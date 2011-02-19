@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.music;
+package com.tomei.musicpurin;
 
 import android.app.ListActivity;
 import android.app.SearchManager;
@@ -62,6 +62,8 @@ import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import java.text.Collator;
+
+import com.android.music.R;
 
 public class AlbumBrowserActivity extends ListActivity
     implements View.OnCreateContextMenuListener, MusicUtils.Defs, ServiceConnection

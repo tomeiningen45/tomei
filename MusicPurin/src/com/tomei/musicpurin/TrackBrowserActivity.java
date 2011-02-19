@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.music;
+package com.tomei.musicpurin;
 
 import android.app.ListActivity;
 import android.app.SearchManager;
@@ -62,6 +62,9 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import java.text.Collator;
 import java.util.Arrays;
+
+import com.android.music.IMediaPlaybackService;
+import com.android.music.R;
 
 public class TrackBrowserActivity extends ListActivity
         implements View.OnCreateContextMenuListener, MusicUtils.Defs, ServiceConnection

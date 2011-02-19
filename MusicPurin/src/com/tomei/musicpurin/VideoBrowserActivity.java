@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.music;
+package com.tomei.musicpurin;
 
 import android.app.ListActivity;
 import android.content.ContentResolver;
@@ -29,6 +29,8 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import java.lang.Integer;
+
+import com.android.music.R;
 
 public class VideoBrowserActivity extends ListActivity implements MusicUtils.Defs
 {

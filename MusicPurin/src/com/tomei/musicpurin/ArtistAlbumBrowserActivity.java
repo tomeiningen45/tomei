@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.android.music;
+package com.tomei.musicpurin;
 
-import com.android.music.QueryBrowserActivity.QueryListAdapter.QueryHandler;
+import com.android.music.R;
+import com.tomei.musicpurin.QueryBrowserActivity.QueryListAdapter.QueryHandler;
 
 import android.app.ExpandableListActivity;
 import android.app.SearchManager;

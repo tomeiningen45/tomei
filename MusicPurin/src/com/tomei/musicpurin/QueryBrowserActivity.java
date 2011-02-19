@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.music;
+package com.tomei.musicpurin;
 
 import android.app.ListActivity;
 import android.app.SearchManager;
@@ -52,6 +52,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import com.android.music.R;
 
 public class QueryBrowserActivity extends ListActivity
 implements MusicUtils.Defs, ServiceConnection

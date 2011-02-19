@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.android.music;
+package com.tomei.musicpurin;
+
+import com.android.music.R;
 
 import android.app.Activity;
 import android.database.Cursor;

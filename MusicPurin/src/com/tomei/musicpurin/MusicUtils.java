@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.music;
+package com.tomei.musicpurin;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -67,6 +67,9 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Locale;
+
+import com.android.music.IMediaPlaybackService;
+import com.android.music.R;
 
 public class MusicUtils {
 

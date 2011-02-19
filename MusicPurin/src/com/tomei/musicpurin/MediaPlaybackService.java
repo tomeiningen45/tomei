@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.music;
+package com.tomei.musicpurin;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -54,6 +54,9 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Random;
 import java.util.Vector;
+
+import com.android.music.IMediaPlaybackService;
+import com.android.music.R;
 
 /**
  * Provides "background" audio playback capabilities, allowing the

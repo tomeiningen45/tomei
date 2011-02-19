@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.music;
+package com.tomei.musicpurin;
 
 import android.bluetooth.BluetoothA2dp;
 import android.content.Context;
