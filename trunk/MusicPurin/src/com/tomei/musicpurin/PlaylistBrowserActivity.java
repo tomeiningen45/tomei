@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.music;
+package com.tomei.musicpurin;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 
 import com.android.internal.database.ArrayListCursor;
+import com.android.music.R;
 
 import android.database.Cursor;
 import android.database.MergeCursor;

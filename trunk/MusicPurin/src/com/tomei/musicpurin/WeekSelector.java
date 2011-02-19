@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.android.music;
+package com.tomei.musicpurin;
+
+import com.android.internal.widget.VerticalTextSpinner;
+import com.android.music.R;
 
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -34,13 +36,10 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class DeleteItems extends Activity
+public class WeekSelector extends Activity
 {
-    private TextView mPrompt;
-    private Button mButton;
-    private long [] mItemList;
+    VerticalTextSpinner mWeeks;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -48,31 +47,44 @@ public class DeleteItems extends Activity
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.confirm_delete);
+        setContentView(R.layout.weekpicker);
         getWindow().setLayout(WindowManager.LayoutParams.FILL_PARENT,
                                     WindowManager.LayoutParams.WRAP_CONTENT);
 
-        mPrompt = (TextView)findViewById(R.id.prompt);
-        mButton = (Button) findViewById(R.id.delete);
-        mButton.setOnClickListener(mButtonClicked);
-
-        ((Button)findViewById(R.id.cancel)).setOnClickListener(new View.OnClickListener() {
+        mWeeks = (VerticalTextSpinner)findViewById(R.id.weeks);
+        mWeeks.setItems(getResources().getStringArray(R.array.weeklist));
+        mWeeks.setWrapAround(false);
+        mWeeks.setScrollInterval(200);
+        
+        int def = MusicUtils.getIntPref(this, "numweeks", 2); 
+        int pos = icicle != null ? icicle.getInt("numweeks", def - 1) : def - 1;
+        mWeeks.setSelectedPos(pos);
+        
+        ((Button) findViewById(R.id.set)).setOnClickListener(mListener);
+        
+        ((Button) findViewById(R.id.cancel)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                setResult(RESULT_CANCELED);
                 finish();
             }
         });
-
-        Bundle b = getIntent().getExtras();
-        String desc = b.getString("description");
-        mItemList = b.getLongArray("items");
-        
-        mPrompt.setText(desc);
     }
     
-    private View.OnClickListener mButtonClicked = new View.OnClickListener() {
+    @Override
+    public void onSaveInstanceState(Bundle outcicle) {
+        outcicle.putInt("numweeks", mWeeks.getCurrentSelectedPos());
+    }
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+    
+    private View.OnClickListener mListener = new View.OnClickListener() {
         public void onClick(View v) {
-            // delete the selected item(s)
-            MusicUtils.deleteTracks(DeleteItems.this, mItemList);
+            int numweeks = mWeeks.getCurrentSelectedPos() + 1;
+            MusicUtils.setIntPref(WeekSelector.this, "numweeks", numweeks);
+            setResult(RESULT_OK);
             finish();
         }
     };
