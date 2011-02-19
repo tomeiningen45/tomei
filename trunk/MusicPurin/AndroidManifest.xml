@@ -15,7 +15,7 @@
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.android.music">
+        package="com.tomei.musicpurin">
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -75,7 +75,7 @@
                 <data android:mimeType="application/itunes"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="com.android.music.PLAYBACK_VIEWER" />
+                <action android:name="com.tomei.musicpurin.PLAYBACK_VIEWER" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

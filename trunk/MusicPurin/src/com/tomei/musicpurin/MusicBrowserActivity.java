@@ -16,8 +16,8 @@
 
 package com.tomei.musicpurin;
 
-import com.android.music.IMediaPlaybackService;
-import com.android.music.R;
+import com.tomei.musicpurin.IMediaPlaybackService;
+import com.tomei.musicpurin.R;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -30,7 +30,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.media.MediaFile;
+import com.tomei.utils.MediaFile;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;

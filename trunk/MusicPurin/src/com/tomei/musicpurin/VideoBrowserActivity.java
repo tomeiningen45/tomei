@@ -30,7 +30,7 @@ import android.widget.SimpleCursorAdapter;
 
 import java.lang.Integer;
 
-import com.android.music.R;
+import com.tomei.musicpurin.R;
 
 public class VideoBrowserActivity extends ListActivity implements MusicUtils.Defs
 {

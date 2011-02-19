@@ -49,7 +49,7 @@ import java.text.Collator;
 import java.util.Formatter;
 import java.util.Locale;
 
-import com.android.music.R;
+import com.tomei.musicpurin.R;
 
 /**
  * Activity allowing the user to select a music track on the device, and

@@ -33,7 +33,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.media.MediaFile;
+import com.tomei.utils.MediaFile;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -63,7 +63,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import java.text.Collator;
 
-import com.android.music.R;
+import com.tomei.musicpurin.R;
 
 public class AlbumBrowserActivity extends ListActivity
     implements View.OnCreateContextMenuListener, MusicUtils.Defs, ServiceConnection

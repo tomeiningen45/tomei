@@ -39,7 +39,7 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.MediaFile;
+import com.tomei.utils.MediaFile;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
@@ -68,8 +68,8 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Locale;
 
-import com.android.music.IMediaPlaybackService;
-import com.android.music.R;
+import com.tomei.musicpurin.IMediaPlaybackService;
+import com.tomei.musicpurin.R;
 
 public class MusicUtils {
 

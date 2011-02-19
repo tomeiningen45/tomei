@@ -16,7 +16,7 @@
 
 package com.tomei.musicpurin;
 
-import com.android.music.R;
+import com.tomei.musicpurin.R;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;

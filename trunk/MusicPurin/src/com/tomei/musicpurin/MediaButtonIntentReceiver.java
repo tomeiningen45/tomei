@@ -16,7 +16,6 @@
 
 package com.tomei.musicpurin;
 
-import android.bluetooth.BluetoothA2dp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.BroadcastReceiver;

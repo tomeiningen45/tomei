@@ -32,11 +32,11 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.media.AudioManager;
-import android.media.MediaFile;
+import com.tomei.utils.MediaFile;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.FileUtils;
+//import android.os.FileUtils;   // I don't care about card ids now because I am running of GalaxyS with only internal SD card.
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -55,8 +55,8 @@ import java.lang.ref.WeakReference;
 import java.util.Random;
 import java.util.Vector;
 
-import com.android.music.IMediaPlaybackService;
-import com.android.music.R;
+import com.tomei.musicpurin.IMediaPlaybackService;
+import com.tomei.musicpurin.R;
 
 /**
  * Provides "background" audio playback capabilities, allowing the
@@ -272,7 +272,7 @@ public class MediaPlaybackService extends Service {
         super.onCreate();
         
         mPreferences = getSharedPreferences("Music", MODE_WORLD_READABLE | MODE_WORLD_WRITEABLE);
-        mCardId = FileUtils.getFatVolumeId(Environment.getExternalStorageDirectory().getPath());
+        mCardId = 0; //FileUtils.getFatVolumeId(Environment.getExternalStorageDirectory().getPath());
         
         registerExternalStorageListener();
 
@@ -680,7 +680,7 @@ public class MediaPlaybackService extends Service {
                         closeExternalStorageFiles(intent.getData().getPath());
                     } else if (action.equals(Intent.ACTION_MEDIA_MOUNTED)) {
                         mMediaMountedCount++;
-                        mCardId = FileUtils.getFatVolumeId(intent.getData().getPath());
+                        mCardId = 0; //FileUtils.getFatVolumeId(intent.getData().getPath());
                         reloadQueue();
                         notifyChange(QUEUE_CHANGED);
                         notifyChange(META_CHANGED);
