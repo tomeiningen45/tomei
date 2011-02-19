@@ -30,7 +30,7 @@ import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.media.AudioManager;
-import android.media.MediaFile;
+import com.tomei.utils.MediaFile;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,7 +53,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import com.android.music.R;
+import com.tomei.musicpurin.R;
 
 public class QueryBrowserActivity extends ListActivity
 implements MusicUtils.Defs, ServiceConnection

@@ -16,7 +16,7 @@
 
 package com.tomei.musicpurin;
 
-import com.android.music.R;
+import com.tomei.musicpurin.R;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -61,9 +61,10 @@ public class TouchInterceptor extends ListView {
     private final int mTouchSlop;
     private int mItemHeightNormal;
     private int mItemHeightExpanded;
-
+    private Context mContext;
     public TouchInterceptor(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
         SharedPreferences pref = context.getSharedPreferences("Music", 3);
         mRemoveMode = pref.getInt("deletemode", -1);
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();

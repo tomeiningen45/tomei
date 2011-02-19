@@ -16,15 +16,15 @@
 
 package com.tomei.musicpurin;
 
-import com.android.internal.database.SortCursor;
-import com.android.music.R;
+import com.tomei.utils.SortCursor;
+import com.tomei.musicpurin.R;
 
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ContentUris;
 import android.database.Cursor;
-import android.media.MediaFile;
+import com.tomei.utils.MediaFile;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;

@@ -16,8 +16,8 @@
 
 package com.tomei.musicpurin;
 
-import com.android.internal.widget.VerticalTextSpinner;
-import com.android.music.R;
+import com.tomei.utils.VerticalTextSpinner;
+import com.tomei.musicpurin.R;
 
 import android.app.Activity;
 import android.content.ContentResolver;

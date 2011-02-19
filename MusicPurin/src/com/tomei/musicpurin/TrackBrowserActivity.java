@@ -33,7 +33,7 @@ import android.database.CharArrayBuffer;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
-import android.media.MediaFile;
+import com.tomei.utils.MediaFile;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -63,8 +63,8 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import java.text.Collator;
 import java.util.Arrays;
 
-import com.android.music.IMediaPlaybackService;
-import com.android.music.R;
+import com.tomei.musicpurin.IMediaPlaybackService;
+import com.tomei.musicpurin.R;
 
 public class TrackBrowserActivity extends ListActivity
         implements View.OnCreateContextMenuListener, MusicUtils.Defs, ServiceConnection
