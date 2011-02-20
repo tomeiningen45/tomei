@@ -24,7 +24,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application android:icon="@drawable/app_music"
-        android:label="@string/musicbrowserlabel"
+        android:label="Music Purin"
         android:taskAffinity="android.task.music"
         android:allowTaskReparenting="true">
         <meta-data

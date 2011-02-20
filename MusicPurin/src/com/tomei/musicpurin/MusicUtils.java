@@ -27,6 +27,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
+import android.database.CharArrayBuffer;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -1236,4 +1237,49 @@ public class MusicUtils {
         v.setBackgroundDrawable(new BitmapDrawable(bg));
     }
 
+    public static void updateMusicName(CharArrayBuffer buffer) {
+        char [] data = buffer.data;
+        for (int i = buffer.sizeCopied-1; i >= 0; i--) {
+            if (data[i] == '\u301c') {
+                data[i] = '\uff5e'; // Fix Japanese Tilde
+            }
+        }
+
+        // Special case -- strip off Tomei's special marker at the beginning
+        if (buffer.sizeCopied > 6 && data.length > 6 && '0' <= data[0] && data[0] <= '9') {
+            strip: {
+                for (int i=1; i<5; i++) {
+                    char c = data[i];
+                    if (('0' <= c && c <= '9') ||
+                        ('a' <= c && c <= 'z') ||
+                        ('A' <= c && c <= 'Z')) {
+                        ;
+                    } else {
+                        break strip;
+                    }
+                }
+                if (data[5] != ' ') {
+                    break strip;
+                }
+                int len = buffer.sizeCopied - 6;
+                System.arraycopy(data, 6, data, 0, len);
+                buffer.sizeCopied -= 6;
+            }
+        }
+    }
+
+    public static int updateArtist(char data[], int len) {
+        int n = len;
+        if (len > 6 && data.length > 6) {
+            if (('0' <= data[n-1] && data[n-1] <= '9') &&
+                ('0' <= data[n-2] && data[n-2] <= '9') &&
+                (':' <= data[n-3] && data[n-3] <= ':') &&
+                ('0' <= data[n-4] && data[n-4] <= '9') &&
+                ('0' <= data[n-5] && data[n-5] <= '9') &&
+                (' ' <= data[n-6] && data[n-6] <= ' ')) {
+                len -= 6;
+            }
+        }
+        return len;
+    }
 }
