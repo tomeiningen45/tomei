@@ -103,6 +103,7 @@ public class MediaPlaybackService extends Service {
     private static final int RELEASE_WAKELOCK = 2;
     private static final int SERVER_DIED = 3;
     private static final int FADEIN = 4;
+    private static final int UPDATE_HISTORY = 5;
     private static final int MAX_HISTORY_SIZE = 100;
     
     private MultiPlayer mPlayer;
@@ -142,7 +143,8 @@ public class MediaPlaybackService extends Service {
     private boolean mResumeAfterCall = false;
     private boolean mIsSupposedToBePlaying = false;
     private boolean mQuietMode = false;
-    
+    private HistoryDB mHistoryDB;
+
     private SharedPreferences mPreferences;
     // We use this to distinguish between different cards when saving/restoring playlists.
     // This will have to change if we want to support multiple simultaneous cards.
@@ -185,6 +187,7 @@ public class MediaPlaybackService extends Service {
     
     private Handler mMediaplayerHandler = new Handler() {
         float mCurrentVolume = 1.0f;
+        int mLastID = -1, mLastSecs = -1;
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -228,6 +231,19 @@ public class MediaPlaybackService extends Service {
                     break;
                 case RELEASE_WAKELOCK:
                     mWakeLock.release();
+                    break;
+                case UPDATE_HISTORY:
+                    if (mPlayer.isInitialized() && mHistoryDB != null && mCursor != null) {
+                        int secs = (int)(position() / 1000);
+                        int id = (int)mCursor.getLong(IDCOLIDX);
+                        if (mLastID != id || mLastSecs != secs) {
+                            mHistoryDB.insertMain(id, secs);
+                        }
+                        mLastID = id;
+                        mLastSecs = secs;
+                        removeMessages(UPDATE_HISTORY);
+                        sendEmptyMessageDelayed(UPDATE_HISTORY, 2000);
+                    }
                     break;
                 default:
                     break;
@@ -300,6 +316,8 @@ public class MediaPlaybackService extends Service {
         // system will relaunch it. Make sure it gets stopped again in that case.
         Message msg = mDelayedStopHandler.obtainMessage();
         mDelayedStopHandler.sendMessageDelayed(msg, IDLE_DELAY);
+
+        mHistoryDB = HistoryDB.obtain(this);
     }
 
     @Override
@@ -330,6 +348,9 @@ public class MediaPlaybackService extends Service {
             mUnmountReceiver = null;
         }
         mWakeLock.release();
+
+        HistoryDB.release(mHistoryDB);
+        mHistoryDB = null;
         super.onDestroy();
     }
     
@@ -1038,6 +1059,9 @@ public class MediaPlaybackService extends Service {
      * Starts playback of a previously opened file.
      */
     public void play() {
+        mMediaplayerHandler.removeMessages(UPDATE_HISTORY);
+        mMediaplayerHandler.sendEmptyMessageDelayed(UPDATE_HISTORY, 2000);
+
         if (mPlayer.isInitialized()) {
             // if we are at the end of the song, go to the next song first
             long duration = mPlayer.duration();

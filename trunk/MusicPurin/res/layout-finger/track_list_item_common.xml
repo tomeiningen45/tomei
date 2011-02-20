@@ -40,15 +40,15 @@
 
     <!-- The height is set to half the height of the parent, which is 64 dip -->
     <TextView android:id="@+id/line1"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_width="wrap_content"
         android:paddingLeft="9dip"
-        android:layout_height="wrap_content"
+        android:layout_height="32dip"
         android:layout_alignWithParentIfMissing="true"
         android:layout_toRightOf="@id/icon"
         android:layout_toLeftOf="@id/duration"
         android:ellipsize="marquee"
-        android:singleLine="true" />
+        android:singleLine="false" />
 
     <!-- The height is set to half the height of the parent, which is 64 dip -->
     <TextView android:id="@+id/line2" android:visibility="visible"
@@ -62,7 +62,18 @@
         android:layout_toRightOf="@id/icon"
         android:layout_toLeftOf="@id/duration"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="29dip" />
+
+    <ProgressBar android:id="@+id/progress" android:visibility="visible"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max="100"
+        android:progress="50"
+        android:layout_below="@id/line2"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_toRightOf="@id/icon"
+        android:layout_toLeftOf="@id/duration"
+        android:layout_width="wrap_content"
+        android:layout_height="3dip" />
 
     <ImageView android:id="@+id/play_indicator"
         android:layout_alignParentRight="true"

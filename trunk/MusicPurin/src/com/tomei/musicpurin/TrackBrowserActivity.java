@@ -55,6 +55,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AlphabetIndexer;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SectionIndexer;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -105,6 +106,8 @@ public class TrackBrowserActivity extends ListActivity
     public TrackBrowserActivity()
     {
     }
+
+    private HistoryDB mHistoryDB;
 
     /** Called when the activity is first created. */
     @Override
@@ -186,6 +189,8 @@ public class TrackBrowserActivity extends ListActivity
                 setAlbumArtBackground();
             }
         });
+
+        mHistoryDB = HistoryDB.obtain(this);
     }
 
     public void onServiceConnected(ComponentName name, IBinder service)
@@ -279,6 +284,8 @@ public class TrackBrowserActivity extends ListActivity
         setListAdapter(null);
         mAdapter = null;
         unregisterReceiverSafe(mScanListener);
+
+        HistoryDB.release(mHistoryDB);
         super.onDestroy();
     }
     
@@ -1332,6 +1339,7 @@ public class TrackBrowserActivity extends ListActivity
         boolean mIsNowPlaying;
         boolean mDisableNowPlayingIndicator;
 
+        int mIDIdx;
         int mTitleIdx;
         int mArtistIdx;
         int mDurationIdx;
@@ -1352,6 +1360,7 @@ public class TrackBrowserActivity extends ListActivity
             TextView line1;
             TextView line2;
             TextView duration;
+            ProgressBar progress;
             ImageView play_indicator;
             CharArrayBuffer buffer1;
             char [] buffer2;
@@ -1428,6 +1437,7 @@ public class TrackBrowserActivity extends ListActivity
         
         private void getColumnIndices(Cursor cursor) {
             if (cursor != null) {
+                mIDIdx = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
                 mTitleIdx = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE);
                 mArtistIdx = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST);
                 mDurationIdx = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
@@ -1464,6 +1474,7 @@ public class TrackBrowserActivity extends ListActivity
             vh.line1 = (TextView) v.findViewById(R.id.line1);
             vh.line2 = (TextView) v.findViewById(R.id.line2);
             vh.duration = (TextView) v.findViewById(R.id.duration);
+            vh.progress = (ProgressBar) v.findViewById(R.id.progress);
             vh.play_indicator = (ImageView) v.findViewById(R.id.play_indicator);
             vh.buffer1 = new CharArrayBuffer(100);
             vh.buffer2 = new char[200];
@@ -1477,7 +1488,16 @@ public class TrackBrowserActivity extends ListActivity
             ViewHolder vh = (ViewHolder) view.getTag();
             
             cursor.copyStringToBuffer(mTitleIdx, vh.buffer1);
+            MusicUtils.updateMusicName(vh.buffer1);
             vh.line1.setText(vh.buffer1.data, 0, vh.buffer1.sizeCopied);
+            /*String s = vh.line1.getText().toString();
+            if (s.startsWith("6qxic")) {
+                String x = "";
+                for (int i=0; i<s.length(); i++) {
+                    x += s.charAt(i) + " " + ((int)(s.charAt(i)));
+                }
+                System.out.println(x);
+                }*/
             
             int secs = cursor.getInt(mDurationIdx) / 1000;
             if (secs == 0) {
@@ -1500,7 +1520,23 @@ public class TrackBrowserActivity extends ListActivity
                 vh.buffer2 = new char[len];
             }
             builder.getChars(0, len, vh.buffer2, 0);
+            len = MusicUtils.updateArtist(vh.buffer2, len);
             vh.line2.setText(vh.buffer2, 0, len);
+
+            int seconds = mActivity.mHistoryDB.getSeconds(cursor.getInt(mIDIdx));
+            if (secs < 60 * 20) {
+                //seconds = 240;
+            }
+            if (seconds <= 0 && secs > 0) {
+                vh.progress.setVisibility(View.INVISIBLE);
+            } else {
+                int value = seconds * 100 / secs;
+                if (value > 100) {
+                    value = 100;
+                }
+                vh.progress.setProgress(value);
+                vh.progress.setVisibility(View.VISIBLE);
+            }
 
             ImageView iv = vh.play_indicator;
             long id = -1;
