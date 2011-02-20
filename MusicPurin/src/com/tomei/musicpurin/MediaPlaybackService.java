@@ -129,8 +129,8 @@ public class MediaPlaybackService extends Service {
             MediaStore.Audio.Media.MIME_TYPE,
             MediaStore.Audio.Media.ALBUM_ID,
             MediaStore.Audio.Media.ARTIST_ID,
-            MediaStore.Audio.Media.IS_PODCAST, // index must match PODCASTCOLIDX below
-            MediaStore.Audio.Media.BOOKMARK    // index must match BOOKMARKCOLIDX below
+            "is_podcast", // index must match PODCASTCOLIDX below
+            "bookmark"    // index must match BOOKMARKCOLIDX below
     };
     private final static int IDCOLIDX = 0;
     private final static int PODCASTCOLIDX = 8;
@@ -1321,7 +1321,7 @@ public class MediaPlaybackService extends Service {
                 
                 // write 'pos' to the bookmark field
                 ContentValues values = new ContentValues();
-                values.put(MediaStore.Audio.Media.BOOKMARK, pos);
+                values.put("bookmark", pos);
                 Uri uri = ContentUris.withAppendedId(
                         MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mCursor.getLong(IDCOLIDX));
                 getContentResolver().update(uri, values, null, null);
