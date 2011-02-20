@@ -428,7 +428,7 @@ public class PlaylistBrowserActivity extends ListActivity
         // do a query for all files that are podcasts
         final String[] ccols = new String[] { MediaStore.Audio.Media._ID};
         Cursor cursor = MusicUtils.query(this, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                ccols, MediaStore.Audio.Media.IS_PODCAST + "=1",
+                ccols, "is_podcast" + "=1",
                 null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
         
         if (cursor == null) {

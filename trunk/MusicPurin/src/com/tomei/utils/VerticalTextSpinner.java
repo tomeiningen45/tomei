@@ -26,6 +26,7 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import com.tomei.musicpurin.R;
 
 
 public class VerticalTextSpinner extends View {
@@ -105,9 +106,9 @@ public class VerticalTextSpinner extends View {
             int defStyle) {
         super(context, attrs, defStyle);
         
-        mBackgroundFocused = context.getResources().getDrawable(com.android.internal.R.drawable.pickerbox_background);
-        mSelectorFocused = context.getResources().getDrawable(com.android.internal.R.drawable.pickerbox_selected);
-        mSelectorNormal = context.getResources().getDrawable(com.android.internal.R.drawable.pickerbox_unselected);
+        mBackgroundFocused = context.getResources().getDrawable(R.drawable.pickerbox_background);
+        mSelectorFocused = context.getResources().getDrawable(R.drawable.pickerbox_selected);
+        mSelectorNormal = context.getResources().getDrawable(R.drawable.pickerbox_unselected);
         
         mSelectorHeight = mSelectorFocused.getIntrinsicHeight();
         mSelectorDefaultY = (mBackgroundFocused.getIntrinsicHeight() - mSelectorHeight) / 2;
@@ -119,11 +120,11 @@ public class VerticalTextSpinner extends View {
         
         mTextPaintDark = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mTextPaintDark.setTextSize(TEXT_SIZE);
-        mTextPaintDark.setColor(context.getResources().getColor(com.android.internal.R.color.primary_text_light));
+        mTextPaintDark.setColor(context.getResources().getColor(R.color.primary_text_light));
         
         mTextPaintLight = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mTextPaintLight.setTextSize(TEXT_SIZE);
-        mTextPaintLight.setColor(context.getResources().getColor(com.android.internal.R.color.secondary_text_dark));
+        mTextPaintLight.setColor(context.getResources().getColor(R.color.secondary_text_dark));
         
         mScrollMode = SCROLL_MODE_NONE;
         mScrollInterval = DEFAULT_SCROLL_INTERVAL_MS;

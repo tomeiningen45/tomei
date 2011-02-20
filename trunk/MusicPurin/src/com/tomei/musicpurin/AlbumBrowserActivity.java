@@ -567,7 +567,7 @@ public class AlbumBrowserActivity extends ListActivity
                     mIndexer.setCursor(cursor);
                 } else {
                     mIndexer = new MusicAlphabetIndexer(cursor, mAlbumIdx, mResources.getString(
-                            com.android.internal.R.string.fast_scroll_alphabet));
+                            R.string.fast_scroll_alphabet));
                 }
             }
         }
