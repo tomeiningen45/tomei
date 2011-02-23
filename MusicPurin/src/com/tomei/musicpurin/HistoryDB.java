@@ -8,6 +8,10 @@ import android.database.sqlite.SQLiteStatement;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * FIXME -- IDs are never removed from the DB ... so if you have a huge music collection you may have
+ * a problem.
+ */
 public class HistoryDB {
     protected SQLiteDatabase mDB;
     private static final String DATABASE_NAME = "history.db";

@@ -64,15 +64,16 @@
         android:layout_width="wrap_content"
         android:layout_height="29dip" />
 
-    <ProgressBar android:id="@+id/progress" android:visibility="visible"
+    <ProgressBar android:id="@+id/progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:max="100"
-        android:progress="50"
+        android:progress="0"
         android:layout_below="@id/line2"
         android:layout_alignWithParentIfMissing="true"
         android:layout_toRightOf="@id/icon"
         android:layout_toLeftOf="@id/duration"
         android:layout_width="wrap_content"
+  	android:visibility="invisible"
         android:layout_height="3dip" />
 
     <ImageView android:id="@+id/play_indicator"

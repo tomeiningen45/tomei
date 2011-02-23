@@ -1051,6 +1051,13 @@ public class MediaPlaybackService extends Service {
                 }
             } else {
                 mOpenFailedCounter = 0;
+                if (mCursor != null && mHistoryDB != null) {
+                    int id = (int)mCursor.getLong(IDCOLIDX);
+                    int msecs = mHistoryDB.getSeconds(id) * 1000 - 1300;
+                    if (msecs > 0 && msecs + 3000 < mPlayer.duration()) {
+                        seek(msecs);
+                    }
+                }
             }
         }
     }

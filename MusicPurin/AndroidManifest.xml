@@ -26,7 +26,8 @@
     <application android:icon="@drawable/app_music"
         android:label="Music Purin"
         android:taskAffinity="android.task.music"
-        android:allowTaskReparenting="true">
+        android:allowTaskReparenting="true"
+        android:debuggable="true">
         <meta-data
             android:name="android.app.default_searchable"
             android:value=".QueryBrowserActivity"

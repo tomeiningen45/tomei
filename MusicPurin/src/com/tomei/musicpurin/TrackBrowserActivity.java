@@ -1524,9 +1524,6 @@ public class TrackBrowserActivity extends ListActivity
             vh.line2.setText(vh.buffer2, 0, len);
 
             int seconds = mActivity.mHistoryDB.getSeconds(cursor.getInt(mIDIdx));
-            if (secs < 60 * 20) {
-                //seconds = 240;
-            }
             if (seconds <= 0 && secs > 0) {
                 vh.progress.setVisibility(View.INVISIBLE);
             } else {
@@ -1534,8 +1531,15 @@ public class TrackBrowserActivity extends ListActivity
                 if (value > 100) {
                     value = 100;
                 }
-                vh.progress.setProgress(value);
-                vh.progress.setVisibility(View.VISIBLE);
+                if (value >= 99) {
+                    int color = 0xff606565;
+                    vh.line1.setTextColor(color);
+                    vh.line2.setTextColor(color);
+                    vh.progress.setVisibility(View.INVISIBLE);
+                } else {
+                    vh.progress.setProgress(value);
+                    vh.progress.setVisibility(View.VISIBLE);
+                }
             }
 
             ImageView iv = vh.play_indicator;
