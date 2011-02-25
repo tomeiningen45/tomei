@@ -5,7 +5,9 @@
 #
 # cvlc mms://wm.nhk.or.jp/r-news/20100627220003_1_1_midnight.wma ––sout \
 # "demux=dump :demuxdump-file
-
+#
+# sudo apt-get install id3v2 eyeD3 vlc-nox mplayer lame
+#
 set test {
 
     cvlc -vvv mms://wm.nhk.or.jp/r-news/20100627220003_1_1_midnight.wma \
@@ -42,6 +44,10 @@ set test {
 proc usage {} {
     puts "Usage:"
     puts "    tclsh [info script] ?options? -titles <section> ..."
+    puts "    tclsh [info script] ?options? -auto   <section> ..."
+    puts "Currently there are no options ..."
+    puts "Sections that are working    : business book"
+    puts "Sections that are not working: newsup column news"
 }
 
 proc hasopt {argv opt} {
@@ -55,6 +61,7 @@ proc hasopt {argv opt} {
 }
 
 proc wget {url {encoding shiftjis}} {
+    puts -nonewline "wget $url .."
     set result ""
     catch {
         set fd [open "|wget -q -O - $url 2> /dev/null"]
@@ -62,8 +69,8 @@ proc wget {url {encoding shiftjis}} {
         set result [read $fd]
         close $fd
     }
+    puts " [string length $result] chars"
     return $result
-
 }
 
 proc year {} {
@@ -164,9 +171,11 @@ proc titles_nhk_news {} {
     set titles {}
 
     foreach line [split [wget http://www.nhk.or.jp/r-news/] \n] {
-        if {[regexp {"([^\"]+[.]asx)";} $line dummy asx]} {
+        if {[regexp {"([^\"]+[.]asx)"} $line dummy asx]} {
+            #puts $line
             if {[regexp {/(201[0-9]....)_1} $line dummy date]} {
                 set url   http://www.nhk.or.jp/r-news/$asx
+                puts $url
                 if {[regexp noon $line]} {
                     set time "12:00"
                 } elseif {[regexp morning $line]} {
@@ -223,7 +232,7 @@ proc titles {verbose argv} {
 
     if {$verbose} {
         foreach n $titles {
-            puts $n
+            puts "GOT: $n"
         }
     }
 
