@@ -174,7 +174,7 @@ proc titles_nhk_news {} {
         if {[regexp {"([^\"]+[.]asx)"} $line dummy asx]} {
             #puts $line
             if {[regexp {/(201[0-9]....)_1} $line dummy date]} {
-                set url   http://www.nhk.or.jp/r-news/$asx
+                set url $asx
                 puts $url
                 if {[regexp noon $line]} {
                     set time "12:00"
@@ -199,6 +199,12 @@ proc titles_nhk_news {} {
     }
 
     return [lrange [lsort -decreasing $titles] 0 1]
+}
+
+rename exec exec.orig
+proc exec {args} {
+    puts "exec $args"
+    return [eval exec.orig $args]
 }
 
 proc setid3 {mp3 artist album title} {
@@ -242,8 +248,13 @@ proc titles {verbose argv} {
 proc getasx {asx mp3} {
     set test 0
     set data [wget $asx]
-    set tmp /tmp/[pid].wma
-    set wav /tmp/[pid].wav
+    set tmp /tmp/getnhk-[pid].wma
+    set wav /tmp/getnhk-[pid].wav
+
+    foreach stalefile [glob /tmp/getnhk-*.wma] {
+        puts "Need to remove $stalefile"
+        catch {file delete $stalefile}
+    }
 
     if {$test} {
         set tmp [file root $mp3].wma
@@ -261,6 +272,7 @@ proc getasx {asx mp3} {
         if {![file exists $tmp]} {
             if 1 {
                 catch {
+                    exec tclsh watch.tcl $tmp 2>@ stderr >@ stdout &
                     exec cvlc $mms \
                         :mms-caching=100000000 :demux=dump :demuxdump-file=$tmp \
                         --play-and-exit  \
