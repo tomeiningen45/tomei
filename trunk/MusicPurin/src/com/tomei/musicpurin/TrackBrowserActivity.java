@@ -95,6 +95,7 @@ public class TrackBrowserActivity extends ListActivity
     private String mAlbumId;
     private String mArtistId;
     private String mPlaylist;
+    private boolean mIsFakePlaylist;
     private String mGenre;
     private String mSortOrder;
     private int mSelectedPosition;
@@ -1055,6 +1056,7 @@ public class TrackBrowserActivity extends ListActivity
                     Integer.valueOf(mGenre)),
                     mCursorCols, where.toString(), keywords, mSortOrder, async);
         } else if (mPlaylist != null) {
+            mIsFakePlaylist = true;
             if (mPlaylist.equals("nowplaying")) {
                 if (MusicUtils.sService != null) {
                     ret = new NowPlayingCursor(MusicUtils.sService, mCursorCols);
@@ -1076,14 +1078,16 @@ public class TrackBrowserActivity extends ListActivity
                 where.append(System.currentTimeMillis() / 1000 - X);
                 ret = queryhandler.doQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                         mCursorCols, where.toString(), keywords,
-                        MediaStore.Audio.Media.DEFAULT_SORT_ORDER, async);
+                        MediaStore.MediaColumns.DATE_ADDED + " DESC", async);
             } else {
                 mSortOrder = MediaStore.Audio.Playlists.Members.DEFAULT_SORT_ORDER;
                 ret = queryhandler.doQuery(MediaStore.Audio.Playlists.Members.getContentUri("external",
                         Long.valueOf(mPlaylist)), mPlaylistMemberCols,
                         where.toString(), keywords, mSortOrder, async);
+                mIsFakePlaylist = false;
             }
         } else {
+            mSortOrder = MediaStore.Audio.Media.ARTIST_ID + " DESC";
             if (mAlbumId != null) {
                 where.append(" AND " + MediaStore.Audio.Media.ALBUM_ID + "=" + mAlbumId);
                 mSortOrder = MediaStore.Audio.Media.TRACK + ", " + mSortOrder;
@@ -1523,8 +1527,15 @@ public class TrackBrowserActivity extends ListActivity
             len = MusicUtils.updateArtist(vh.buffer2, len);
             vh.line2.setText(vh.buffer2, 0, len);
 
-            int seconds = mActivity.mHistoryDB.getSeconds(cursor.getInt(mIDIdx));
-            if (seconds <= 0 && secs > 0) {
+            vh.line1.setTextColor(0xffffffff);
+            vh.line2.setTextColor(0xffffffff);
+
+            int colIdx = mIDIdx;
+            if (mActivity.mPlaylist != null && !mActivity.mIsFakePlaylist) {
+                colIdx = mAudioIdIdx;
+            }
+            int seconds = mActivity.mHistoryDB.getSeconds(cursor.getInt(colIdx));
+            if (seconds <= 0 && secs > 5) {
                 vh.progress.setVisibility(View.INVISIBLE);
             } else {
                 int value = seconds * 100 / secs;
