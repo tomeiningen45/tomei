@@ -404,7 +404,7 @@ public class PlaylistBrowserActivity extends ListActivity
         final String[] ccols = new String[] { MediaStore.Audio.Media._ID};
         String where = MediaStore.MediaColumns.DATE_ADDED + ">" + (System.currentTimeMillis() / 1000 - X);
         Cursor cursor = MusicUtils.query(this, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                ccols, where, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+                ccols, where, null, MediaStore.MediaColumns.DATE_ADDED + " DESC");
         
         if (cursor == null) {
             // Todo: show a message
