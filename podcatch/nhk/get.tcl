@@ -251,7 +251,7 @@ proc getasx {asx mp3} {
     set tmp /tmp/getnhk-[pid].wma
     set wav /tmp/getnhk-[pid].wav
 
-    foreach stalefile [glob /tmp/getnhk-*.wma] {
+    foreach stalefile [glob -nocomplain /tmp/getnhk-*.wma] {
         puts "Need to remove $stalefile"
         catch {file delete $stalefile}
     }
