@@ -401,6 +401,30 @@ proc getall {argv} {
     }
 }
 
+proc sync {} {
+    set files [glob mp3/*.mp3]
+    set news {}
+    set pod  {}
+
+    # want to save pod casts for longer but news for shorter.
+    # also news is larger so want to conserve space on server
+    foreach f $files {
+        if {[regexp {[-]news[-]} $f]} {
+            lappend news $f
+        } else {
+            lappend pod $f
+        }
+    }
+
+    dosync html/pod/nhknews  3 $news
+    dosync html/pod/nhkpod  10 $pod
+}
+
+proc dosync {dir max files} {
+    set script [file dir [info script]]/../tools/sync.tcl
+    eval exec tclsh $script $dir $max $files 2>@ stderr >@ stdout
+}
+
 proc main {argv} {
     if {[lindex $argv 0] == "-titles"} {
         titles 1 [lrange $argv 1 end]
@@ -408,6 +432,7 @@ proc main {argv} {
         while 1 {
             puts [exec date]
             getall [lrange $argv 1 end]
+            sync
             puts [exec date]
             puts "Sleeping now"
             exec sleep 3600
