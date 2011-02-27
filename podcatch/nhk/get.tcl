@@ -360,6 +360,7 @@ proc get_mms {n} {
     }
 
     setid3 $file $artist $album $title
+    sync
 }
 
 proc get_mp3 {n} {
