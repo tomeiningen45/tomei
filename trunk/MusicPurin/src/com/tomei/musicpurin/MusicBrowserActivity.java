@@ -57,6 +57,7 @@ public class MusicBrowserActivity extends Activity
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        TimerService.startService(this);
         int activeTab = MusicUtils.getIntPref(this, "activetab", R.id.artisttab);
         if (activeTab != R.id.artisttab
                 && activeTab != R.id.albumtab

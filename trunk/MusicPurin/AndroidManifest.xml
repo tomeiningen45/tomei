@@ -235,5 +235,17 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/appwidget_info" />
         </receiver>
+
+        <receiver android:name=".TimerReceiver">
+            <intent-filter>
+               <action android:name="com.tomei.musicpurin.TIMER" />
+               <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <service android:name=".TimerService">
+            <intent-filter>
+                <action android:name="com.tomei.musicpurin.TimerService" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>

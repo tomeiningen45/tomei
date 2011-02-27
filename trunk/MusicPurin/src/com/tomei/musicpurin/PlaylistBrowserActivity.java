@@ -85,6 +85,7 @@ public class PlaylistBrowserActivity extends ListActivity
     public void onCreate(Bundle icicle)
     {
         super.onCreate(icicle);
+        TimerService.startService(this);
 
         final Intent intent = getIntent();
         final String action = intent.getAction();
