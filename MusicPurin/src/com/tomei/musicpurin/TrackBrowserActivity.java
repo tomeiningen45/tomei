@@ -115,6 +115,7 @@ public class TrackBrowserActivity extends ListActivity
     public void onCreate(Bundle icicle)
     {
         super.onCreate(icicle);
+        TimerService.startService(this);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         Intent intent = getIntent();
         if (intent != null) {
