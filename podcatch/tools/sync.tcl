@@ -12,7 +12,7 @@ set changed 0
 proc delfiles {} {
     global user dir maxfiles changed
 
-    set files [exec ssh $user ls -t $dir]
+    set files [lsort -decreasing [exec ssh $user ls -t $dir]]
     regsub list.txt $files "" files
     #puts ===$files===
     set todel [lrange $files $maxfiles end]
@@ -29,7 +29,7 @@ proc delfiles {} {
 proc pushfiles {files} {
     global user dir maxfiles changed
 
-    set files [eval exec ls -t $files]
+    set files [lsort -decreasing [eval exec ls -t $files]]
     set topush [lrange $files 0 [expr $maxfiles - 1]]
 
     set remotefiles [exec ssh $user ls -t $dir]
@@ -50,7 +50,7 @@ proc pushfiles {files} {
 proc indexfiles {} {
     global user dir maxfiles
 
-    exec ssh $user "cd $dir; ls -t > list.txt"
+    exec ssh $user "cd $dir; ls -t *.mp3 > list.txt"
 }
 
 set dir [lindex $argv 0]
