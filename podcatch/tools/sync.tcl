@@ -6,6 +6,10 @@ proc exec {args} {
     return [eval exec.orig $args]
 }
 
+catch {
+    unset env(SSH_AUTH_SOCK)
+}
+
 set user $env(NHKEXPORT)
 set changed 0
 
