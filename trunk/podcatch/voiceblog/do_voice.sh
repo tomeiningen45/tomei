@@ -11,4 +11,9 @@ if test "$*" = ""; then
 else
     e=$*
 fi
-time tclsh voiceblog_get.tcl `tclsh voiceblog_titles.tcl 10000 $e`
+
+while true; do
+    echo ================ `date`
+    time tclsh voiceblog_get.tcl `tclsh voiceblog_titles.tcl 10000 $e`
+    sleep 3600
+done
