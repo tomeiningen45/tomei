@@ -8,6 +8,9 @@
 #
 # sudo apt-get install id3v2 eyeD3 vlc-nox mplayer lame
 #
+# http://www.nhk.or.jp/gr  chikyuu rajio
+
+
 set test {
 
     cvlc -vvv mms://wm.nhk.or.jp/r-news/20100627220003_1_1_midnight.wma \
@@ -298,7 +301,7 @@ proc getasx {asx mp3} {
                 2>@ stderr >@ stdout
         }
         catch {
-            exec nice lame -S -m s -f $wav -o $mp3 \
+            exec nice lame -b 64 -S -m m -f $wav -o $mp3 \
                 2>@ stderr >@ stdout
         }
 
