@@ -19,7 +19,6 @@ set default_channels {
     udochuru
     katsuhiro
     gekiura
-    bukuro24
     seishun-cho
 }
 #    madge   pink-away
@@ -30,6 +29,7 @@ set default_channels {
 #     mayo-love
 #    tokyo-pod
 #    udochuru
+#     bukuro24
 
 set cfg(numtitles) 10000
 set cfg(depth)     1
@@ -161,4 +161,5 @@ proc main {argv} {
     }
 }
 
+set verbose 1
 main $argv
