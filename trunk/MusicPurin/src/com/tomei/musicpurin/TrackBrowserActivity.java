@@ -77,6 +77,7 @@ public class TrackBrowserActivity extends ListActivity
     private static final int CLEAR_PLAYLIST = CHILD_MENU_BASE + 4;
     private static final int REMOVE = CHILD_MENU_BASE + 5;
     private static final int SEARCH = CHILD_MENU_BASE + 6;
+    private static final int SYNC = CHILD_MENU_BASE + 7;
 
 
     private static final String LOGTAG = "TrackBrowser";
@@ -692,6 +693,7 @@ public class TrackBrowserActivity extends ListActivity
         if (isMusic(mTrackCursor)) {
             menu.add(0, SEARCH, 0, R.string.search_title);
         }
+        menu.add(0, SYNC, 0, "Sync");
         mCurrentAlbumName = mTrackCursor.getString(mTrackCursor.getColumnIndexOrThrow(
                 MediaStore.Audio.Media.ALBUM));
         mCurrentArtistNameForAlbum = mTrackCursor.getString(mTrackCursor.getColumnIndexOrThrow(
@@ -758,8 +760,16 @@ public class TrackBrowserActivity extends ListActivity
             case SEARCH:
                 doSearch();
                 return true;
+
+            case SYNC:
+                doSync();
+                return true;
         }
         return super.onContextItemSelected(item);
+    }
+
+    void doSync() {
+        Sync.sync(this);
     }
 
     void doSearch() {
