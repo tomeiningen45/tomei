@@ -20,6 +20,11 @@ set default_channels {
     katsuhiro
     gekiura
     seishun-cho
+    higashitotsuka
+    ord197203
+    preacher
+    bible
+    japanalive
 }
 #    madge   pink-away
 #
