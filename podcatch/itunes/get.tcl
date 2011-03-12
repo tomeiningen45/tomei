@@ -47,6 +47,7 @@ proc unquote {s} {
 }
 
 proc get_lib {xmlfile} {
+    global env
     set fd [open $xmlfile r]
     fconfigure $fd -encoding utf-8
     set data [read $fd]
@@ -90,14 +91,16 @@ proc get_lib {xmlfile} {
         if {![file exists $dstpath]} {
             puts "Copying $dirname/$filename"
             file mkdir $dstdir
-            file copy -force $srcpath $dstpath
+
+            set tmpfile $env(HOME)/iTunes/catch/tmp[file ext $filename]
+            file copy -force $srcpath $tmpfile
 
             set title $name
             set artist "$date $dirname"
             set album "IT $dirname"
             set genre "IT"
 
-            set mp3 [glob $dstpath]
+            set mp3 $tmpfile
             exec id3v2 -D $mp3 2>@ stderr >@ stdout
             exec eyeD3 --set-encoding=utf16-LE \
                 -G $genre -a $artist -A $album \
@@ -105,6 +108,8 @@ proc get_lib {xmlfile} {
 
             set sec [clock scan 20$date]
             file mtime $mp3 $sec
+
+            file rename -force $tmpfile $dstpath
         }
         #exit
     }
