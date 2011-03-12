@@ -426,7 +426,11 @@ proc sync {} {
 
 proc dosync {dir max files} {
     set script [file dir [info script]]/../tools/sync.tcl
-    eval exec tclsh $script $dir $max $files 2>@ stderr >@ stdout
+    if {[catch {
+        eval exec tclsh $script $dir $max $files 2>@ stderr >@ stdout
+    } msg]} {
+        catch {puts "FAILED: $msg"}
+    }
 }
 
 proc main {argv} {
