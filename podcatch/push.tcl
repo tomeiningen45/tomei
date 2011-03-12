@@ -70,12 +70,11 @@ proc doit {} {
                 set size [file size $f]
                 incr total $size
 
-                exec $ADB push $f /sdcard/Music 2>@ stderr >@ stdout
+                exec $ADB push $f /sdcard/Music/tmp 2>@ stderr >@ stdout
+                exec $ADB shell mv /sdcard/Music/tmp /sdcard/Music/$t 2>@ stderr >@ stdout
             }
         }
     }
-
-    if {0} {
 
     set files ""
 
@@ -87,27 +86,20 @@ proc doit {} {
         set has($f) 1
     }
 
-    foreach f [glob -nocomplain z:/iTunes/Podcasts/*/*.mp3] {
-        regsub .*iTunes/Podcasts/ $f "" t
-        regsub / $t _ t
-        set t [hash $t].mp3
+    foreach f [glob -nocomplain z:/iTunes/catch/tracks/*] {
+        set t [file tail $f]
         if {![info exists has($t)]} {
             set ftime [file mtime $f]
             set now   [clock seconds]
 
-            if {$now - $ftime < 7 * 86400} {
-                puts "New but not too old: $t = $f"
+            if {1 || ($now - $ftime < 7 * 86400)} {
                 set size [file size $f]
+                puts "New but not too old: ($size) $t = $f"
                 incr total $size
-
-                set tmp c:/tmp/push.tcl.mp3
-                file copy $f $tmp
-                exec $ADB push $tmp /sdcard/Podcasts/$t 2>@ stderr >@ stdout
-                file delete $tmp                
+                exec $ADB push $f /sdcard/Podcasts/tmp 2>@ stderr >@ stdout
+                exec $ADB shell mv /sdcard/Podcasts/tmp /sdcard/Podcasts/$t 2>@ stderr >@ stdout
             }
         }
-    }
-
     }
 
     if {$total > 0} {
