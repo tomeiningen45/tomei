@@ -1,0 +1,2 @@
+tclsh get.tcl
+
