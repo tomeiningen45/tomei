@@ -70,8 +70,8 @@ proc doit {} {
                 set size [file size $f]
                 incr total $size
 
-                exec $ADB push $f /sdcard/Music/tmp 2>@ stderr >@ stdout
-                exec $ADB shell mv /sdcard/Music/tmp /sdcard/Music/$t 2>@ stderr >@ stdout
+                catch {exec $ADB push $f /sdcard/Music/tmp 2>@ stderr >@ stdout}
+                catch {exec $ADB shell mv /sdcard/Music/tmp /sdcard/Music/$t 2>@ stderr >@ stdout}
             }
         }
     }
@@ -96,8 +96,8 @@ proc doit {} {
                 set size [file size $f]
                 puts "New but not too old: ($size) $t = $f"
                 incr total $size
-                exec $ADB push $f /sdcard/Podcasts/tmp 2>@ stderr >@ stdout
-                exec $ADB shell mv /sdcard/Podcasts/tmp /sdcard/Podcasts/$t 2>@ stderr >@ stdout
+                catch {exec $ADB push $f /sdcard/Podcasts/tmp 2>@ stderr >@ stdout}
+                catch {exec $ADB shell mv /sdcard/Podcasts/tmp /sdcard/Podcasts/$t 2>@ stderr >@ stdout}
             }
         }
     }
