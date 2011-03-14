@@ -8,10 +8,13 @@
 # onto ~/iTunes/catch/lib.xml to be used by this script.
 
 # sudo apt-get install tcllib
+# sudo apt-get install lame faad
 #
 
-package require uri
-package require uri::urn
+#package require uri
+#package require uri::urn
+
+source [file dirname [info script]]/../voiceblog/all_common.tcl
 
 proc splitex {data pat} {
     regsub -all $pat $data \uFFFF data
@@ -52,6 +55,7 @@ proc get_lib {xmlfile} {
     fconfigure $fd -encoding utf-8
     set data [read $fd]
     fconfigure stdout -encoding utf-8
+    set HOME $env(HOME)
 
     foreach part [splitex $data "<key>Track ID</key>"] {
         if {[string first <key>Name</key> $part] < 0} {
@@ -67,12 +71,29 @@ proc get_lib {xmlfile} {
             continue
         }
         regsub -all -- - $date "" date
+        set origfilename [file tail $file]
         set file [unquote $file]
         set filename [file tail $file]
         set dirname  [file tail [file dir $file]]
-        
-        set dstname $date-[hash $dirname]-[hash $filename][file ext $filename]
 
+        set ext [file ext $filename]
+        set origext $ext
+
+        if {"$ext" == ".mp3"} {
+            # do nothing
+        } elseif {"$ext" == ".m4a"} {
+            set ext .mp3
+        } elseif {"$ext" == ".mp4"} {
+            # do nothing
+        } elseif {"$ext" == ".m4v"} {
+            # do nothing
+        } else {
+            puts "Unknown file type $ext: ignore $file"
+            continue
+        }
+        
+        set dstname $date-[hash $dirname]-[hash $filename]$ext
+  
         #puts $dirname/$filename/-$date-$name-$dstname
 
         if {[info exists exists($dstname)]} {
@@ -80,38 +101,77 @@ proc get_lib {xmlfile} {
         }
         set exists($dstname) 1
 
-        set dstdir  ~/iTunes/catch/tracks
-        set srcpath ~/iTunes/Podcasts/$dirname/$filename
+        if {"$ext" == ".mp4" || "$ext" == ".m4v"} {
+            set dstdir  $HOME/iTunes/catch/videos
+            continue
+        } else {
+            set dstdir  $HOME/iTunes/catch/tracks
+        }
+        set srcpath $HOME/iTunes/Podcasts/$dirname/$filename
         set dstpath $dstdir/$dstname
 
-        #if {[regexp {.mp3$} $srcpath]} {
+        #if {[regexp {.mp[34]$} $srcpath]} {
         #    continue
         #}
 
+        if {![file exists $srcpath]} {
+            set srcpath $HOME/iTunes/catch0/tracks/[file root $dstname]$origext
+        }
+
         if {![file exists $dstpath]} {
-            puts "Copying $dirname/$filename"
+            puts "Copying $dirname/$filename $srcpath"
             file mkdir $dstdir
 
-            set tmpfile $env(HOME)/iTunes/catch/tmp[file ext $filename]
-            file copy -force $srcpath $tmpfile
-
-            set title $name
-            set artist "$date $dirname"
-            set album "IT $dirname"
-            set genre "IT"
-
-            set mp3 $tmpfile
-            exec id3v2 -D $mp3 2>@ stderr >@ stdout
-            exec eyeD3 --set-encoding=utf16-LE \
-                -G $genre -a $artist -A $album \
-                -t $title $mp3 2>@ stderr >@ stdout
-
             set sec [clock scan 20$date]
-            file mtime $mp3 $sec
+            set dateid [dateid $sec]
+            set tmpfile $HOME/iTunes/catch/tmp$ext
 
+            if {"$ext" == ".mp3"} {
+                if {"$origext" == ".mp3"} {
+                    file copy -force $srcpath $tmpfile
+                } else {
+                    set wav $HOME/iTunes/catch/tmp.wav
+                    catch {
+                        puts "Running faad"
+                        exec faad -q -o $wav $srcpath \
+                            2>@ stderr >@ stdout
+                    }
+                    catch {
+                        puts "Running lame"
+                        exec nice lame -b 64 -S -m m -f $wav -o $tmpfile \
+                            2>@ stderr >@ stdout
+                    }
+                    file delete $wav
+                }
+                if {![file exists $tmpfile]} {
+                    puts "Not supported format??"
+                    continue
+                }
+
+                set sec [clock scan 20$date]
+                set dateid [dateid $sec]
+
+                set title "$dateid $name"
+                set artist "$date $dirname"
+                set album "IT $dirname"
+                set genre "IT"
+
+                set mp3 $tmpfile
+                exec id3v2 -D $mp3 2>@ stderr >@ stdout
+                exec eyeD3 --set-encoding=utf16-LE \
+                    -G $genre -a $artist -A $album \
+                    -t $title $mp3 2>@ stderr >@ stdout
+            } elseif {"$ext" == ".mp4" || "$ext" == ".m4v"} {
+                file copy -force $srcpath $tmpfile
+            } else {
+                continue
+            }
+
+            file mtime $tmpfile $sec
             file rename -force $tmpfile $dstpath
+
+            #exit
         }
-        #exit
     }
 
 
