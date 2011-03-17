@@ -91,8 +91,14 @@ proc get_lib {xmlfile} {
             puts "Unknown file type $ext: ignore $file"
             continue
         }
+
+        if {[regexp {^NHK} $dirname]} {
+            set prefix "nhk-";
+        } else {
+            set prefix ""
+        }
         
-        set dstname $date-[hash $dirname]-[hash $filename]$ext
+        set dstname $date-$prefix[hash $dirname]-[hash $filename]$ext
   
         #puts $dirname/$filename/-$date-$name-$dstname
 
@@ -119,6 +125,7 @@ proc get_lib {xmlfile} {
         }
 
         if {![file exists $dstpath]} {
+            puts "\n=========================================[exec date]============================"
             puts "Copying $dirname/$filename $srcpath"
             file mkdir $dstdir
 
@@ -178,11 +185,17 @@ proc get_lib {xmlfile} {
     close $fd
 }
 
+set first 1
 while 1 {
-    puts "===================== trying [exec date]===="
+    if {$first} {
+        puts "===================== trying [exec date]===="
+    }
     get_lib ~/iTunes/catch/lib.xml
-    puts "===================== sleeping [exec date]===="
+    if {$first} {
+        puts "===================== sleeping [exec date]===="
+    }
     after [expr 1000 * 60 * 5]
+    set first 0
 }
 
 
