@@ -30,21 +30,28 @@ proc backup_itunes_lib {} {
 
 proc doit {} {
     global ADB
+    global first
 
     backup_itunes_lib
 
-    puts "====checking space ..."
+    if {$first} {
+        puts "====checking space ..."
+    }
     catch {
         exec $ADB shell df /sdcard  2>@ stderr >@ stdout
     }
-    puts "====checking space ... done"
+    if {$first} {
+        puts "====checking space ... done"
+    }
 
     set text ""
     catch {
         set text [string trim [exec $ADB shell ls /sdcard/pushme 2>@ stderr]]
     }
     if {"$text" != "/sdcard/pushme"} {
-        puts "Device not connected. Skipped: $text"
+        if {$first} {
+            puts "Device not connected. Skipped: $text"
+        }
         return
     }
 
@@ -79,7 +86,7 @@ proc doit {} {
     set files ""
 
     catch {
-        set files [exec $ADB shell ls /sdcard/Podcasts]
+        set files [exec $ADB shell ls /sdcard/Pod]
     }
 
     foreach f $files {
@@ -96,8 +103,8 @@ proc doit {} {
                 set size [file size $f]
                 puts "New but not too old: ($size) $t = $f"
                 incr total $size
-                catch {exec $ADB push $f /sdcard/Podcasts/tmp 2>@ stderr >@ stdout}
-                catch {exec $ADB shell mv /sdcard/Podcasts/tmp /sdcard/Podcasts/$t 2>@ stderr >@ stdout}
+                catch {exec $ADB push $f /sdcard/Pod/tmp 2>@ stderr >@ stdout}
+                catch {exec $ADB shell mv /sdcard/Pod/tmp /sdcard/Pod/$t 2>@ stderr >@ stdout}
             }
         }
     }
@@ -106,14 +113,22 @@ proc doit {} {
         puts "Updating media scanner"
         exec $ADB shell am broadcast -a android.intent.action.MEDIA_MOUNTED --ez read-only false -d file:///sdcard 2>@ stderr >@ stdout
     }
-    puts "Total new files = [expr round($total / 1024 / 1024.0)] MB"
+    if {$total > 0} {
+        puts "Total new files = [expr round($total / 1024 / 1024.0)] MB"
+    }
 }
 
+set first 1
 while 1 {
-    puts "===================== trying [exec date]===="
+    if {$first} {
+        puts "===================== trying [exec date]===="
+    }
     doit
-    puts "===================== sleeping [exec date]===="
+    if {$first} {
+        puts "===================== sleeping [exec date]===="
+    }
     after [expr 1000 * 60 * 5]
+    set first 0
 }
 
 
