@@ -29,7 +29,7 @@ public class HistoryDB {
         mInsertMainStmt = mDB.compileStatement(INSERT_MAIN);
     }
 
-    public synchronized void insertMain(int id, int seconds) {
+    public synchronized void insertMain(long id, int seconds) {
         System.out.println("inserting id = " + id + ", seconds = " + seconds);
         mInsertMainStmt.bindLong(1, id);
         mInsertMainStmt.bindLong(2, seconds);
@@ -46,7 +46,7 @@ public class HistoryDB {
 
     static String[] PROJECTION = {"seconds"};
 
-    public synchronized int getSeconds(int id) {
+    public synchronized int getSeconds(long id) {
         Cursor c =
             mDB.query(MAIN_TABLE_NAME, PROJECTION, "_id=" + id, null, null, null, null);
         try {

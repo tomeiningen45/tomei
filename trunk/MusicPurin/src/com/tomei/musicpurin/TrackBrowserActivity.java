@@ -78,6 +78,9 @@ public class TrackBrowserActivity extends ListActivity
     private static final int REMOVE = CHILD_MENU_BASE + 5;
     private static final int SEARCH = CHILD_MENU_BASE + 6;
     private static final int SYNC = CHILD_MENU_BASE + 7;
+    private static final int BACK = CHILD_MENU_BASE + 8;
+    private static final int MARK_PLAYED = CHILD_MENU_BASE + 9;
+    private static final int MARK_NOTPLAYED = CHILD_MENU_BASE + 10;
 
 
     private static final String LOGTAG = "TrackBrowser";
@@ -669,6 +672,8 @@ public class TrackBrowserActivity extends ListActivity
         return ismusic;
     }
 
+    boolean mIgnoreContextMenuInfo;
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfoIn) {
         menu.add(0, PLAY_SELECTION, 0, R.string.play_selection);
@@ -677,22 +682,49 @@ public class TrackBrowserActivity extends ListActivity
         if (mEditMode) {
             menu.add(0, REMOVE, 0, R.string.remove_from_playlist);
         }
-        menu.add(0, USE_AS_RINGTONE, 0, R.string.ringtone_menu);
-        menu.add(0, DELETE_ITEM, 0, R.string.delete_item);
-        AdapterContextMenuInfo mi = (AdapterContextMenuInfo) menuInfoIn;
-        mSelectedPosition =  mi.position;
-        mTrackCursor.moveToPosition(mSelectedPosition);
-        try {
-            int id_idx = mTrackCursor.getColumnIndexOrThrow(
-                    MediaStore.Audio.Playlists.Members.AUDIO_ID);
-            mSelectedId = mTrackCursor.getLong(id_idx);
-        } catch (IllegalArgumentException ex) {
-            mSelectedId = mi.id;
+        //junk menu.add(0, USE_AS_RINGTONE, 0, R.string.ringtone_menu);
+
+        long totalSecs = 0;
+        int durationIdx = mTrackCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
+        if (!mIgnoreContextMenuInfo) {
+            AdapterContextMenuInfo mi = (AdapterContextMenuInfo) menuInfoIn;
+            mSelectedPosition =  mi.position;
+            mTrackCursor.moveToPosition(mSelectedPosition);
+            try {
+                int id_idx = mTrackCursor.getColumnIndexOrThrow(
+                        MediaStore.Audio.Playlists.Members.AUDIO_ID);
+                mSelectedId = mTrackCursor.getLong(id_idx);
+                totalSecs = mTrackCursor.getInt(durationIdx) / 1000;
+            } catch (IllegalArgumentException ex) {
+                mSelectedId = mi.id;
+            }
+        } else {
+            mTrackCursor.moveToPosition(mSelectedPosition);
+            try {
+                int id_idx = mTrackCursor.getColumnIndexOrThrow(
+                        MediaStore.Audio.Playlists.Members.AUDIO_ID);
+                mSelectedId = mTrackCursor.getLong(id_idx);
+                totalSecs = mTrackCursor.getInt(durationIdx) / 1000;
+            } catch (IllegalArgumentException ex) {
+                try {
+                    int id_idx = mTrackCursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
+                    mSelectedId = mTrackCursor.getLong(id_idx);
+                    totalSecs = mTrackCursor.getInt(durationIdx) / 1000;
+                } catch (IllegalArgumentException ex2) {
+                    ex2.printStackTrace();
+                    mSelectedId = 0xffffffff;
+                }
+            }
         }
-        // only add the 'search' menu if the selected item is music
-        if (isMusic(mTrackCursor)) {
-            menu.add(0, SEARCH, 0, R.string.search_title);
+
+        if (mSelectedId != 0xffffffff) {
+            menu.add(0, DELETE_ITEM, 0, R.string.delete_item);
         }
+
+        //junk only add the 'search' menu if the selected item is music
+        //junk if (isMusic(mTrackCursor)) {
+        //junk     menu.add(0, SEARCH, 0, R.string.search_title);
+        //junk }
         menu.add(0, SYNC, 0, "Sync");
         mCurrentAlbumName = mTrackCursor.getString(mTrackCursor.getColumnIndexOrThrow(
                 MediaStore.Audio.Media.ALBUM));
@@ -700,7 +732,19 @@ public class TrackBrowserActivity extends ListActivity
                 MediaStore.Audio.Media.ARTIST));
         mCurrentTrackName = mTrackCursor.getString(mTrackCursor.getColumnIndexOrThrow(
                 MediaStore.Audio.Media.TITLE));
+
+        long playedSecs = mHistoryDB.getSeconds(mSelectedId);
+        System.out.println("Played seconds[" + mSelectedId + "] = " + playedSecs + " of " + totalSecs);
+        if (playedSecs + 10 < totalSecs) {
+            menu.add(0, MARK_PLAYED, 0, "Marked as played");
+        } else {
+            menu.add(0, MARK_NOTPLAYED, 0, "Marked as not played");
+        }
+
+        menu.add(0, BACK, 0, "Cancel");
+
         menu.setHeaderTitle(mCurrentTrackName);
+
     }
 
     @Override
@@ -764,6 +808,20 @@ public class TrackBrowserActivity extends ListActivity
             case SYNC:
                 doSync();
                 return true;
+
+            case BACK:
+                return true;
+
+            case MARK_NOTPLAYED:
+                mHistoryDB.insertMain(mSelectedId, 0);
+                getListView().invalidateViews();
+                return true;
+
+            case MARK_PLAYED:
+                mHistoryDB.insertMain(mSelectedId, 1000 * 60 * 60 * 12);
+                getListView().invalidateViews();
+                return true;
+
         }
         return super.onContextItemSelected(item);
     }
@@ -915,6 +973,17 @@ public class TrackBrowserActivity extends ListActivity
         if (mTrackCursor.getCount() == 0) {
             return;
         }
+        if (true) {
+            mSelectedPosition = position;
+            mSelectedId = id;
+            mIgnoreContextMenuInfo = true;
+            try {
+                openContextMenu(getListView());
+            } finally {
+                mIgnoreContextMenuInfo = false;
+            }
+            return;
+        }
         // When selecting a track from the queue, just jump there instead of
         // reloading the queue. This is both faster, and prevents accidentally
         // dropping out of party shuffle.
@@ -1040,7 +1109,7 @@ public class TrackBrowserActivity extends ListActivity
         }
 
         Cursor ret = null;
-        mSortOrder = MediaStore.Audio.Media.TITLE_KEY;
+        mSortOrder = MediaStore.Audio.Media.TITLE_KEY + " DESC";
         StringBuilder where = new StringBuilder();
         where.append(MediaStore.Audio.Media.TITLE + " != ''");
 
@@ -1098,10 +1167,10 @@ public class TrackBrowserActivity extends ListActivity
                 mIsFakePlaylist = false;
             }
         } else {
-            mSortOrder = MediaStore.Audio.Media.ARTIST_ID + " DESC";
+            //mSortOrder = MediaStore.Audio.Media.ARTIST_ID + " DESC";
             if (mAlbumId != null) {
                 where.append(" AND " + MediaStore.Audio.Media.ALBUM_ID + "=" + mAlbumId);
-                mSortOrder = MediaStore.Audio.Media.TRACK + ", " + mSortOrder;
+                //mSortOrder = MediaStore.Audio.Media.TRACK + ", " + mSortOrder;
             }
             if (mArtistId != null) {
                 where.append(" AND " + MediaStore.Audio.Media.ARTIST_ID + "=" + mArtistId);
@@ -1559,6 +1628,9 @@ public class TrackBrowserActivity extends ListActivity
                     vh.line2.setTextColor(color);
                     vh.progress.setVisibility(View.INVISIBLE);
                 } else {
+                    int color = 0xffffc0c0;
+                    vh.line1.setTextColor(color);
+                    vh.line2.setTextColor(color);
                     vh.progress.setProgress(value);
                     vh.progress.setVisibility(View.VISIBLE);
                 }

@@ -242,7 +242,9 @@ public class MediaPlaybackService extends Service {
                         mLastID = id;
                         mLastSecs = secs;
                         removeMessages(UPDATE_HISTORY);
-                        sendEmptyMessageDelayed(UPDATE_HISTORY, 2000);
+                        if (isPlaying()) {
+                            sendEmptyMessageDelayed(UPDATE_HISTORY, 2000);
+                        }
                     }
                     break;
                 default:
