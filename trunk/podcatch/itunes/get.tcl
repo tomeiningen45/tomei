@@ -46,6 +46,8 @@ proc unquote {s} {
         }
     }
 
+    #puts ==$d==
+
     return [encoding convertfrom utf-8 $d]
 }
 
@@ -61,6 +63,12 @@ proc get_lib {xmlfile} {
         if {[string first <key>Name</key> $part] < 0} {
             continue;
         }
+        if {![regexp {<key>Name</key><string>([^<]+)} $part dummy name]} {
+            continue
+        }
+        if {![regexp {^<integer>([^<]+)} $part dummy id]} {
+            continue
+        }
         if {![regexp {<key>Location</key><string>([^<]+)} $part dummy file]} {
             continue
         }
@@ -72,6 +80,7 @@ proc get_lib {xmlfile} {
         }
         regsub -all -- - $date "" date
         set origfilename [file tail $file]
+        #puts "===========$file=============$name==$id"
         set file [unquote $file]
         set filename [file tail $file]
         set dirname  [file tail [file dir $file]]
@@ -121,7 +130,12 @@ proc get_lib {xmlfile} {
         #}
 
         if {![file exists $srcpath]} {
+            #puts "--$srcpath--$dirname--$filename"
             set srcpath $HOME/iTunes/catch0/tracks/[file root $dstname]$origext
+        }
+        if {![file exists $srcpath]} {
+            #puts "This really sucks -- $filename"
+            continue;
         }
 
         if {![file exists $dstpath]} {

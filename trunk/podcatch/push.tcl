@@ -36,17 +36,15 @@ proc doit {} {
 
     if {$first} {
         puts "====checking space ..."
-    }
-    catch {
-        exec $ADB shell df /sdcard  2>@ stderr >@ stdout
-    }
-    if {$first} {
+        catch {
+            exec $ADB shell df /sdcard  2> NUL >@ stdout
+        }
         puts "====checking space ... done"
     }
 
     set text ""
     catch {
-        set text [string trim [exec $ADB shell ls /sdcard/pushme 2>@ stderr]]
+        set text [string trim [exec $ADB shell ls /sdcard/pushme 2> NUL]]
     }
     if {"$text" != "/sdcard/pushme"} {
         if {$first} {
@@ -73,8 +71,8 @@ proc doit {} {
             set now   [clock seconds]
 
             if {$now - $ftime < 7 * 86400} {
-                puts "New but not too old:  $f"
                 set size [file size $f]
+                puts "New but not too old:  $f $size"
                 incr total $size
 
                 catch {exec $ADB push $f /sdcard/Music/tmp 2>@ stderr >@ stdout}
@@ -114,7 +112,7 @@ proc doit {} {
         exec $ADB shell am broadcast -a android.intent.action.MEDIA_MOUNTED --ez read-only false -d file:///sdcard 2>@ stderr >@ stdout
     }
     if {$total > 0} {
-        puts "Total new files = [expr round($total / 1024 / 1024.0)] MB"
+        puts "Total new files = [expr round($total / 1024 / 1024.0)] MB [exec date]"
     }
 }
 
