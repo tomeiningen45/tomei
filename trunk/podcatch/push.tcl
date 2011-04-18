@@ -63,10 +63,35 @@ proc doit {} {
         set has($f) 1
     }
 
+    set now [clock seconds]
+
+    foreach f [glob -nocomplain nhk/mp3/*.mp3] {
+        set ftime [file mtime $f]
+
+        if {$now - $ftime > 10 * 86400} {
+            puts "Delete old NHK $f"
+            file delete $f
+        }
+    }
+
+    foreach f [glob -nocomplain voiceblog/voiceblog/*tachiyomist*.mp3] {
+        set ftime [file mtime $f]
+
+        if {$now - $ftime > 30 * 86400} {
+            puts "Delete old tachiyomist $f"
+            file delete $f
+        }
+    }
+
+    #uncomment for testing deleteing (or if you run out of space)
+    #set nocopy 1
+
+    set deleted 0
     set total 0
     foreach f [glob -nocomplain nhk/mp3/*.mp3 voiceblog/voiceblog/*.mp3] {
         set t [file tail $f]
-        if {![info exists has($t)]} {
+        set seenonpc($t) 1
+        if {![info exists has($t)] && ![info exists nocopy]} {
             set ftime [file mtime $f]
             set now   [clock seconds]
 
@@ -81,6 +106,21 @@ proc doit {} {
         }
     }
 
+    foreach f [array names has] {
+        if {[regexp {[-]news[-].....mp3} $f] ||
+            [regexp {[-]tachiyomist[-]} $f]} {
+            if {![info exists seenonpc($f)]} {
+                set deleted 1
+                puts "Delete $f"
+                catch {exec $ADB shell rm /sdcard/Music/$f 2>@ stderr >@ stdout}
+            }
+        }
+    }
+
+    #-------------------------------------------------------------------------------
+    catch {unset has}
+    catch {unset seenonpc}
+
     set files ""
 
     catch {
@@ -93,7 +133,8 @@ proc doit {} {
 
     foreach f [glob -nocomplain z:/iTunes/catch/tracks/*] {
         set t [file tail $f]
-        if {![info exists has($t)]} {
+        set seenonpc($t) 1
+        if {![info exists has($t)] && ![info exists nocopy]} {
             set ftime [file mtime $f]
             set now   [clock seconds]
 
@@ -107,7 +148,16 @@ proc doit {} {
         }
     }
 
-    if {$total > 0} {
+    foreach f [array names has] {
+        if {![info exists seenonpc($f)]} {
+            set deleted 1
+            puts "Delete $f"
+            catch {exec $ADB shell rm /sdcard/Pod/$f 2>@ stderr >@ stdout}
+        }
+    }
+
+
+    if {$total > 0 || $deleted > 0} {
         puts "Updating media scanner"
         exec $ADB shell am broadcast -a android.intent.action.MEDIA_MOUNTED --ez read-only false -d file:///sdcard 2>@ stderr >@ stdout
     }
