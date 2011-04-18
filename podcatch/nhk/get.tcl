@@ -211,10 +211,14 @@ proc exec {args} {
 }
 
 proc setid3 {mp3 artist album title} {
-    exec id3v2 -D $mp3 2>@ stderr >@ stdout
-    exec eyeD3 --set-encoding=utf16-LE \
-        -a $artist -A $album \
-        -t "$title ." $mp3 2>@ stderr >@ stdout
+    catch {
+        exec id3v2 -D $mp3 2>@ stderr >@ stdout
+    }
+    catch {
+        exec eyeD3 --set-encoding=utf16-LE \
+            -a $artist -A $album \
+            -t "$title ." $mp3 2>@ stderr >@ stdout
+    }
 }
 
 proc titles {verbose argv} {
