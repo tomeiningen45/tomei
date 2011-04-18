@@ -51,6 +51,15 @@ proc unquote {s} {
     return [encoding convertfrom utf-8 $d]
 }
 
+proc get_oldfiles {} {
+    global old_files env
+    set HOME $env(HOME)
+
+    foreach file [glob -nocomplain $HOME/iTunes/catch/tracks/*.mp3] {
+        set old_files([file tail $file]) $file
+    }
+}
+
 proc get_lib {xmlfile} {
     global env
     set fd [open $xmlfile r]
@@ -195,8 +204,17 @@ proc get_lib {xmlfile} {
         }
     }
 
-
     close $fd
+
+    # remove old files that have been removed inside iTunes by user
+    global old_files
+    foreach f [array names old_files] {
+        if {![info exists exists($f)]} {
+            puts "Delete $f"
+            #file rename $old_files($f) /tmp/$f
+            file delete $old_files($f)
+        }
+    }
 }
 
 set first 1
@@ -204,6 +222,7 @@ while 1 {
     if {$first} {
         puts "===================== trying [exec date]===="
     }
+    get_oldfiles
     get_lib ~/iTunes/catch/lib.xml
     if {$first} {
         puts "===================== sleeping [exec date]===="
