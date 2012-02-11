@@ -5,5 +5,9 @@ FILES = $(ROOT)/Utils.java \
         $(ROOT)/WifiServer.java
 
 all:
-	rm -rf classes
-	javac 
+	rm -rf classes	
+	mkdir classes
+	javac -d classes ${FILES}
+	cd classes; jar cvf ../WifiServer.jar .
+	cp -v WifiServer.jar mac/server
+
