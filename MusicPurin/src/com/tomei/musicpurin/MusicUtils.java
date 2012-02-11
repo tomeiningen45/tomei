@@ -90,7 +90,8 @@ public class MusicUtils {
         public final static int DELETE_ITEM = 10;
         public final static int SCAN_DONE = 11;
         public final static int QUEUE = 12;
-        public final static int CHILD_MENU_BASE = 13; // this should be the last item
+        public final static int WIFI_SYNC = 13;
+        public final static int CHILD_MENU_BASE = 14; // this should be the last item
     }
 
     public static String makeAlbumsLabel(Context context, int numalbums, int numsongs, boolean isUnknown) {
@@ -1281,5 +1282,11 @@ public class MusicUtils {
             }
         }
         return len;
+    }
+
+    public static void startWifiSync(Context context) {
+        Intent intent = new Intent();
+        intent.setClass(context, WifiSyncActivity.class);
+        context.startActivity(intent);
     }
 }

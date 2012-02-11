@@ -85,6 +85,11 @@
                 android:label="@string/mediaplaybacklabel" >
         </activity>
 
+        <activity android:name="WifiSyncActivity"
+                android:theme="@android:style/Theme.NoTitleBar"
+                android:label="WifiSyncActivity" >
+        </activity>
+
         <activity android:name="StreamStarter" android:theme="@android:style/Theme.Dialog" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -248,4 +253,5 @@
             </intent-filter>
         </service>
     </application>
+    <uses-sdk android:minSdkVersion="4" />
 </manifest>
