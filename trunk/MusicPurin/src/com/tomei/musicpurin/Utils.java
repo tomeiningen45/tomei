@@ -11,8 +11,14 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.net.Socket;
+import java.net.ServerSocket;
 
 public class Utils {
+    static void close(ServerSocket obj) {
+        try {
+            obj.close();
+        } catch (Throwable t) {}
+    }
     static void close(Socket obj) {
         try {
             obj.close();
