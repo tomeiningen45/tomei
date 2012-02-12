@@ -8,6 +8,7 @@ import java.util.*;
 
 public class WifiServer {
     public static final String CMD_LIST_SYNCABLE_FILES = "ListSyncableFiles";
+    public static final String CMD_GET_FILE = "GetFile";
 
     public static final String INFO_END_FILES = ":://info/EndFiles";
 
@@ -15,7 +16,7 @@ public class WifiServer {
 
     private static String mITunesRoot;
     private static long mLastLoadTime;
-    private static ArrayList mSongs;
+    private static ArrayList<Song> mSongs;
 
     public static void main(String args[]) {
         //Locale.setDefault(new Locale("en_US", "UTF8")
@@ -23,14 +24,107 @@ public class WifiServer {
         mITunesRoot = args[0];
         loadLib();
         test1();
+        startServer();
     }
+
+    private static void startServer() {
+        ServerSocket ss = null;
+	try {
+	    ss = new ServerSocket(WifiServer.PORT);
+            System.out.println("******************************************************");
+            System.out.println("Started server: " + ss);
+            System.out.println("ADDR = " + ss.getInetAddress().getHostAddress());
+            System.out.println("PORT = " + ss.getLocalPort());
+            System.out.println("******************************************************");
+
+            while (true) {
+                final Socket s = ss.accept();
+                Thread t = new Thread() {
+                        public void run() {
+                            handleClient(s);
+                        }
+                    };
+                t.start();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        } finally {
+            Utils.close(ss);
+        }
+    }
+
+    private static void handleClient(Socket s) {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            in = s.getInputStream();
+            out = s.getOutputStream();
+            DataInputStream din = new DataInputStream(in);
+            String cmd = din.readUTF();
+            if (cmd != null) {
+                if (cmd.equals(CMD_LIST_SYNCABLE_FILES)) {
+                    listSyncableFiles(new DataOutputStream(out));
+                    return;
+                }
+                if (cmd.equals(CMD_GET_FILE)) {
+                    getFile(din.readUTF(), out);
+                    return;
+                }
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        } finally {
+            Utils.close(out);
+            Utils.close(in);
+            Utils.close(s);
+        }
+    }
+
+    private static void getFile(String hostPath, OutputStream out) throws IOException {
+        FileInputStream in = null;
+        byte buf[] = new byte[4096];
+        System.out.println("getFile: " + hostPath);
+
+        try {
+            in = new FileInputStream(hostPath);
+            int n;
+            while ((n = in.read(buf)) > 0) {
+                out.write(buf, 0, n);
+            }
+        } finally {
+            Utils.close(in);
+        }
+    }
+
+    private static void listSyncableFiles(DataOutputStream out) throws IOException {
+        int MAX = 80;
+        int count = 0;
+        for (Song song : mSongs) {
+            if (song.mSize > 40 * 1024 * 1024) {
+                continue;
+            }
+            if ((count ++) > MAX) {
+                break;
+            }
+            System.out.println("SYNCABLE: " + song);
+            out.writeLong(song.mSize);
+            out.writeUTF(song.mLocation);
+        }
+    }
+    
 
     private static void test1() {
         // print latest 30 songs
-
+        int count = 0;
+        for (Song song : mSongs) {
+            System.out.println(song + ":" + song.getFileDate());
+            if ((count ++) > 30) {
+                break;
+            }
+        }
     }
 
-    private static void loadLib() {
+    private static synchronized void loadLib() {
         File file = new File(mITunesRoot + "/iTunes Music Library.xml");
         long modtime = file.lastModified();
         if (mLastLoadTime >= modtime) {
@@ -63,7 +157,17 @@ public class WifiServer {
             Utils.close(in);
         }
 
+        sortSongs();
+
         System.out.println("Loaded " + count + " lines in " + (now() - start) + " ms, " + mSongs.size() + " songs");
+    }
+
+    private static void sortSongs() {
+        Collections.sort(mSongs, new Comparator<Song>() {
+                public int compare(Song lhs, Song rhs) {
+                    return -lhs.compare(rhs); // sort descending (newest first)
+                }
+            });
     }
 
     static class Song {
@@ -85,6 +189,27 @@ public class WifiServer {
             mSize = -1;
             mTotalTime = -1;
             mID = -1000;
+        }
+
+        int compare(Song rhs) {
+            return getFileDate().compareTo(rhs.getFileDate());
+        }
+
+        String getFileDate() {
+            if (mDateMod != null) {
+                return mDateMod;
+            }
+            if (mDateRelease != null) {
+                return mDateRelease;
+            }
+            if (mDateAdded != null) {
+                return mDateAdded;
+            }
+            return "";
+        }
+
+        public String toString() {
+            return mLocation;
         }
     }
 
