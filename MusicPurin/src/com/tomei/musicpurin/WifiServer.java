@@ -18,8 +18,16 @@ public class WifiServer {
     private static ArrayList mSongs;
 
     public static void main(String args[]) {
+        //Locale.setDefault(new Locale("en_US", "UTF8")
+        //System.out.println(Locale.getDefault()); 
         mITunesRoot = args[0];
         loadLib();
+        test1();
+    }
+
+    private static void test1() {
+        // print latest 30 songs
+
     }
 
     private static void loadLib() {
@@ -37,7 +45,7 @@ public class WifiServer {
 
         try {
             in = new FileInputStream(file);
-            reader = new BufferedReader(new InputStreamReader(in));
+            reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -129,7 +137,15 @@ public class WifiServer {
         }
         
         if (song.mLocation != null && song.mIsPodcast) {
-            mSongs.add(song);
+            String s;
+            //s = "/Volumes/USB/Music/Bonchicast/051202-tin25000-kudotin_vol7_051117.mp3";
+            //s = "/Users/ioilam/Music/iTunes/iTunes Media/Podcasts/NHKラシオニュース";
+            s = song.mLocation;
+            if ((new File(s)).exists()) {
+                mSongs.add(song);
+            } else {
+                System.out.println("missing = " + s);
+            }
         }
 
         //System.out.println("siz = " + song.mSize);
@@ -147,8 +163,12 @@ public class WifiServer {
         line = line.substring(prefix.length());
         line = line.substring(0, line.length() - suffix.length());
 
-        if (line.indexOf('%') >= 0) {
+        if (line.indexOf('%') >= 0 || line.indexOf('&') >= 0) {
             line = unescape(line);
+        }
+
+        if (line.startsWith("file://localhost/")) {
+            line = line.substring("file://localhost/".length() - 1);
         }
 
         return line;
@@ -156,11 +176,15 @@ public class WifiServer {
 
     private static String unescape(String s) {
         if (true) {
+            s = s.replaceAll("[+]", "@@ADD@@");
+            s = s.replace("&#38;", "&");
             try {
-                URL u = new URL(s);
-                return URLDecoder.decode(u.getFile());
-            } catch (Throwable t) {;}
-            return "xxx";
+                s = URLDecoder.decode(s);
+            } catch (Throwable t) {
+                //System.out.println("DECODE: " + s);
+            }
+            s = s.replaceAll("@@ADD@@", "+");
+            return s;
         }
 
         StringBuffer sbuf = new StringBuffer();

@@ -33,3 +33,6 @@ src/com/tomei/musicpurin/MediaPlaybackActivity.java
         return 500;
     }
     
+On Mac, to use UTF8 filenames, must do this:
+
+    java -Dfile.encoding=UTF-8 -classpath WifiServer.jar com.tomei.musicpurin.WifiServer ~/Music/iTunes $*
