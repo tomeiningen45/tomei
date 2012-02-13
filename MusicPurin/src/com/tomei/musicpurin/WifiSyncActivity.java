@@ -61,10 +61,13 @@ import android.widget.SectionIndexer;
 import android.widget.SimpleCursorTreeAdapter;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 import java.text.Collator;
 
+import java.io.File;
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
@@ -80,6 +83,9 @@ public class WifiSyncActivity extends Activity
 {
     String mHost;
 
+    ProgressBar mOneProgress;
+    ProgressBar mAllProgress;
+    EditText mSyncStatus;
 
     /** Called when the activity is first created. */
     @Override
@@ -88,13 +94,110 @@ public class WifiSyncActivity extends Activity
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.wifisync);
 
-
         final Button button = (Button) findViewById(R.id.start_sync);
         button.setOnClickListener(new View.OnClickListener() {
              public void onClick(View v) {
-
+                 Thread t = new Thread() {
+                         public void run() {
+                             sync();
+                         }
+                     };
+                 t.start();
              }
          });
+
+        mOneProgress = (ProgressBar) findViewById(R.id.one_progress);
+        mAllProgress = (ProgressBar) findViewById(R.id.all_progress);
+        mSyncStatus = (EditText)  findViewById(R.id.sync_status);
     }
+
+    boolean syncing;
+
+    void sync() {
+        synchronized (this) {
+            if (syncing) {
+                return;
+            }
+            syncing = true;
+        }
+
+        long started = System.currentTimeMillis();
+        mTotalBytes = 0;
+
+        MyWakeLock.acquireCpuWakeLock(this);
+        try {
+            WifiClient client = new WifiClient("192.168.2.80", "/sdcard/musicpurin");
+            try {
+                client.sync(mNotifier);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+
+            long elapsed = System.currentTimeMillis() - started;
+        
+            mNotifier.notify("Elapsed: " + (elapsed) + "ms");
+            if (mTotalBytes > 0) {
+                mNotifier.notify("Speed: " + (int)(mTotalBytes / ((double)elapsed)) + " KB/Sec");
+            }
+
+            refreshDB();
+        } finally {
+            MyWakeLock.releaseCpuWakeLock();
+        }
+
+        synchronized (this) {
+            syncing = false;
+        }
+    }
+
+    private void refreshDB() {
+        Intent intent = new Intent();
+        intent.setAction("android.intent.action.MEDIA_MOUNTED");
+        intent.putExtra("read-only", false);
+        intent.setData(Uri.fromFile(new File("/sdcard")));
+
+        sendBroadcast(intent);
+    }
+
+    private long mTotalBytes;
+
+    private void post(Runnable r) {
+        runOnUiThread(r);
+    }
+
+    WifiClient.Notifier mNotifier = new WifiClient.Notifier() {
+
+            public void notifyTotal(int numToSync, long totalBytes) {
+                mTotalBytes = totalBytes;
+            }
+
+            public void notifyOneSongProgress(final int numSongDownloaded, 
+                                              final long thisSongTotal,
+                                              final long thisSongDownloaded,
+                                              final long allSongsDownloaded) {
+                post(new Runnable() {
+                        public void run() {
+                            if (thisSongTotal > 0) {
+                                mOneProgress.setProgress((int)(100.0 * ((double)thisSongDownloaded) / ((double)thisSongTotal)));
+                            }
+                            if (mTotalBytes > 0) {
+                                mAllProgress.setProgress((int)(100.0 * ((double)allSongsDownloaded) / ((double)mTotalBytes)));
+                            }
+                        }
+                    });
+            }
+
+            public void notifyOneSongStart(String localFilePath, long thisSongTotal) {
+                int i = localFilePath.lastIndexOf('/');
+                notify(localFilePath.substring(i + 1));
+            }
+            public void notify(final String s) {
+                post(new Runnable() {
+                        public void run() {
+                            mSyncStatus.append(s + '\n');
+                        }
+                    });
+            }
+        };
 }
 

@@ -42,6 +42,7 @@ public class WifiClient {
             mSockDataOutputStream = new DataOutputStream(mSock.getOutputStream());
             mSockDataOutputStream.writeUTF(command);
         } catch (Throwable t) {
+            t.printStackTrace();
             cleanUpServerConnection();
         }
         return mSockDataInputStream;
@@ -51,11 +52,17 @@ public class WifiClient {
         long mSize;
         String mHostPath;
         String mLocalPath;
+        String mFileDate;
 
-        Song(long size, String hostPath) {
+        Song(long size, String hostPath, String fileDate) {
             mHostPath = hostPath;
             mSize = size;
             mLocalPath = mMediaRoot + hostPath;
+            mFileDate = fileDate;
+        }
+
+        int compare(Song rhs) {
+            return mFileDate.compareTo(rhs.mFileDate);
         }
     }
 
@@ -68,21 +75,32 @@ public class WifiClient {
             while (true) {
                 long size = in.readLong();
                 String s = in.readUTF();
+                String fileDate = in.readUTF();
                 if (s == null || s.equals(WifiServer.INFO_END_FILES)) {
                     break;
                 }
-                Song song = new Song(size, s);
+                Song song = new Song(size, s, fileDate);
                 list.add(song);
             }
         } catch (Throwable t) {
+            t.printStackTrace();
             cleanUpServerConnection();
         }
+
+        Collections.sort(list, new Comparator<Song>() {
+                public int compare(Song lhs, Song rhs) {
+                    return lhs.compare(rhs); // sort ascending (oldest first)
+                }
+            });
+ 
         return list;
     }
 
-    private void getFile(Song s) throws IOException {
+    private void getFile(Song s, Notifier notifier, int numSongDownloaded, long allSongsDownloaded) throws IOException {
         FileOutputStream out = null;
         byte buf[] = new byte[4096];
+
+        notifier.notifyOneSongStart(s.mLocalPath, s.mSize);
 
         try {
             DataInputStream in = askServer(WifiServer.CMD_GET_FILE);
@@ -99,6 +117,8 @@ public class WifiClient {
                 }
                 out.write(buf, 0, n);
                 downloaded += n;
+                allSongsDownloaded += n;
+                notifier.notifyOneSongProgress(numSongDownloaded, s.mSize, downloaded, allSongsDownloaded);
             }
             System.out.println("Expect: " + s.mSize + ", saved = " + downloaded);
         } finally {
@@ -107,19 +127,62 @@ public class WifiClient {
     }
 
 
-    public void test() throws IOException {
+    private void test() throws IOException {
+        sync(new Notifier());
+    }
+
+    public void sync(Notifier notifier) throws IOException {
         ArrayList<Song> list = readAllSyncableFiles();
+        ArrayList<Song> todownload = new ArrayList<Song>();
+
+        long totalBytes = 0;
+
         for (Song song : list) {
-            System.out.println("SYNCABLE: [" + song.mSize + "] "+ song.mLocalPath);
+            //System.out.println("SYNCABLE: [" + song.mSize + "] "+ song.mLocalPath);
             File f = new File(song.mLocalPath);
             if (!f.exists() || f.length() != song.mSize) {
-                getFile(song);
+                todownload.add(song);
+                totalBytes += song.mSize;
             }
         }
 
-        if (list.size() > 0) {
-            Song s = list.get(0);
-            getFile(s);
+        if (todownload.size() <= 0) {
+            notifier.notify("Nothing to sync - checked " + list.size() + " songs");
+            return;
+        }
+
+        notifier.notify("Downloading " + todownload.size() + " songs");
+        notifier.notifyTotal(todownload.size(), totalBytes);
+
+        int numSongDownloaded = 0;
+        long allSongsDownloaded = 0;
+
+        for (Song song : todownload) {
+            System.out.println("Syncing: [" + song.mSize + "] "+ song.mLocalPath);
+            getFile(song, notifier, numSongDownloaded, allSongsDownloaded);
+            numSongDownloaded ++;
+            allSongsDownloaded += song.mSize;
+        }
+
+        //if (list.size() > 0) {
+        //    Song s = list.get(0);
+        //    getFile(s);
+        //}
+    }
+
+    public static class Notifier {
+        public void notifyTotal(int numToSync, long totalBytes) {
+
+        }
+
+        public void notifyOneSongProgress(int numSongDownloaded, long thisSongTotal, long thisSongDownloaded, long allSongsDownloaded) {
+
+        }
+        public void notifyOneSongStart(String localFilePath, long thisSongTotal) {
+
+        }
+        public void notify(String s) {
+
         }
     }
 }
