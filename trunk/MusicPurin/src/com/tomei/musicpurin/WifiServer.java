@@ -109,7 +109,11 @@ public class WifiServer {
             System.out.println("SYNCABLE: " + song);
             out.writeLong(song.mSize);
             out.writeUTF(song.mLocation);
+            out.writeUTF(song.getFileDate());
         }
+        out.writeLong(0);
+        out.writeUTF(WifiServer.INFO_END_FILES);
+        out.writeUTF(WifiServer.INFO_END_FILES);
     }
     
 
