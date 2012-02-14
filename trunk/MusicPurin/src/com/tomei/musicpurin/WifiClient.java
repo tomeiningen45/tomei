@@ -66,6 +66,16 @@ public class WifiClient {
         }
     }
 
+    class PlayList {
+        String mName;
+        ArrayList<String> mSongNames;
+
+        PlayList(String name) {
+            mName = name;
+            mSongNames = new ArrayList<String>();
+        }
+    }
+
     private ArrayList<Song> readAllSyncableFiles() {
         DataInputStream in;
         ArrayList<Song> list = new ArrayList<Song>();
@@ -126,9 +136,15 @@ public class WifiClient {
         }
     }
 
-
     private void test() throws IOException {
-        sync(new Notifier());
+        //sync(new Notifier());
+        ArrayList<PlayList> lists = getPlayLists();
+        for (PlayList list : lists) {
+            System.out.println(list.mName + "=============================");
+            for (String localPath: list.mSongNames) {
+                System.out.println(list.mName + " +> " + localPath);
+            }
+        }
     }
 
     public void sync(Notifier notifier) throws IOException {
@@ -168,6 +184,35 @@ public class WifiClient {
         //    Song s = list.get(0);
         //    getFile(s);
         //}
+    }
+
+    public ArrayList<PlayList> getPlayLists() {
+        ArrayList<PlayList> lists = new ArrayList<PlayList>();
+
+        DataInputStream in;
+
+        try {
+            in = askServer(WifiServer.CMD_GET_PLAYLISTS);
+            while (true) {
+                String name = in.readUTF();
+                if (name == null || name.equals(WifiServer.INFO_END_FILES)) {
+                    break;
+                }
+                PlayList list = new PlayList(name);
+                while (true) {
+                    String songName = in.readUTF();
+                    if (songName == null || songName.equals(WifiServer.INFO_END_LIST)) {
+                        break;
+                    }
+                    list.mSongNames.add(mMediaRoot + songName);
+                }
+                lists.add(list);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+            cleanUpServerConnection();
+        }
+        return lists;
     }
 
     public static class Notifier {
