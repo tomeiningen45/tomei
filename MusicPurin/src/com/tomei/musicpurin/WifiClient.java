@@ -10,7 +10,8 @@ public class WifiClient {
     public static void main(String args[]) {//used for testing purpose
         WifiClient client = new WifiClient(args[0], args[1]);
         try {
-            client.test();
+            client.test1();
+            //client.test2();
         } catch (Throwable t) {;}
     }
 
@@ -136,8 +137,11 @@ public class WifiClient {
         }
     }
 
-    private void test() throws IOException {
-        //sync(new Notifier());
+    private void test1() throws IOException {
+        sync(new Notifier());
+    }
+
+    private void test2() throws IOException {
         ArrayList<PlayList> lists = getPlayLists();
         for (PlayList list : lists) {
             System.out.println(list.mName + "=============================");

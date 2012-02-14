@@ -22,6 +22,14 @@ public class WifiServer {
     private static ArrayList<PlayList> mPlayLists;
     private static HashMap<String, Song> mID2SongMap;
 
+    private static String mListsToSync[] = { // FIXME do not hard code ...
+        "iPod",
+        "Torigako",
+        "Gakumon Susume",
+        "Suntory",
+        "Recent",
+    };
+
     public static void main(String args[]) {
         //Locale.setDefault(new Locale("en_US", "UTF8")
         //System.out.println(Locale.getDefault()); 
@@ -29,6 +37,15 @@ public class WifiServer {
         loadLib();
         test1();
         startServer();
+    }
+
+    static boolean shouldSyncList(String name) {
+        for (String s : mListsToSync) {
+            if (s.equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void startServer() {
@@ -105,9 +122,31 @@ public class WifiServer {
     }
 
     private static void listSyncableFiles(DataOutputStream out) throws IOException {
+        ArrayList<Song> songs = mSongs;
         int MAX = 80;
+
+        HashMap done = new HashMap();
+
+        if (true) { // select play lists to sync
+            songs = new ArrayList<Song>();
+
+            for (PlayList list : mPlayLists) {
+                if (!shouldSyncList(list.mName)) {
+                    continue;
+                }
+                for (Song song: list.mSongs) {
+                    if (done.get(song) == null) {
+                        done.put(song, song);
+                        songs.add(song);
+                    }
+                }
+            }
+
+            MAX = songs.size();
+        }
+
         int count = 0;
-        for (Song song : mSongs) {
+        for (Song song : songs) {
             if (song.mSize > 40 * 1024 * 1024) {
                 continue;
             }
@@ -126,6 +165,10 @@ public class WifiServer {
     
     private static void getPlayLists(DataOutputStream out) throws IOException {
         for (PlayList list : mPlayLists) {
+            if (!shouldSyncList(list.mName)) {
+                continue;
+            }
+
             out.writeUTF(list.mName);
             for (Song song: list.mSongs) {
                 out.writeUTF(song.mLocation);
@@ -193,13 +236,13 @@ public class WifiServer {
             Utils.close(in);
         }
 
-        sortSongs();
+        sortSongs(mSongs);
 
         System.out.println("Loaded " + count + " lines in " + (now() - start) + " ms, " + mSongs.size() + " songs");
     }
 
-    private static void sortSongs() {
-        Collections.sort(mSongs, new Comparator<Song>() {
+    private static void sortSongs(ArrayList<Song> songs) {
+        Collections.sort(songs, new Comparator<Song>() {
                 public int compare(Song lhs, Song rhs) {
                     return -lhs.compare(rhs); // sort descending (newest first)
                 }
