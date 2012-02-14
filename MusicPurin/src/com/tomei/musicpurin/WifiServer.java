@@ -9,14 +9,18 @@ import java.util.*;
 public class WifiServer {
     public static final String CMD_LIST_SYNCABLE_FILES = "ListSyncableFiles";
     public static final String CMD_GET_FILE = "GetFile";
+    public static final String CMD_GET_PLAYLISTS = "GetPlayLists";
 
     public static final String INFO_END_FILES = ":://info/EndFiles";
+    public static final String INFO_END_LIST  = ":://info/EndList";
 
     public static final int PORT = 3938;
 
     private static String mITunesRoot;
     private static long mLastLoadTime;
     private static ArrayList<Song> mSongs;
+    private static ArrayList<PlayList> mPlayLists;
+    private static HashMap<String, Song> mID2SongMap;
 
     public static void main(String args[]) {
         //Locale.setDefault(new Locale("en_US", "UTF8")
@@ -70,6 +74,10 @@ public class WifiServer {
                     getFile(din.readUTF(), out);
                     return;
                 }
+                if (cmd.equals(CMD_GET_PLAYLISTS)) {
+                    getPlayLists(new DataOutputStream(out));
+                }
+
             }
         } catch (Throwable t) {
             t.printStackTrace();
@@ -116,6 +124,16 @@ public class WifiServer {
         out.writeUTF(WifiServer.INFO_END_FILES);
     }
     
+    private static void getPlayLists(DataOutputStream out) throws IOException {
+        for (PlayList list : mPlayLists) {
+            out.writeUTF(list.mName);
+            for (Song song: list.mSongs) {
+                out.writeUTF(song.mLocation);
+            }
+            out.writeUTF(INFO_END_LIST);
+        }
+        out.writeUTF(WifiServer.INFO_END_FILES);
+    }
 
     private static void test1() {
         // print latest 30 songs
@@ -135,6 +153,8 @@ public class WifiServer {
             return;
         }
         mSongs = new ArrayList();
+        mPlayLists = new ArrayList<PlayList>();
+        mID2SongMap = new HashMap<String, Song>();
         mLastLoadTime = modtime;
         FileInputStream in = null;
         BufferedReader reader = null;
@@ -146,12 +166,24 @@ public class WifiServer {
             reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 
             String line;
+            boolean playlistMode = false;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 int songNum = -1000;
-                if ((songNum = isSongStart(line)) > -1000)  {
-                    //System.out.println(line + "=" + songNum);
-                    loadOneSong(reader, songNum);
+                if (line.equals("<key>Playlists</key>")) {
+                    playlistMode = true;
+                }
+
+                if (!playlistMode) {
+                    if ((songNum = isSongStart(line)) > -1000)  {
+                        //System.out.println(line + "=" + songNum);
+                        loadOneSong(reader, songNum);
+                    }
+                } else {
+                    String listName;
+                    if ((listName = isPlayListStart(line)) != null) {
+                        loadOneList(reader, listName);
+                    }
                 }
                 count ++;
             }
@@ -174,8 +206,19 @@ public class WifiServer {
             });
     }
 
+    static class PlayList {
+        String mName;
+        ArrayList<Song> mSongs;
+
+        PlayList(String name) {
+            mName = name;
+            mSongs = new ArrayList<Song>();
+        }
+    }
+
     static class Song {
         int mID;
+      //String mTrackID;
         String mGenre;
         String mKind;
         long mSize;
@@ -233,6 +276,10 @@ public class WifiServer {
         }
     }
 
+    private static String isPlayListStart(String line) {
+        return  check(line, null, "<key>Name</key><string>", "</string>");
+    }
+
     private static String mTempKey;
     private static String mTempString;
 
@@ -251,6 +298,8 @@ public class WifiServer {
             if (line.equals("</dict>")) {
                 break;
             }
+
+          //song.mTrackID      = check(line, song.mTrackID,      "<key>Track ID</key><integer>", "</integer>");
             song.mGenre        = check(line, song.mGenre,        "<key>Genre</key><string>", "</string>");
             song.mKind         = check(line, song.mKind,         "<key>Kind</key><string>", "</string>");
             song.mSize         = check(line, song.mSize,         "<key>Size</key><integer>", "</integer>");
@@ -264,7 +313,7 @@ public class WifiServer {
             song.mLocation     = check(line, song.mLocation,     "<key>Location</key><string>", "</string>");
             song.mComments     = check(line, song.mComments,     "<key>Comments</key><string>", "</string>");
         }
-        
+
         if (song.mLocation != null && song.mIsPodcast) {
             String s;
             //s = "/Volumes/USB/Music/Bonchicast/051202-tin25000-kudotin_vol7_051117.mp3";
@@ -272,6 +321,7 @@ public class WifiServer {
             s = song.mLocation;
             if ((new File(s)).exists()) {
                 mSongs.add(song);
+                mID2SongMap.put("" + song.mID, song);
             } else {
                 System.out.println("missing = " + s);
             }
@@ -281,6 +331,33 @@ public class WifiServer {
         //System.out.println("pod = " + song.mIsPodcast);
         //System.out.println("loc = " + song.mLocation);
     }
+
+
+    private static void loadOneList(BufferedReader reader, String listName) throws IOException {
+        String line;
+
+        PlayList list = new PlayList(listName);
+
+        while ((line = reader.readLine()) != null) {
+            line = line.trim();
+            if (line.equals("</array>")) {
+                break;
+            }
+            String id = check(line, null, "<key>Track ID</key><integer>", "</integer>");
+            if (id == null) {
+                continue;
+            }
+            Song song = mID2SongMap.get(id);
+            if (song == null) {
+                System.out.println("Song " + id + " not found in PlayList " + listName);
+            } else {
+                System.out.println(listName + " => " + song.mLocation);
+                list.mSongs.add(song);
+            }
+        }
+        mPlayLists.add(list);
+    }
+
 
     private static String check(String line, String def, String prefix, String suffix) {
         if (!line.startsWith(prefix)) {
