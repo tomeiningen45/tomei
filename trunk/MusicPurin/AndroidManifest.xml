@@ -87,6 +87,8 @@
 
         <activity android:name="WifiSyncActivity"
                 android:theme="@android:style/Theme.NoTitleBar"
+                android:alwaysRetainTaskState="true"
+                android:configChanges="orientation|keyboardHidden"
                 android:label="WifiSyncActivity" >
         </activity>
 

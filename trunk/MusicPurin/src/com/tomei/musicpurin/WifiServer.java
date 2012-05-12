@@ -82,6 +82,7 @@ public class WifiServer {
             out = s.getOutputStream();
             DataInputStream din = new DataInputStream(in);
             String cmd = din.readUTF();
+            loadLib();
             if (cmd != null) {
                 if (cmd.equals(CMD_LIST_SYNCABLE_FILES)) {
                     listSyncableFiles(new DataOutputStream(out));
@@ -147,7 +148,7 @@ public class WifiServer {
 
         int count = 0;
         for (Song song : songs) {
-            if (song.mSize > 40 * 1024 * 1024) {
+            if (song.mSize > 80 * 1024 * 1024 || !song.mLocation.endsWith(".mp3")) {
                 continue;
             }
             if ((count ++) > MAX) {

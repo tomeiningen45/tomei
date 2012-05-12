@@ -261,6 +261,7 @@ public class PlaylistBrowserActivity extends ListActivity
         if (!mCreateShortcut) {
             menu.add(0, PARTY_SHUFFLE, 0, R.string.party_shuffle); // icon will be set in onPrepareOptionsMenu()
         }
+        menu.add(0, WIFI_SYNC, 0, "Wifi Sync");
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -276,6 +277,9 @@ public class PlaylistBrowserActivity extends ListActivity
         switch (item.getItemId()) {
             case PARTY_SHUFFLE:
                 MusicUtils.togglePartyShuffle();
+                break;
+            case WIFI_SYNC:
+                MusicUtils.startWifiSync(this);
                 break;
         }
         return super.onOptionsItemSelected(item);

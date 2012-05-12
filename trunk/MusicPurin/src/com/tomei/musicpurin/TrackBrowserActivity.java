@@ -822,6 +822,9 @@ public class TrackBrowserActivity extends ListActivity
                 getListView().invalidateViews();
                 return true;
 
+            case WIFI_SYNC:
+                MusicUtils.startWifiSync(this);
+                break;
         }
         return super.onContextItemSelected(item);
     }
@@ -1018,6 +1021,7 @@ public class TrackBrowserActivity extends ListActivity
                 menu.add(0, CLEAR_PLAYLIST, 0, R.string.clear_playlist).setIcon(R.drawable.ic_menu_clear_playlist);
             }
         }
+        menu.add(0, WIFI_SYNC, 0, "Wifi Sync");
         return true;
     }
 
