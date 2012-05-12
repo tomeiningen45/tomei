@@ -10,8 +10,11 @@ public class WifiClient {
     public static void main(String args[]) {//used for testing purpose
         WifiClient client = new WifiClient(args[0], args[1]);
         try {
-            client.test1();
-            //client.test2();
+            if ("test1".equals(args[2])) {
+                client.test1();
+            } else {
+                client.test2();
+            }
         } catch (Throwable t) {;}
     }
 
@@ -151,11 +154,44 @@ public class WifiClient {
         }
     }
 
+    HashMap<String, String> mFilesInRootMap;
+
+    private void findAllFilesInRoot() {
+        mFilesInRootMap = new HashMap();
+        File dir = new File(mMediaRoot);
+        findAllFiles(dir);
+    }
+
+    private void findAllFiles(File dir) {
+        String children[] = dir.list();
+        for (String child : children) {
+            File f = new File(dir, child);
+            if (f.isDirectory()) {
+                findAllFiles(f);
+            } else {
+                String s = f.getPath();
+                mFilesInRootMap.put(s, s);
+            }
+        }
+    }
+
+    private void deleteUnneededFiles(Notifier notifier) {
+        int del = 0;
+        for (String file : mFilesInRootMap.keySet()) {
+            System.out.println("NOT NEEDED: " + file);
+            (new File(file)).delete();
+            del ++;
+        }
+        notifier.notify("Deleted " + del + " files");
+    }
+
     public void sync(Notifier notifier) throws IOException {
         ArrayList<Song> list = readAllSyncableFiles();
         ArrayList<Song> todownload = new ArrayList<Song>();
 
         long totalBytes = 0;
+
+        findAllFilesInRoot();
 
         for (Song song : list) {
             //System.out.println("SYNCABLE: [" + song.mSize + "] "+ song.mLocalPath);
@@ -164,6 +200,13 @@ public class WifiClient {
                 todownload.add(song);
                 totalBytes += song.mSize;
             }
+            mFilesInRootMap.remove(song.mLocalPath);
+        }
+
+        if (list.size() > 0) {
+            deleteUnneededFiles(notifier);
+        } else {
+            // probably because connection to server failed.
         }
 
         if (todownload.size() <= 0) {
@@ -171,7 +214,7 @@ public class WifiClient {
             return;
         }
 
-        notifier.notify("Downloading " + todownload.size() + " songs");
+        notifier.notify("Downloading " + todownload.size() + " songs : " + (totalBytes/1024) + " KB");
         notifier.notifyTotal(todownload.size(), totalBytes);
 
         int numSongDownloaded = 0;
@@ -221,7 +264,7 @@ public class WifiClient {
 
     public static class Notifier {
         public void notifyTotal(int numToSync, long totalBytes) {
-
+            System.out.println("Need to sync: " + numToSync + " songs for " + totalBytes + " bytes");
         }
 
         public void notifyOneSongProgress(int numSongDownloaded, long thisSongTotal, long thisSongDownloaded, long allSongsDownloaded) {

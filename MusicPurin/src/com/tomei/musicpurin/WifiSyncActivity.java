@@ -39,6 +39,7 @@ import android.media.AudioManager;
 import com.tomei.utils.MediaFile;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -75,9 +76,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import java.util.ArrayList;
 import java.net.Socket;
+import com.tomei.musicpurin.WifiClient.PlayList;
+import com.tomei.musicpurin.WifiClient.Song;
 
 public class WifiSyncActivity extends Activity
 {
@@ -113,6 +117,25 @@ public class WifiSyncActivity extends Activity
 
     boolean syncing;
 
+    void updatePlayLists(ArrayList<PlayList> lists, String root) {
+        for (PlayList list : lists) {
+            FileOutputStream out = null;
+            OutputStreamWriter writer = null;
+
+            try {
+                out = new FileOutputStream(root + "/" + list.mName + ".m3u");
+                writer = new OutputStreamWriter(out, "UTF-8");
+                for (String songName : list.mSongNames) {
+                    writer.write(songName + "\n");
+                }
+                writer.flush();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+            Utils.close(out);
+        }
+    }
+
     void sync() {
         synchronized (this) {
             if (syncing) {
@@ -123,12 +146,23 @@ public class WifiSyncActivity extends Activity
 
         long started = System.currentTimeMillis();
         mTotalBytes = 0;
+        String root = "/sdcard/musicpurin";
+
+        mNotifier.notify("\nstart");
 
         MyWakeLock.acquireCpuWakeLock(this);
         try {
-            WifiClient client = new WifiClient("192.168.2.80", "/sdcard/musicpurin");
+            WifiClient client = new WifiClient("192.168.2.80", root);
             try {
                 client.sync(mNotifier);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+
+            ArrayList<PlayList> lists = null;
+            try {
+                lists = client.getPlayLists();
+                updatePlayLists(lists, root);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -151,12 +185,8 @@ public class WifiSyncActivity extends Activity
     }
 
     private void refreshDB() {
-        Intent intent = new Intent();
-        intent.setAction("android.intent.action.MEDIA_MOUNTED");
-        intent.putExtra("read-only", false);
-        intent.setData(Uri.fromFile(new File("/sdcard")));
-
-        sendBroadcast(intent);
+        sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
+                                 Uri.parse("file://" + Environment.getExternalStorageDirectory())));
     }
 
     private long mTotalBytes;
@@ -195,6 +225,11 @@ public class WifiSyncActivity extends Activity
                 post(new Runnable() {
                         public void run() {
                             mSyncStatus.append(s + '\n');
+                            mSyncStatus.postDelayed(new Runnable() {
+                                    public void run() {
+                                        //mSyncStatus.scrollTo(0, 100000);
+                                    }
+                                }, 200);
                         }
                     });
             }
