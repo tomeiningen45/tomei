@@ -19,6 +19,9 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
     <!-- This is the LinearLayout that contains the album art, function buttons and album/artist/track info -->
     <LinearLayout
@@ -145,6 +148,14 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <com.tomei.musicpurin.CarPlayerView
+        android:id="@+id/carplayer"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+    />
+
+    </FrameLayout>
 
     <include layout="@layout/audio_player_common" />
 
