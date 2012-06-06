@@ -23,8 +23,13 @@ if {![info exists env(SCRIPT_NAME)]} {
 if {![info exists env(HTTP_HOST)]} {
     set env(HTTP_HOST) localhost:8015
 }
+if {![info exists env(DOCUMENT_ROOT)]} {
+    set env(DOCUMENT_ROOT) [exec sh -c "cd [file dirname [info script]]; cd ..; pwd"]
+    set isfake 1
+}
 #----------------------------------------------------------------------test
 
+set env(START_SEC) [clock seconds]
 
 proc main {} {
     global env
@@ -66,8 +71,55 @@ proc tagsplit {text tag} {
     return [split $text \uffff]
 }
 
+proc open_info_cache {} {
+    global env info_cache
+
+    if {[info exists info_cache]} {
+        return
+    }
+
+    set cache_file $env(DOCUMENT_ROOT)/ytunes_info.cache
+    set cache_hash $env(DOCUMENT_ROOT)/ytunes_info.hash
+
+    if {![file exists $cache_file]} {
+        return
+    }
+}
+
+proc get_info {watch} {
+    global env info_cache isfake
+
+    set info_cache(touch:$watch) $env(START_SEC)
+
+    if {[info exists info_cache(pubdate:$watch)] &&
+        [info exists info_cache(length:$watch)]} {
+        return
+    }
+
+    set pubdate $env(START_SEC)
+    set length  60
+
+    if {[catch {
+        set url "http://www.youtube.com/watch?v=$watch"
+        set data [exec wget -q -O - $url 2> /dev/null]
+
+        if {[regexp {<span id="eow-date"[^>]*>([^<]+)</span>} $data dummy date]} {
+            catch {
+                set pubdate [clock scan $date]
+            }
+        }
+        regexp {"length_seconds": ([0-9]+)} $data dummy length
+
+    } err]} {
+        #set fetch_err $err--\n$errorInfo
+    }
+
+    set info_cache(pubdate:$watch) $pubdate
+    set info_cache(length:$watch)  $length
+}
+
 proc convert {chan_name data} {
-    global env
+    global env info_cache isfake
     set root http://$env(HTTP_HOST)
 
     set total 0
@@ -85,6 +137,11 @@ proc convert {chan_name data} {
                 continue
             }
 
+            get_info $watch
+            if {[info exists isfake]} {
+                puts "pubdate $watch [clock format $info_cache(pubdate:$watch)]"
+            }
+
             set i $total; incr total
 
             set wat($i) $watch
@@ -96,7 +153,13 @@ proc convert {chan_name data} {
             if {[string first "<!\[CDATA\[" $sum($i)] != 0} {
                 set sum($i) "<!\[CDATA\[$sum($i)\]\]"
             }
-            set dat($i) "Wed, 30 May 2012 03:01:36 PDT"
+            #set dat($i) "Wed, 30 May 2012 03:01:36 PDT"
+            set dat($i) [clock format $info_cache(pubdate:$watch)]
+            set dur($i) $info_cache(length:$watch)
+
+            if {$total > 10 && false} {
+                break
+            }
         }
     }
 
@@ -121,7 +184,7 @@ proc convert {chan_name data} {
             <author>AUTHOR</author>
             <description>DESCRIPTION</description>
             <itunes:author>AUTHOR</itunes:author>
-            <itunes:duration>386</itunes:duration>
+            <itunes:duration>DURATION</itunes:duration>
             <enclosure url="MEDIA_URL" length="0" type="video/mp4" />
             <pubDate>DATE</pubDate>
             <media:content url="MEDIA_URL" type="video/mp4" /></item>
@@ -134,11 +197,9 @@ proc convert {chan_name data} {
         regsub -all GUID        $t $i          t
         regsub -all DATE        $t $dat($i)    t
         regsub -all AUTHOR      $t $chan_name  t
+        regsub -all DURATION    $t $dur($i)    t
 
         puts $t
-        if {$i >= 1 && false} {
-            break
-        }
     }
 
     puts "</channel></rss>"
