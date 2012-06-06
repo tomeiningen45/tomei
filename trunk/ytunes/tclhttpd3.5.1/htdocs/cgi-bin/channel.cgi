@@ -10,6 +10,7 @@ if [ -e /usr/bin/tclsh8.4 ]; then exec /usr/bin/tclsh8.4 "$0" ${1+"$@"} ; fi
 # \
 exec tclsh "$0" ${1+"$@"}
 
+package require md5
 
 #----------------------------------------------------------------------
 # This is for testing in the command-line
@@ -81,13 +82,66 @@ proc open_info_cache {} {
     set cache_file $env(DOCUMENT_ROOT)/ytunes_info.cache
     set cache_hash $env(DOCUMENT_ROOT)/ytunes_info.hash
 
-    if {![file exists $cache_file]} {
+    if {![file exists $cache_file] || ![file exists $cache_hash]} {
         return
     }
+
+    set fd [open $cache_file]
+    set data [read $fd]
+    close $fd
+
+    set fd [open $cache_hash]
+    set oldmd5 [string trim [read $fd]]
+    close $fd
+
+    set md5 [::md5::md5 -hex $data]
+    if {"$md5" != "$oldmd5"} {
+        catch {file delete $cache_file}
+        catch {file delete $cache_hash}
+    }
+
+    foreach line [split $data \n] {
+        set watch [lindex $line 0]
+        set info_cache(pubdate:$watch) [lindex $line 1]
+        set info_cache(length:$watch)  [lindex $line 2]
+        set info_cache(touch:$watch)   [lindex $line 3]
+    }
+}
+
+
+proc save_info_cache {} {
+    global env info_cache isfake
+
+    if {![info exists info_cache]} {
+        return
+    }
+
+    set data ""
+
+    foreach name [array names info_cache touch:*] {
+        set watch [lindex [split $name :] 1]
+        append data "[list $watch $info_cache(pubdate:$watch) $info_cache(length:$watch) $info_cache(touch:$watch)]\n"
+    }
+
+    set data [string trim $data]
+    set md5 [::md5::md5 -hex $data]
+
+    set cache_file $env(DOCUMENT_ROOT)/ytunes_info.cache
+    set cache_hash $env(DOCUMENT_ROOT)/ytunes_info.hash
+
+    set fd [open $cache_file w]
+    puts -nonewline $fd $data
+    close $fd
+
+    set fd [open $cache_hash w]
+    puts -nonewline $fd $md5
+    close $fd
 }
 
 proc get_info {watch} {
     global env info_cache isfake
+
+    open_info_cache
 
     set info_cache(touch:$watch) $env(START_SEC)
 
@@ -157,7 +211,7 @@ proc convert {chan_name data} {
             set dat($i) [clock format $info_cache(pubdate:$watch)]
             set dur($i) $info_cache(length:$watch)
 
-            if {$total > 10 && false} {
+            if {$total > 3 && false} {
                 break
             }
         }
@@ -203,6 +257,7 @@ proc convert {chan_name data} {
     }
 
     puts "</channel></rss>"
+    save_info_cache
     exit
 }
 
@@ -241,4 +296,5 @@ set feed_template {<?xml version="1.0" encoding="UTF-8"?>
 }
 
 main
+save_info_cache
 exit 0
