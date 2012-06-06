@@ -54,10 +54,11 @@ proc print_rss {name} {
     if {[catch {
         foreach num {50 25 10} {
             set url "http://gdata.youtube.com/feeds/api/users/$name/uploads?orderby=updated&v=1&max-results=50"
-            set data [exec wget -q -O - $url 2> /dev/null]
+            set fd [open "|wget -q -O - $url 2> /dev/null"]
+            fconfigure $fd -encoding utf-8
+            set data [read $fd]
             set xmldata [convert $name $data]
             if {"$xmldata" != ""} {
-
                 return 1
             }
         }
@@ -159,9 +160,10 @@ proc get_info {watch} {
 
         if {[regexp {<span id="eow-date"[^>]*>([^<]+)</span>} $data dummy date]} {
             catch {
-                set pubdate [clock scan $date]
+                set pubdate [expr [clock scan $date] + 60 * 60 * 12]
             }
         }
+        #NOT PUBLISH DATE -> regexp {"timestamp": ([0-9]+)} $data dummy pubdate
         regexp {"length_seconds": ([0-9]+)} $data dummy length
 
     } err]} {
@@ -173,10 +175,12 @@ proc get_info {watch} {
 }
 
 proc convert {chan_name data} {
-    global env info_cache isfake
+    global env info_cache isfake last_pubdate
     set root http://$env(HTTP_HOST)
 
     set total 0
+    set last_pubdate 0x7fffffff
+
     foreach item [tagsplit $data {<title[^>]*>}] {
         incr idx
         if {$idx <= 2} {
@@ -192,6 +196,14 @@ proc convert {chan_name data} {
             }
 
             get_info $watch
+
+            if {$info_cache(pubdate:$watch) >= $last_pubdate} {
+                # Force iTunes to sort the list in same order as in the feed
+                # (or else same date means sort by title)
+                set info_cache(pubdate:$watch) [expr $last_pubdate - 1]
+            }
+            set last_pubdate $info_cache(pubdate:$watch)
+
             if {[info exists isfake]} {
                 puts "pubdate $watch [clock format $info_cache(pubdate:$watch)]"
             }
@@ -224,6 +236,8 @@ proc convert {chan_name data} {
     puts "Content-Type: application/xhtml+xml"
     puts "Encoding: UTF-8"
     puts ""
+
+    fconfigure stdout -encoding utf-8
 
     global feed_template
 
