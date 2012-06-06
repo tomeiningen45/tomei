@@ -1,0 +1,7 @@
+This is a web server that serves Youtube channels as RSS feeds that can be downloaded by iTunes.
+
+Need to
+
+sudo apt-get install tcl tcllib
+
+
