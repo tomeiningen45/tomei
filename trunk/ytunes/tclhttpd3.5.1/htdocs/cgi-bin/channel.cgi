@@ -249,9 +249,9 @@ proc convert {chan_name data} {
             <item>
             <title><![CDATA[TITLE]]></title>
             <link>LINK_URL</link>
-            <author>AUTHOR</author>
+            <author>Youtube</author>
             <description>DESCRIPTION</description>
-            <itunes:author>AUTHOR</itunes:author>
+            <itunes:author>Youtube</itunes:author>
             <itunes:duration>DURATION</itunes:duration>
             <enclosure url="MEDIA_URL" length="0" type="video/mp4" />
             <pubDate>DATE</pubDate>
@@ -301,7 +301,7 @@ set feed_template {<?xml version="1.0" encoding="UTF-8"?>
   <channel>
       
       <title>Youtube: CHANNEL</title>
-      <itunes:author>CHANNEL</itunes:author>
+      <itunes:author>Youtube</itunes:author>
       <link>http://cnettv.cnet.com/</link>
       <copyright>CHANNEL</copyright>
       <description>Youtube: CHANNEL</description>

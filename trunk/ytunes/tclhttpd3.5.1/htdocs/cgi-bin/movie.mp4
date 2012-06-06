@@ -44,12 +44,72 @@ proc main {} {
     hint
 }
 
+proc get_movie_from_youtube {name} {
+    global env isfake
+
+    # Formats: http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
+    # 22 = 720p mp4
+    # 18 = 360p mp4
+    foreach format {22 18} {
+        set has_written 0
+
+        if {[info exists isfake]} {
+            set errpipe "2>@ stderr"
+        } else {
+            set errpipe "2> /dev/null"
+        }
+
+        if {[catch {
+            set args "|$env(DOCUMENT_ROOT)/youtube-dl -q -o - -f $format http://www.youtube.com/watch?v=$name $errpipe"
+            set fd [open $args r]
+            fconfigure $fd    -encoding binary -translation binary
+            fconfigure stdout -encoding binary -translation binary
+
+            if {![eof $fd]} {
+                set data [read $fd 4096]
+                if {![info exists isfake]} {
+                    if {"$data" != ""} {
+                        set has_written 1
+                        puts "Content-Type: video/mp4"
+                        puts ""
+                    }
+                } else {
+                    puts stderr $args
+                    if {"$data" != ""} {
+                        set has_written 1
+                    }
+                }
+                puts -nonewline stdout $data
+            }
+
+            while {![eof $fd]} {
+                set data [read $fd 4096]
+                puts -nonewline stdout $data
+            }
+        } err]} {
+            if {[info exists isfake]} {
+                global errorInfo
+                puts stderr "$err--\n$errorInfo"
+            }
+            continue
+        }
+        if {$has_written} {
+            return 1
+        }
+    }
+
+    return 0
+}
+
 proc get_movie {name} {
     global env isfake
 
+    if {[get_movie_from_youtube $name]} {
+        return 1
+    }
 
+    # Get the fake movie
     set file $env(DOCUMENT_ROOT)/sample_mpeg4.mp4
-
     if {[file exists $file]} {
         puts "Content-Type: video/mp4"
         puts ""
