@@ -10,6 +10,13 @@ if [ -e /usr/bin/tclsh8.4 ]; then exec /usr/bin/tclsh8.4 "$0" ${1+"$@"} ; fi
 # \
 exec tclsh "$0" ${1+"$@"}
 
+# Tests
+# http://localhost:8015/cgi-bin/channel.cgi?name=ANNnewsCH
+# http://gdata.youtube.com/feeds/api/users/ANNnewsCH/uploads?orderby=updated&v=1&max-results=50
+#
+#
+# CARandDRIVER, porsche
+
 package require md5
 
 #----------------------------------------------------------------------
@@ -175,11 +182,10 @@ proc get_info {watch} {
 }
 
 proc convert {chan_name data} {
-    global env info_cache isfake last_pubdate
+    global env info_cache isfake
     set root http://$env(HTTP_HOST)
 
     set total 0
-    set last_pubdate 0x7fffffff
 
     foreach item [tagsplit $data {<title[^>]*>}] {
         incr idx
@@ -196,13 +202,6 @@ proc convert {chan_name data} {
             }
 
             get_info $watch
-
-            if {$info_cache(pubdate:$watch) >= $last_pubdate} {
-                # Force iTunes to sort the list in same order as in the feed
-                # (or else same date means sort by title)
-                set info_cache(pubdate:$watch) [expr $last_pubdate - 1]
-            }
-            set last_pubdate $info_cache(pubdate:$watch)
 
             if {[info exists isfake]} {
                 puts "pubdate $watch [clock format $info_cache(pubdate:$watch)]"
@@ -231,6 +230,17 @@ proc convert {chan_name data} {
 
     if {$total <= 0} {
         return "";
+    }
+
+    for {set i [expr $total - 2]} {$i >= 0} {incr i -1} {
+        set this $wat([expr $i + 0])
+        set next $wat([expr $i + 1])
+
+        if {$info_cache(pubdate:$this) <= $info_cache(pubdate:$next)} {
+            # Force iTunes to sort the list in same (time) order as in the feed
+            # (or else same date means sort by title)
+            set info_cache(pubdate:$this) [expr $info_cache(pubdate:$next) + 1]
+        }
     }
 
     puts "Content-Type: application/xhtml+xml"
