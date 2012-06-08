@@ -239,7 +239,8 @@ proc convert {chan_name data} {
         if {$info_cache(pubdate:$this) <= $info_cache(pubdate:$next)} {
             # Force iTunes to sort the list in same (time) order as in the feed
             # (or else same date means sort by title)
-            set info_cache(pubdate:$this) [expr $info_cache(pubdate:$next) + 1]
+            set info_cache(pubdate:$this) [expr $info_cache(pubdate:$next) + 60]
+            set dat($i) [clock format $info_cache(pubdate:$this)]
         }
     }
 
