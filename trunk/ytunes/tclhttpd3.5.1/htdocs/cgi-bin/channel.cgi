@@ -54,8 +54,7 @@ proc main {} {
 }
 
 proc print_rss {name} {
-    global fetch_err errorInfo
-
+    global fetch_err errorInfo isfake
     set data ""
 
     if {[catch {
@@ -71,6 +70,9 @@ proc print_rss {name} {
         }
     } err]} {
         set fetch_err $err--\n$errorInfo
+        if {[info exists isfake]} {
+            puts stderr $fetch_err
+        }
     }
     return 0
 }
@@ -118,6 +120,9 @@ proc open_info_cache {chan_name} {
 
 
 proc save_info_cache {chan_name} {
+    if {1} {
+        return
+    }
     global env info_cache isfake
 
     if {![info exists info_cache]} {
@@ -149,7 +154,7 @@ proc save_info_cache {chan_name} {
 }
 
 proc get_info {chan_name watch} {
-    global env info_cache isfake
+    global env info_cache isfake last_pubdate
 
     open_info_cache $chan_name
 
@@ -192,7 +197,25 @@ proc get_info {chan_name watch} {
         }
         set info_cache(fake:$watch) 1
     }
+}
 
+proc get_info_new {chan_name watch item} {
+    global env info_cache isfake last_pubdate
+
+    set pubdate [expr $last_pubdate - 1]
+    set length 60
+    regexp {<yt:duration seconds='([0-9]+)'/>} $item dummy length
+    if {[regexp {<published>([^<]+)[.][^<]+Z</published>} $item dummy pubdatestr]} {
+        #puts $pubdatestr
+        catch {
+            set pubdate [clock scan $pubdatestr -format {%Y-%m-%dT%H:%M:%S}]
+            #puts [clock format $pubdate]
+        }
+    }
+
+    set info_cache(pubdate:$watch) $pubdate
+    set info_cache(length:$watch)  $length
+    set last_pubdate $pubdate
 }
 
 proc convert {chan_name data} {
@@ -215,10 +238,10 @@ proc convert {chan_name data} {
                 continue
             }
 
-            get_info $chan_name $watch
+            get_info_new $chan_name $watch $item
 
             if {[info exists isfake]} {
-                puts "pubdate $watch [clock format $info_cache(pubdate:$watch)]"
+                puts "pubdate $watch [clock format $info_cache(pubdate:$watch)] == $info_cache(length:$watch)]"
             }
 
             set i $total; incr total
@@ -236,7 +259,7 @@ proc convert {chan_name data} {
             set dat($i) [clock format $info_cache(pubdate:$watch)]
             set dur($i) $info_cache(length:$watch)
 
-            if {$total > 3 && true} {
+            if {$total > 3 && false} {
                 break
             }
         }
@@ -296,7 +319,7 @@ proc convert {chan_name data} {
     }
 
     puts "</channel></rss>"
-    save_info_cache $chan_name
+    #save_info_cache $chan_name
     exit
 }
 
@@ -342,6 +365,7 @@ set feed_template {<?xml version="1.0" encoding="UTF-8"?>
       <itunes:summary>Youtube: CHANNEL</itunes:summary>
 }
 
+set last_pubdate [clock seconds]
 main
-save_info_cache
+#save_info_cache
 exit 0
