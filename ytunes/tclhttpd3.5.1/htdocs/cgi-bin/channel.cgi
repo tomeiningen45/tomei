@@ -293,7 +293,15 @@ proc hint {} {
     puts <ul>
 
     foreach {name title} {
+        ANNnewsCH "ANN News Channel"
         CARandDRIVER "Car and Driver"
+        autocar "AutoCar"
+        evotv "EVO Magazine"
+        TopGear TopGear
+        NBA NBA
+        Bloomberg Bloomberg
+        NHKonline NHKonline
+        adamcarollascarcast adamcarollascarcast
     } {
         puts "<li><a href=$env(SCRIPT_NAME)?name=$name>$title</li>"
     }
