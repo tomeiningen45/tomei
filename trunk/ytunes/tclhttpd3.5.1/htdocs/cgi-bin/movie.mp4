@@ -108,6 +108,8 @@ proc get_movie {name} {
         return 1
     }
 
+    exit 1
+
     # Get the fake movie
     set file $env(DOCUMENT_ROOT)/sample_mpeg4.mp4
     if {[file exists $file]} {
