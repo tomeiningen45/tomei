@@ -80,15 +80,15 @@ proc tagsplit {text tag} {
     return [split $text \uffff]
 }
 
-proc open_info_cache {} {
+proc open_info_cache {chan_name} {
     global env info_cache
 
     if {[info exists info_cache]} {
         return
     }
 
-    set cache_file $env(DOCUMENT_ROOT)/ytunes_info.cache
-    set cache_hash $env(DOCUMENT_ROOT)/ytunes_info.hash
+    set cache_file $env(DOCUMENT_ROOT)/ytunes_info.$chan_name.cache
+    set cache_hash $env(DOCUMENT_ROOT)/ytunes_info.$chan_name.hash
 
     if {![file exists $cache_file] || ![file exists $cache_hash]} {
         return
@@ -117,7 +117,7 @@ proc open_info_cache {} {
 }
 
 
-proc save_info_cache {} {
+proc save_info_cache {chan_name} {
     global env info_cache isfake
 
     if {![info exists info_cache]} {
@@ -128,14 +128,16 @@ proc save_info_cache {} {
 
     foreach name [array names info_cache touch:*] {
         set watch [lindex [split $name :] 1]
-        append data "[list $watch $info_cache(pubdate:$watch) $info_cache(length:$watch) $info_cache(touch:$watch)]\n"
+        if {![info exists info_cache(fake:$watch)]} {
+            append data "[list $watch $info_cache(pubdate:$watch) $info_cache(length:$watch) $info_cache(touch:$watch)]\n"
+        }
     }
 
     set data [string trim $data]
     set md5 [::md5::md5 -hex $data]
 
-    set cache_file $env(DOCUMENT_ROOT)/ytunes_info.cache
-    set cache_hash $env(DOCUMENT_ROOT)/ytunes_info.hash
+    set cache_file $env(DOCUMENT_ROOT)/ytunes_info.$chan_name.cache
+    set cache_hash $env(DOCUMENT_ROOT)/ytunes_info.$chan_name.hash
 
     set fd [open $cache_file w]
     puts -nonewline $fd $data
@@ -146,10 +148,10 @@ proc save_info_cache {} {
     close $fd
 }
 
-proc get_info {watch} {
+proc get_info {chan_name watch} {
     global env info_cache isfake
 
-    open_info_cache
+    open_info_cache $chan_name
 
     set info_cache(touch:$watch) $env(START_SEC)
 
@@ -160,6 +162,8 @@ proc get_info {watch} {
 
     set pubdate $env(START_SEC)
     set length  60
+    set has_date 0
+    set has_length 0
 
     if {[catch {
         set url "http://www.youtube.com/watch?v=$watch"
@@ -168,17 +172,27 @@ proc get_info {watch} {
         if {[regexp {<span id="eow-date"[^>]*>([^<]+)</span>} $data dummy date]} {
             catch {
                 set pubdate [expr [clock scan $date] + 60 * 60 * 12]
+                set has_date 1
             }
         }
         #NOT PUBLISH DATE -> regexp {"timestamp": ([0-9]+)} $data dummy pubdate
-        regexp {"length_seconds": ([0-9]+)} $data dummy length
-
+        if {[regexp {"length_seconds": ([0-9]+)} $data dummy length]} {
+            set has_length 1
+        }
     } err]} {
         #set fetch_err $err--\n$errorInfo
     }
 
     set info_cache(pubdate:$watch) $pubdate
     set info_cache(length:$watch)  $length
+
+    if {!$has_date || !$has_length} {
+        if {[info exists isfake]} {
+            puts stderr "Using fake info: $watch [clock format $pubdate] $length"
+        }
+        set info_cache(fake:$watch) 1
+    }
+
 }
 
 proc convert {chan_name data} {
@@ -201,7 +215,7 @@ proc convert {chan_name data} {
                 continue
             }
 
-            get_info $watch
+            get_info $chan_name $watch
 
             if {[info exists isfake]} {
                 puts "pubdate $watch [clock format $info_cache(pubdate:$watch)]"
@@ -222,7 +236,7 @@ proc convert {chan_name data} {
             set dat($i) [clock format $info_cache(pubdate:$watch)]
             set dur($i) $info_cache(length:$watch)
 
-            if {$total > 3 && false} {
+            if {$total > 3 && true} {
                 break
             }
         }
@@ -282,7 +296,7 @@ proc convert {chan_name data} {
     }
 
     puts "</channel></rss>"
-    save_info_cache
+    save_info_cache $chan_name
     exit
 }
 
