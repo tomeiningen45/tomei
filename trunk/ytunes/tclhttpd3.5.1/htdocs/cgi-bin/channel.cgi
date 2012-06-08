@@ -208,7 +208,7 @@ proc get_info_new {chan_name watch item} {
     if {[regexp {<published>([^<]+)[.][^<]+Z</published>} $item dummy pubdatestr]} {
         #puts $pubdatestr
         catch {
-            set pubdate [clock scan $pubdatestr -format {%Y-%m-%dT%H:%M:%S}]
+            set pubdate [clock scan $pubdatestr -format {%Y-%m-%dT%H:%M:%S} -timezone GMT]
             #puts [clock format $pubdate]
         }
     }
