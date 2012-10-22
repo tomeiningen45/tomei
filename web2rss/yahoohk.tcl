@@ -70,7 +70,7 @@ proc update {} {
         }
 
         if {[regsub {.*<div class="yom-mod yom-videometadata-desc">} $data "" data] &&
-            [regsub {<div class="yom-mod yom-videometadata-prvdr">.*} $data]} {
+            [regsub {<div class="yom-mod yom-videometadata-prvdr">.*} $data "" data]} {
             set gotit 1
         }
 
