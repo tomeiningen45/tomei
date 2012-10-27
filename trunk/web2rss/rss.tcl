@@ -57,7 +57,10 @@ proc makeitem {title link data date} {
 
     regsub -all TITLE       $t $title t
     regsub -all LINK_URL    $t $link  t
-    regsub -all DESCRIPTION $t $data  t
     regsub -all DATE        $t [clock format $date] t
+
+    regsub DESCRIPTION $t \uFFFF t
+    set list [split $t \uFFFF]
+    set t [lindex $list 0]$data[lindex $list 1]
     return $t
 }
