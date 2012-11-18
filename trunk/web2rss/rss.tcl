@@ -55,9 +55,14 @@ proc makeitem {title link data date} {
         </item>
     }
 
+    catch {
+        # if passed in an integer, make it into a date string
+        set date [clock format $date]
+    }
+
     regsub -all TITLE       $t $title t
     regsub -all LINK_URL    $t $link  t
-    regsub -all DATE        $t [clock format $date] t
+    regsub -all DATE        $t $date t
 
     regsub DESCRIPTION $t \uFFFF t
     set list [split $t \uFFFF]

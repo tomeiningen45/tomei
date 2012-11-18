@@ -7,6 +7,8 @@ while true; do
     scp data/wforum.xml $WEB2RSSROOT/wforum.xml
     tclsh yahoohk.tcl
     scp data/hkyahoo.xml $WEB2RSSROOT/test3.xml
+    tclsh cnbeta.tcl
+    scp data/cnbeta.xml $WEB2RSSROOT/cnbeta.xml
     echo done============`date`
     sleep 3600
 done
