@@ -1,0 +1,84 @@
+#! /usr/bin/wish
+package require Tix
+
+tixScrolledListBox .b
+frame .buttons
+button .reload -command loadit -text Reload
+button .edit -command editit -text Edit
+button .copy -command copyit -text "Copy names"
+set listbox [.b subwidget listbox]
+
+bind $listbox <Double-Button-1> doit
+bind $listbox <q> exit
+bind . <q> exit
+bind . <KeyPress-Return> doit
+
+proc loadit {} {
+    global listbox
+    $listbox delete 0 end
+
+    set d [pwd]
+    set hg 0
+    while {$d != "/"} {
+        if {[file exists $d/.hg]} {
+            set hg 1
+            break
+        } else {
+            set d [file dir $d]
+        }
+    }
+
+    if {$hg} {
+        set cmd hg
+    } else {
+        set cmd svn
+    }
+
+    puts $cmd
+    set n 0 
+    foreach line [split [exec $cmd status | grep -v {^[?]} | sort] \n] {
+        if {[regexp {^M} $line]} {
+            set file [lindex $line 1]
+            $listbox insert end "$file"
+            incr n
+        }
+        puts $line
+    }
+    return $n
+}
+
+
+pack .b -expand yes -fill both
+pack .buttons -fill x
+pack .edit -in .buttons -fill x -side right
+pack .reload -in .buttons -fill x -side right
+pack .copy -in .buttons -fill x -side right
+focus $listbox
+
+proc doit {} {
+    set listbox [.b subwidget listbox]
+    catch {
+        set file [$listbox get [$listbox curselection]]
+        exec tkdiff  $file &
+        #exec tkdiff -r4360 $file &
+    } e
+}
+
+proc editit {} {
+    global listbox
+    catch {
+        set file [$listbox get [$listbox curselection]]
+        exec emacsclient -n $file &
+        #exec tkdiff -r4360 $file &
+    } e
+}
+
+set n [loadit]
+
+puts "changed files == $n"
+
+if {$n > 20} {
+    set n 20
+}
+
+$listbox config -height [expr $n + 2]
