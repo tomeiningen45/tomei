@@ -1,21 +1,45 @@
 #! /usr/bin/wish
 package require Tix
 
-tixScrolledListBox .b
+tixScrolledHList .b
 frame .buttons
 button .reload -command loadit -text Reload
 button .edit -command editit -text Edit
 button .copy -command copyit -text "Copy names"
-set listbox [.b subwidget listbox]
+button .listselect -command list_select -text "List Selected"
+button .listunselect -command list_unselect -text "List Unselected"
 
-bind $listbox <Double-Button-1> doit
-bind $listbox <q> exit
+set hlist [.b subwidget hlist]
+$hlist config -separator \uFFFF -font TkDefaultFont -selectforeground black -selectbackground #a0a0ff -command doit
+
+bind $hlist <ButtonRelease-1> "selectit %x %y"
+bind $hlist <q> exit
 bind . <q> exit
-bind . <KeyPress-Return> doit
+#bind . <KeyPress-Return> doit
+
+proc generate_photo {width height color} {
+   set data [list]
+   for {set y 0} {$y < $height} {incr y} {
+      set row [list]
+      for {set x 0} {$x < $width} {incr x} {
+         lappend row $color
+      }
+      lappend data $row
+   }
+   return $data
+}
+
+set sel_width  14
+set sel_height 14
+set image_nosel [image create photo]
+$image_nosel put [generate_photo $sel_width $sel_height #a0a0a0]
+
+set image_sel [image create photo]
+$image_sel put [generate_photo $sel_width $sel_height #ff7070]
 
 proc loadit {} {
-    global listbox
-    $listbox delete 0 end
+    global hlist image_sel image_nosel
+    $hlist delete all
 
     set d [pwd]
     set hg 0
@@ -39,38 +63,149 @@ proc loadit {} {
     foreach line [split [exec $cmd status | grep -v {^[?]} | sort] \n] {
         if {[regexp {^M} $line]} {
             set file [lindex $line 1]
-            $listbox insert end "$file"
+            $hlist add "$file" -itemtype imagetext -text $file -image $image_nosel
             incr n
         }
         puts $line
     }
+
+    restore_selection
     return $n
 }
-
 
 pack .b -expand yes -fill both
 pack .buttons -fill x
 pack .edit -in .buttons -fill x -side right
 pack .reload -in .buttons -fill x -side right
 pack .copy -in .buttons -fill x -side right
-focus $listbox
+pack .listselect -in .buttons -fill x -side right
+pack .listunselect -in .buttons -fill x -side right
 
-proc doit {} {
-    set listbox [.b subwidget listbox]
+focus $hlist
+
+proc doit {file} {
     catch {
-        set file [$listbox get [$listbox curselection]]
-        exec tkdiff  $file &
+        exec tkdiff $file &
         #exec tkdiff -r4360 $file &
     } e
 }
 
 proc editit {} {
-    global listbox
+    global hlist
     catch {
-        set file [$listbox get [$listbox curselection]]
+        set file [$hlist get [$hlist curselection]]
         exec emacsclient -n $file &
         #exec tkdiff -r4360 $file &
-    } e
+    }
+}
+
+proc selectit {x y} {
+    global sel_width sel_height image_sel image_nosel
+    global hlist
+    if {$x < $sel_width + 10} {
+        set item [$hlist info selection]
+        set img [$hlist entrycget $item -image]
+        if {"$img" == "$image_sel"} {
+            set img $image_nosel
+        } else {
+            set img $image_sel
+        }
+        $hlist entryconfig $item -image $img
+    }
+    save_selection
+}
+
+proc get_selection {{is_selected 1}} {
+    global hlist image_sel image_nosel
+
+    if {$is_selected} {
+        set seed $image_sel
+    } else {
+        set seed $image_nosel
+    }
+
+    set list {}
+    foreach item [lsort [$hlist info children]] {
+        if {[$hlist entrycget $item -image] == "$seed"} {
+            lappend list $item
+        }
+    }
+
+    return $list
+}
+
+proc list_select {} {
+    set n 0
+    puts " >>"
+    foreach item [get_selection] {
+        puts "$item"
+        incr n
+    }
+    puts " ==================== $n items selected"
+}
+
+proc list_unselect {} {
+    set n 0
+    puts " >>"
+    foreach item [get_selection 0] {
+        puts "$item"
+        incr n
+    }
+    puts " ==================== $n items NOT selected"
+}
+
+set sel_file  ~/.tksvn_sel
+proc read_save_selections {} {
+    global sel_file
+
+    set list {}
+
+    if {[file exists $sel_file]} {
+        set fd [open $sel_file]
+        while {![eof $fd]} {
+            lappend list [gets $fd]
+        }
+        close $fd
+    }
+
+    return $list
+}
+
+proc save_selection {} {
+    global sel_file
+
+    set old [read_save_selections]
+    foreach f $old {
+        if {[string trim $f] != ""} {
+            set sel($f) 1
+        }
+    }
+
+    foreach item [get_selection] {
+        set sel($item) 1
+    }
+
+    foreach item [get_selection 0] {
+        if {[info exists sel($item)]} {
+            unset sel($item)
+        }
+    }
+
+    set fd [open $sel_file w+]
+    foreach item [lsort [array names sel]] {
+        puts $fd $item
+    }
+    close $fd
+}
+
+proc restore_selection {} {
+    global hlist image_sel
+
+    foreach item [read_save_selections] {
+        if {[$hlist info exists $item]} {
+            $hlist entryconfig $item -image $image_sel
+        }
+    }
 }
 
 set n [loadit]
@@ -81,4 +216,6 @@ if {$n > 20} {
     set n 20
 }
 
-$listbox config -height [expr $n + 2]
+$hlist config -height [expr $n + 2]
+
+wm geometry . 400x600+300+400
