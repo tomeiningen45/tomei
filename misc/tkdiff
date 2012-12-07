@@ -743,6 +743,7 @@ proc get-file-rev {f index {r ""}} {
         set bkopt ""
         set pvcsopt ""
         set p4file "$f"
+        set hgopt ""
     } else {
         set rev "r$r"
         set acrev "\"$r\""
@@ -754,6 +755,7 @@ proc get-file-rev {f index {r ""}} {
         set bkopt "-r$r"
         set pvcsopt "-r$r"
         set p4file "$f#$r"
+        set hgopt "-r $r"
     }
 
     set finfo(pth,$index) [tmpfile $index]
@@ -907,6 +909,14 @@ proc get-file-rev {f index {r ""}} {
             puts "Couldn't deal with $f, exiting..."
             exit
         }
+    } elseif {[is_in_hg_tree $dirname]} {
+        set cmd "hg"
+        if {$::tcl_platform(platform) == "windows"} {
+            append cmd ".exe"
+        }
+        set finfo(lbl,$index) "$f (HG $rev)"
+        debug-info "  Setting lbl $finfo(lbl,$index)"
+        die-unless "exec $cmd cat $hgopt $f" "$finfo(pth,$index)"
     } else {
         fatal-error "File '$f' is not part of a revision control system"
     }
@@ -916,6 +926,17 @@ proc get-file-rev {f index {r ""}} {
         set finfo(lbl,$index) $finfo(userlbl,$index)
         debug-info "  User label: $finfo(lbl,$index)"
     }
+}
+
+proc is_in_hg_tree {d} {
+    while {$d != "/"} {
+        if {[file exists $d/.hg]} {
+            return 1
+        } else {
+            set d [file dir $d]
+        }
+    }
+    return 0
 }
 
 proc sccs-is-bk {} {
