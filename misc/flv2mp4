@@ -1,0 +1,18 @@
+#! /bin/sh
+# See http://superuser.com/questions/483597/converting-flv-to-mp4-using-ffmpeg-and-preserving-the-quality
+
+for i in ${1+"$@"}; do
+    j=`basename "$i" .flv`.mp4
+    if test ! -f "$j"; then
+        TMPFILE=/tmp/flv2mp4.txt
+        mplayer -vo null -ao null -identify -frames 0 "$i" 2>&1 | cat > $TMPFILE
+        if cat $TMPFILE | grep -q -i ID_VIDEO_FORMAT=H264 && \
+           cat $TMPFILE | grep -q -i ID_AUDIO_FORMAT=MP4A; then
+            echo "Simple convert $i";
+            ffmpeg -i "$i" -acodec copy -vcodec copy -copyts "$j"
+        else 
+            echo "Full convert $i"
+            ffmpeg -i "$i" -sameq -ar 22050 "$j"
+        fi
+    fi        
+done
