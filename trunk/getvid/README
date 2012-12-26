@@ -1,0 +1,25 @@
+Getting videos without hassle
+
+Tudou - 2 steps:
+
+[1] Use Firefox to go to tudou. Select the desired HTML block (such as
+    a playlist), right click -> "Inspect Element" -> pull down list
+    -> Copy Inner HTML.
+
+    Save the HTML into a text file.
+
+    tclsh tudou_html.tcl < in.txt > list.txt
+
+[2] Edit list.txt if necessary, remove anything you don't want
+
+    tclsh tudou_get.tcl list.txt
+
+    This will automatically download all items in the list.txt and save them
+    into data/<name>.f4v
+
+    Note that if a file is already downloaded, it will not be downloaded again.
+
+    If available, 480p will be downloaded. Otherwise 360p will be downloaded.
+
+
+
