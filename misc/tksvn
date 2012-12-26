@@ -58,7 +58,7 @@ proc loadit {} {
         set cmd svn
     }
 
-    puts $cmd
+    #puts $cmd
     set n 0 
     foreach line [split [exec $cmd status | grep -v {^[?]} | sort] \n] {
         if {[regexp {^M} $line]} {
@@ -138,7 +138,7 @@ proc list_select {} {
     set n 0
     puts " >>"
     foreach item [get_selection] {
-        puts "$item"
+        puts "$item \\"
         incr n
     }
     puts " ==================== $n items selected"
@@ -148,7 +148,7 @@ proc list_unselect {} {
     set n 0
     puts " >>"
     foreach item [get_selection 0] {
-        puts "$item"
+        puts "$item \\"
         incr n
     }
     puts " ==================== $n items NOT selected"
@@ -218,4 +218,9 @@ if {$n > 20} {
 
 $hlist config -height [expr $n + 2]
 
-wm geometry . 400x600+300+400
+set h [winfo vrootheight .]
+if {$h < 800} {
+    wm geometry . 400x600+50+50
+} else {
+    wm geometry . 400x600+300+400
+}
