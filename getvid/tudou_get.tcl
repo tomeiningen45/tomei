@@ -51,6 +51,7 @@ proc update_vid_url {url} {
             regsub "</div>.*" $d "" d
             if {[regexp {javascript:getFile.'([^']+)} $d dummy vidurl]} {
                 regsub -all {&amp;} $vidurl "\\&" vidurl
+                puts "--P$res"
                 puts $vidurl
                 break
             }
@@ -83,7 +84,7 @@ proc download {url} {
         return 1
     }
 
-    puts "\n--------------------------------------------------$name - staring"
+    puts "\n--------------------------------------------------$name - starting"
     if {![info exists v_files($url,vid)]} {
         if {![update_vid_url $url]} {
             return 0
@@ -94,7 +95,7 @@ proc download {url} {
     set vidurl $v_files($url,vid)
     if {[catch {
         file delete $vidfile.part
-        exec wget --read-timeout=60 -O $vidfile.part $vidurl >@ stdout 2>@ stdout
+        exec wget --tries=1 --read-timeout=60 -O $vidfile.part $vidurl >@ stdout 2>@ stdout
         file rename $vidfile.part $vidfile
     } err]} {
         puts -nonewline "$name FAILED ($err)"
