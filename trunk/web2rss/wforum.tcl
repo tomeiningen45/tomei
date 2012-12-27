@@ -72,7 +72,8 @@ proc update {} {
             continue
         }
         if {![regsub {<input type="hidden" name="btrd_content" id="btrd_content" value="">.*} \
-              $data "" data]} {
+              $data "" data] &&
+            ![regsub {<input name='user_name.*} $data "" data]} {
             puts "cannot get page tail $link"
             continue
         }
