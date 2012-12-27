@@ -44,18 +44,37 @@ proc update {} {
     }
     regsub {</table>.*} $data "" data
 
+    set data2 [wget http://www.wforum.com/news/headline/ gb2312]
+    if {[regsub {.*../images/wforum_index_35.gif} $data2 "" data2] &&
+        [regsub {<form target='_self'.*} $data2 "" data2] &&
+        [regsub -all {<td aligh='left'>} $data2 "" data2]} {
+        append data $data2
+    }
+
     set lastdate 0xffffffff
 
     foreach line [makelist $data <td] {
-        if {[regexp {href='([^'>]+)'} $line dummy link] &&
+        if {[regexp {<a href='([^']+)' title='([^']+)'} $line dummy link title]} {
+            set type 1
+        } elseif {[regexp {href='([^'>]+)'} $line dummy link] &&
             [regexp {>([^<]+)<} $line dummy title]} {
-            puts $title==$link
+            set type 2
         } else {
             continue;
         }
-        set link http://bbs.wforum.com/wmf/$link
-        if {![regexp {id=([0-9]+)} $link dummy localname]} {
-            continue
+        puts $type:$title==$link
+
+        if {$type == 1} {
+            set link http://www.wforum.com/news/headline/$link
+            if {![regexp {id=([0-9]+)} $link dummy localname]} {
+                continue
+            }
+            set localname $localname-news
+        } else {
+            set link http://bbs.wforum.com/wmf/$link
+            if {![regexp {id=([0-9]+)} $link dummy localname]} {
+                continue
+            }
         }
 
         set fname [getcachefile $localname]
@@ -66,16 +85,33 @@ proc update {} {
         }
         set lastdate $date
 
-        if {![regsub {.*<td width="640" height="46" align="center" class="trd_subject" id="trd_subject">}  \
-              $data "" data]} {
-            puts "cannot get page header $link"
-            continue
-        }
-        if {![regsub {<input type="hidden" name="btrd_content" id="btrd_content" value="">.*} \
-              $data "" data] &&
-            ![regsub {<input name='user_name.*} $data "" data]} {
-            puts "cannot get page tail $link"
-            continue
+        if {$type == 1} {
+            if {![regsub {.*正文</td>} $data "" data]} {
+                puts "cannot get page header $link"
+                continue
+            }
+            if {![regsub {<!-- Wforum_ROS_160x600 -->.*} $data "" data] ||
+                ![regsub {<img src=.../images/text_jcwz.gif.*} $data "" data]} {
+                puts "cannot get page tail $link"
+                continue
+            }
+            regsub {<h3[^>]+>[^<]+</h3>} $data "" data
+            regsub -all {<div id='div-gpt-ad-[^>]+>} $data "<DIV>" data
+            #regsub -all {<script [^>]+>} $data "" data
+            #puts $data
+            #exit
+        } else {
+            if {![regsub {.*<td width="640" height="46" align="center" class="trd_subject" id="trd_subject">}  \
+                  $data "" data]} {
+                puts "cannot get page header $link"
+                continue
+            }
+            if {![regsub {<input type="hidden" name="btrd_content" id="btrd_content" value="">.*} \
+                  $data "" data] &&
+                ![regsub {<input name='user_name.*} $data "" data]} {
+                puts "cannot get page tail $link"
+                continue
+            }
         }
 
         regsub {<tr align="left" id="tr_acc_display">.*} $data "" data
