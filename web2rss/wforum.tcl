@@ -44,11 +44,13 @@ proc update {} {
     }
     regsub {</table>.*} $data "" data
 
-    set data2 [wget http://www.wforum.com/news/headline/ gb2312]
-    if {[regsub {.*../images/wforum_index_35.gif} $data2 "" data2] &&
-        [regsub {<form target='_self'.*} $data2 "" data2] &&
-        [regsub -all {<td aligh='left'>} $data2 "" data2]} {
-        append data $data2
+    if 0 {
+        set data2 [wget http://www.wforum.com/news/headline/ gb2312]
+        if {[regsub {.*../images/wforum_index_35.gif} $data2 "" data2] &&
+            [regsub {<form target='_self'.*} $data2 "" data2] &&
+            [regsub -all {<td aligh='left'>} $data2 "" data2]} {
+            append data $data2
+        }
     }
 
     set lastdate 0xffffffff
