@@ -1,22 +1,7 @@
-file mkdir data
+set instdir [file dirname [info script]]
+source $instdir/lib.tcl
 
-#-------------------------------------------------------------------------------
-proc wget {url {encoding {utf-8}}} {
-    set data ""
-    catch {
-        set fd [open "|wget -q -O - $url 2> /dev/null"]
-        fconfigure $fd -encoding $encoding
-        set data [read $fd]
-    }
-    catch {
-        close $fd
-    }
-    return $data
-}
-proc now {} {
-    return [clock seconds]
-}
-#-------------------------------------------------------------------------------
+file mkdir data
 
 #http://92flv.com/?url=http%3A%2F%2Fwww.tudou.com%2Flistplay%2FyZbsvUhF6ew%2FIFmZsdGDmSM.html
 #http://92flv.com/?url=http%3A%2F%2Fwww.tudou.com%2Flistplay%2FP5DoRCB9sPw%2FAVuZWD-lViY.html
@@ -120,11 +105,13 @@ proc download {url} {
 proc download_in_order {} {
     global v_files v_order
 
-    while 1 {
+    for {set i 0} {$i < 10} {incr i} {
         set ok 1
+        set failed {}
         foreach url $v_order {
             if {![download $url]} {
                 set ok 0
+                lappend failed $url
             }
         }
 
@@ -133,6 +120,12 @@ proc download_in_order {} {
         }
     }
 
+    if {!$ok} {
+        puts "Some files are still not downloaded"
+        foreach url $failed {
+            puts "  $v_files($url)"
+        }
+    }
 }
 
 proc read_index {files} {
@@ -156,5 +149,5 @@ proc read_index {files} {
 read_index $argv
 download_in_order
 
-parray v_files
+puts "All done!"
 
