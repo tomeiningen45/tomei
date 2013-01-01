@@ -31,7 +31,7 @@ foreach item $map {
     set title [lindex $item 1]
     set url [lindex $item 2]
 
-    if {"$argv" == "" || [lsearch $argv $name]} {
+    if {"$argv" == "" || [lsearch $argv $name] >= 0} {
         catch {
             exec tclsh [file dirname [info script]]/yahoofn.tcl $name $title [list $url] 2>@ stdout >@ stdout
         } 

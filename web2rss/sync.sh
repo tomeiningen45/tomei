@@ -17,6 +17,9 @@ while true; do
     tclsh yahoofn_top.tcl 
     scp data/yahoofn_*.xml $WEB2RSSROOT/
 
+    tclsh bloomberg_top.tcl 
+    scp data/bloomberg_*.xml $WEB2RSSROOT/
+
     echo done============`date`
-    sleep 3600
+    sleep 1200
 done
