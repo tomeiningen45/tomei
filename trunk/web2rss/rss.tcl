@@ -69,3 +69,7 @@ proc makeitem {title link data date} {
     set t [lindex $list 0]$data[lindex $list 1]
     return $t
 }
+
+proc now {} {
+    return [clock seconds]
+}

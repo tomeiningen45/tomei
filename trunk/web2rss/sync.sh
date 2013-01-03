@@ -14,6 +14,9 @@ while true; do
     tclsh cnbeta.tcl
     scp data/cnbeta.xml $WEB2RSSROOT/cnbeta.xml
 
+    tclsh iza.tcl
+    scp data/iza.xml $WEB2RSSROOT/iza.xml
+
     tclsh yahoofn_top.tcl 
     scp data/yahoofn_*.xml $WEB2RSSROOT/
 
