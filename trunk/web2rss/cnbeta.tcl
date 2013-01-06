@@ -83,6 +83,7 @@ proc update {} {
         if {[regexp {.*<div id="news_content">.*<div class="digbox">} $data]} {
             regsub {.*<div id="news_content">} $data "" data
             regsub {<div class="digbox">.*} $data "" data
+            set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
             set description $data
         } else {
             puts "-- failed to parse contents"
