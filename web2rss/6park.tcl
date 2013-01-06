@@ -58,10 +58,19 @@ proc update {} {
         }
         set lastdate $date
 
+        set from ""
+        regexp {新闻来源: ([^ ]+)} $data dymmy from
+
         regsub {.*<!--bodybegin-->} $data "" data
         regsub {<!--bodyend-->.*} $data "" data
         regsub -all {<font color=E6E6DD> www.6park.com</font>} $data "\n\n" data
+        regsub -all {onclick=document.location=} $data "xx=" data
         regsub {.*</script>} $data "" data 
+
+        if {"$from" != ""} {
+            set data "【$from】 $data"
+        }
+        set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
         append out [makeitem $title $link $data $date]
 
     }

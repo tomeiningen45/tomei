@@ -3,9 +3,16 @@
 #----------------------------------------------------------------------
 
 proc wget {url {encoding {utf-8}}} {
+    global env
+
     set data ""
     catch {
-        set fd [open "|wget -q -O - $url 2> /dev/null"]
+        if {[info exists env(USEICONV)] && "$encoding" == "gb2312"} {
+            set fd [open "|wget -q -O - $url 2> /dev/null | iconv -f gbk -t utf-8"]
+            set encoding utf-8 
+        } else {
+            set fd [open "|wget -q -O - $url 2> /dev/null"]
+        }
         fconfigure $fd -encoding $encoding
         set data [read $fd]
     }
