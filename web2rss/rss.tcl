@@ -35,7 +35,12 @@ proc getcachefile {localname} {
 }
 
 proc getfile {link localname {encoding utf-8}} {
+    global env
     set fname [getcachefile $localname]
+
+    if {[info exists env(USEICONV)] && "$encoding" == "gb2312"} {
+        set encoding utf-8
+    }
 
     if {![file exists $fname]} {
         set data [wget $link $encoding]
