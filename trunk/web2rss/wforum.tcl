@@ -134,6 +134,7 @@ proc update {} {
 
         #puts $data
         #exit
+        set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
         append out [makeitem $title $link $data $date]
 
     }
