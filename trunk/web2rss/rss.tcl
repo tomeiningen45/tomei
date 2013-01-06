@@ -38,12 +38,13 @@ proc getfile {link localname {encoding utf-8}} {
     global env
     set fname [getcachefile $localname]
 
+    set x $encoding
     if {[info exists env(USEICONV)] && "$encoding" == "gb2312"} {
         set encoding utf-8
     }
 
     if {![file exists $fname]} {
-        set data [wget $link $encoding]
+        set data [wget $link $x]
         set fd [open $fname w+]
         fconfigure $fd -encoding $encoding
         puts -nonewline $fd $data
