@@ -67,6 +67,10 @@ proc update {} {
         regsub -all {onclick=document.location=} $data "xx=" data
         regsub {.*</script>} $data "" data 
 
+        set id [file tail [file root $link]]
+        set comment " 【<a href=http://www.6park.com/news/newscom/${id}.shtml>网友评论</a>】 "
+        set data "$comment $data"
+
         if {"$from" != ""} {
             set data "【$from】 $data"
         }
