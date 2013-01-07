@@ -19,6 +19,7 @@ while 1 {
         if {[regexp {^http://www.youtube.com/watch.*} $sel] &&
             ![regexp { } $sel]} {
             regsub {[&]list=.*} $sel "" sel
+            regsub {[&]feature=.*} $sel "" sel
             if {![info exists seen($sel)]} {
                 set seen($sel) 1
                 puts stdout $sel

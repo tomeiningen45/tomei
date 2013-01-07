@@ -12,6 +12,9 @@ while {![eof stdin]} {
         regsub { - YouTube$} $title "" title
         regsub -all {[_%]} $title " " title
         regsub -all { +} $title " " title
+        regsub -all {&quot;} $title \" title
+        regsub -all {&#39;} $title {'} title
+        regsub -all / $title {.} title
         puts " $title"
     } else {
         puts ""
