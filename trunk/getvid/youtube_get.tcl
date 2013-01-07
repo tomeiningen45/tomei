@@ -65,15 +65,26 @@ proc compare {a b} {
     return [code $resa $resb]
 }
 
+proc mark_working {url} {
+
+}
+
 proc download {url} {
     global v_files v_order instdir
 
     set name $v_files($url)
     set vidfile data/$name
 
-    foreach f [glob -nocomplain $vidfile*] {
-        if {![regexp {[.]part$} $f]} {
-            puts "$name: already exists $f"
+    
+    foreach f [glob -nocomplain data/*] {
+        if {![file isfile $f]} {
+            continue
+        }
+        if {[file ext $f] == ".part"}  {
+            continue
+        }
+        if {[string first $vidfile $f] == 0} {
+            puts "$url: already exists $f"
             return 1
         }
     }
