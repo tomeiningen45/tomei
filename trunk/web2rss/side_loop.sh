@@ -1,3 +1,4 @@
+echo "starting side loop"
 sleep 100
 while true; do
     cp side_sync.sh run_sidesync.sh

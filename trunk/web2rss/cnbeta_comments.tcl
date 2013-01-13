@@ -68,7 +68,7 @@ proc update_comments {datadir links} {
         }
     }
 
-    foreach file [glob $dir/*.html] {
+    foreach file [glob -nocomplain $dir/*.html] {
         if {![regexp {([0-9]+)[.]html} $file dummy id]} {
             continue
         }
