@@ -10,39 +10,11 @@ catch {
 source $instdir/rss.tcl
 
 #----------------------------------------------------------------------
-# to-be common scripts
-#----------------------------------------------------------------------
-
-# return a list of {title link description pubdate ...}
-proc extract_feed {url} {
-    set data [wget $url]
-    set list ""
-    foreach part [makelist $data <item>] {
-        if {![regexp {<title>(.*)</title>} $part dummy title]} {
-            continue
-        }
-        if {![regexp {<link>(.*)</link>} $part dummy link]} {
-            continue
-        }
-        if {![regexp {<description>(.*)</description>} $part dummy description]} {
-            continue
-        }
-        if {![regexp -nocase {<pubdate>(.*)</pubdate>} $part dummy pubdate]} {
-            continue
-        }
-
-        lappend list $title $link $description $pubdate
-    }
-
-    return $list
-}
-
-#----------------------------------------------------------------------
 # Site specific scripts
 #----------------------------------------------------------------------
 
 proc update {} {
-    global datadir
+    global datadir env
 
     set out  {<?xml version="1.0" encoding="utf-8"?>
 
@@ -64,26 +36,27 @@ proc update {} {
     regsub -all LANG        $out zh    out
     regsub -all DESC        $out 6prk  out
 
-    set lastdate 0xffffffff
+    set newlinks {}
 
     foreach {title link description pubdate} [extract_feed http://cnbeta.com/backend.php] {
-        puts $link
         if {![regexp {([0-9]+)[.]htm} $link dummy localname]} {
             continue
         }
 
+        puts -nonewline $link
+        flush stdout
+        set started [now]
+
         set fname [getcachefile $localname]
         set data [getfile $link $localname gb2312]
-        set date [file mtime $fname]
-        if {$date >= $lastdate} {
-            set date [expr $lastdate - 1]
-        }
-        set lastdate $date
+        puts "  [expr [now] - $started] secs"
+
+        set comments "【<a href=$env(WEB2RSSHTTP)cnbeta_comments/$localname.html>网友评论</a>】"
 
         if {[regexp {.*<div id="news_content">.*<div class="digbox">} $data]} {
             regsub {.*<div id="news_content">} $data "" data
             regsub {<div class="digbox">.*} $data "" data
-            set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
+            set data "<div lang=\"zh\" xml:lang=\"zh\">${comments}$data</div>"
             set description $data
         } else {
             puts "-- failed to parse contents"
@@ -92,6 +65,9 @@ proc update {} {
         #puts $data
         #exit
         append out [makeitem $title $link $description $pubdate]
+        catch {
+            lappend newlinks [clock scan $pubdate] $link
+        }
     }
 
     append out {</channel></rss>}
@@ -100,6 +76,11 @@ proc update {} {
     fconfigure $fd -encoding utf-8
     puts -nonewline $fd $out
     close $fd
+
+    set links [save_links $datadir $newlinks 200]
+    puts "cnbeta: [llength $links] comments to update"
+    # update_comments $datadir $links
 }
+
 
 update
