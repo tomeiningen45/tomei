@@ -171,18 +171,28 @@ proc update {} {
         regsub -all {&quot;} $title \" title
         regsub -all {&#39;} $title {'} title
 
+        set images [get_images $data $localname]
 
         if {[regexp {<div id="newsText1" class="newsText">(.*)<p id="return2TextTop">} $data dummy data]} {
-            regsub -all {<p class="speech">関連記事</p>.*<span class="speech">記事本文の続き</span>} $data "" data
-            regsub -all {<span class="speech">記事本文の続き</span>} $data "" data
-            #puts $data
+            if {[regsub -all {<p class="speech">関連記事</p>.*<span class="speech">記事本文の続き</span>} $data \uFFFF data] ||
+                [regsub -all {<span class="speech">記事本文の続き</span>} $data \uFFFF data]} {
+                set list [split $data \uFFFF]
+                set data "[lindex $list 0]$images[lindex $list 1]"
+            } else {
+                append data $images
+            }
         } else {
             set title "@@$title"
             set data "-unparsable- $link"
         }
 
-        puts $title==$url
+        if {"$images" != ""} {
+            append title " - (画)"
+        }
 
+
+        puts $title==$url
+        set data "<div lang=\"ja\" xml:lang=\"ja\">$data</div>"
         append out [makeitem $title $url $data $date]
     }
 
@@ -193,5 +203,62 @@ proc update {} {
     puts -nonewline $fd $out
     close $fd
 }
+
+proc get_images {data localname} {
+    set fname [getcachefile $localname.imgcache]
+    if {[file exists $fname]} {
+        set fd [open $fname]
+        set data [read $fd]
+        close $fd
+        return $data
+    }
+
+    set queue {}
+    if {[regexp {div class="mainPhoto"><span><a href="([^>]+)">} $data dummy link]} {
+        set link http://www.iza.ne.jp$link
+        lappend queue $link
+        set seen($link) 1
+    } else {
+        return ""
+    }
+
+    set result ""
+
+    set pass 0
+    while {[llength $queue] > 0} {
+        incr pass
+        set q $queue
+        set queue {}
+
+        foreach link $q {
+            set done($link) 1
+            set data [wget $link]
+
+            set pat {<li><a href="([^>]+/slideshow/[0-9]+/)"><img class="content_img"}
+
+            if {[regexp {<img class="content_img pis_image" src="([^"]+)" alt="([^"]+)"} $data dummy img text]} {
+                append result "<br><img src=$img><br>$text<p>\n"
+            }
+            while {[regexp $pat $data dummy link]} {
+                #puts $pass=$link
+                regsub $pat $data XXX data
+                set link http://www.iza.ne.jp$link
+                if {![info exists seen($link)]} {
+                    lappend queue $link
+                    set seen($link) 1
+                }
+            }
+        }
+    }
+    set result "<hr><center>$result</center><hr>"
+    #puts $result
+    set fd [open $fname w+]
+    puts $fd $result
+    close $fd
+    return $result
+}
+
+#get_images [wget http://www.iza.ne.jp/news/newsarticle/world/america/621516/]
+#exit
 
 update

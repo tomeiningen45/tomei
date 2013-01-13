@@ -5,6 +5,9 @@
 proc wget {url {encoding {utf-8}}} {
     global env
 
+    if {[info exists env(RSSVERBOSE)]} {
+        puts "wget $url"
+    }
     set data ""
     catch {
         if {[info exists env(USEICONV)] && "$encoding" == "gb2312"} {
