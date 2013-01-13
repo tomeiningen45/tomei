@@ -39,9 +39,10 @@ proc update_comments {datadir links} {
         set head {<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
 }
 
-        set data "$head<div lang='zh' xml:lang='zh'><font size='+2'><h1>热门评论</h1>$hot <hr> <h1>所有评论</h1>$all</font></div>"
+        set data "$head<div lang='zh' xml:lang='zh'><h3>热门评论</h3>$hot <hr> <h3>所有评论</h3>$all</div>"
         set updated($id) 1
 
         set cmtfile $dir/$id.html
