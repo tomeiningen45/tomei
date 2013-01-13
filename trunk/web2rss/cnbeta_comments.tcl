@@ -13,6 +13,8 @@ source $instdir/rss.tcl
 # Site specific scripts
 #----------------------------------------------------------------------
 
+set started [now]
+
 proc update_comments {datadir links} {
     set dir ${datadir}_comments
     file mkdir $dir
@@ -100,3 +102,5 @@ if {[update_comments $datadir [read_links $datadir]]} {
 } else {
     puts "No comments updated??"
 }
+
+puts "Elapsed [expr [now] - $started] secs"
