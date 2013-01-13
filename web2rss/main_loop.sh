@@ -1,4 +1,4 @@
-sh side_loop.sh &
+sh side_loop.sh 2>&1 | cat > side.log &
 
 while true; do
     echo SVN Update ===========`date`
