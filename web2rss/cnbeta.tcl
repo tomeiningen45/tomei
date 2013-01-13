@@ -51,12 +51,7 @@ proc update {} {
         set data [getfile $link $localname gb2312]
         puts "  [expr [now] - $started] secs"
 
-
-        set id $localname
-        set hot http://www.cnbeta.com/comment/g_content/$id.html
-        set all http://www.cnbeta.com/comment/normal/$id.html
-
-        set comments "【<a href=$hot>热门评论</a>】【<a href=$all>所有评论</a>】"
+        set comments "【<a href=$env(WEB2RSSHTTP)cnbeta_comments/$localname.html>网友评论</a>】"
 
         if {[regexp {.*<div id="news_content">.*<div class="digbox">} $data]} {
             regsub {.*<div id="news_content">} $data "" data
