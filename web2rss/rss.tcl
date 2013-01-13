@@ -86,3 +86,87 @@ proc makeitem {title link data date} {
 proc now {} {
     return [clock seconds]
 }
+
+
+# Return a list of {title link description pubdate ...} from an RSS feed
+# Works for cnbeta: http://cnbeta.com/backend.php
+proc extract_feed {url} {
+    set data [wget $url]
+    set list ""
+    foreach part [makelist $data <item>] {
+        if {![regexp {<title>(.*)</title>} $part dummy title]} {
+            continue
+        }
+        if {![regexp {<link>(.*)</link>} $part dummy link]} {
+            continue
+        }
+        if {![regexp {<description>(.*)</description>} $part dummy description]} {
+            continue
+        }
+        if {![regexp -nocase {<pubdate>(.*)</pubdate>} $part dummy pubdate]} {
+            continue
+        }
+
+        lappend list $title $link $description $pubdate
+    }
+
+    return $list
+}
+
+proc save_links {datadir newlinks {limit 200}} {
+    set file $datadir.links
+
+    if {[file exists $file]} {
+        set fd [open $file]
+        while {![eof $fd]} {
+            set line [string trim [gets $fd]]
+            if {"$line" != ""} {
+                set date [lindex $line 0]
+                set link [lindex $line 1]
+                set table($date) $link
+            }
+        }
+        close $fd
+    }
+
+    foreach {date link} $newlinks {
+        set table($date) $link
+    }
+
+    set links {}
+    set n 0
+    set fd [open $file w+]
+    foreach date [lsort -integer -decreasing [array names table]] {
+        set link $table($date)
+        puts $fd [list $date $link]
+        incr n
+        if {$n >= $limit} {
+            break;
+        }
+        lappend links $link
+    }
+    close $fd
+
+    return $links
+    #parray table
+}
+
+proc read_links {datadir} {
+    set file $datadir.links
+
+    set list {}
+
+    if {[file exists $file]} {
+        set fd [open $file]
+        while {![eof $fd]} {
+            set line [string trim [gets $fd]]
+            if {"$line" != ""} {
+                set link [lindex $line 1]
+                lappend list $link
+            }
+        }
+        close $fd
+    }
+
+    return $list
+}
