@@ -54,7 +54,6 @@ proc update {} {
         }
         set link http://hk.news.yahoo.com/$link
         set fname [getcachefile $link]
-
         set data [getfile $link [file tail $link]]
 
         set date [file mtime $fname]
