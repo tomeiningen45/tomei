@@ -84,7 +84,7 @@ proc update {} {
             set data "<div lang='zh' xml:lang='zh'>$comments $data</div>"
             append out [makeitem $title $link $data $date]
             catch {
-                lappend newlinks [clock scan $date] $link
+                lappend newlinks $date $link
             }
         }
 
