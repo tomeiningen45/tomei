@@ -14,7 +14,7 @@ source $instdir/rss.tcl
 #----------------------------------------------------------------------
 
 proc update {} {
-    global datadir
+    global datadir env
 
     set out  {<?xml version="1.0" encoding="utf-8"?>
 
@@ -41,6 +41,7 @@ proc update {} {
     regsub {.*<div class="yog-col yog-11u yom-primary">} $data "" data
     regsub {<div class="yog-col yog-8u yog-col-last yom-secondary">.*} $data "" data
 
+    set newlinks {}
     set lastdate 0xffffffff
 
     set n 1
@@ -59,11 +60,17 @@ proc update {} {
         set date [file mtime $fname]
         if {$date >= $lastdate} {
             set date [expr $lastdate - 1]
+            file mtime $fname $date
         }
         set lastdate $date
 
         set gotit 0
 
+        set comments ""
+        if {[regexp {[-]([0-9]+)(([-][-][0-9a-z]+)|)[.]html} $link dummy id]} {
+            set comments "【<a href=$env(WEB2RSSHTTP)hkyahoo_comments/$id.html>网友评论</a>】"
+        }
+        
         if {[regsub {.*<p class="first">} $data "" data] && 
             [regsub {<div class="yom-mod yom-follow".*} $data "" data]} {
             set gotit 1
@@ -75,8 +82,11 @@ proc update {} {
         }
 
         if {$gotit} {
-            set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
+            set data "<div lang='zh' xml:lang='zh'>$comments $data</div>"
             append out [makeitem $title $link $data $date]
+            catch {
+                lappend newlinks [clock scan $date] $link
+            }
         }
 
         if {$n > 5} {
@@ -91,6 +101,10 @@ proc update {} {
     fconfigure $fd -encoding utf-8
     puts -nonewline $fd $out
     close $fd
+
+    set links [save_links $datadir $newlinks 40]
+    puts "hkyahoo: [llength $links] comments to update"
+
 }
 
 update
