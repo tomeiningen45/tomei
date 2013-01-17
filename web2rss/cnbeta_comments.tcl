@@ -90,13 +90,13 @@ proc update_comments {datadir links} {
 if {[update_comments $datadir [read_links $datadir]]} {
     catch {
         puts "Deleting old files on remote host"
-        exec ssh $env(WEB2RSSHOST) "rm -vf html/cnbeta_comments/*" 2>@ stderr >@ stdout
+        exec [ssh_prog] $env(WEB2RSSHOST) "rm -vf html/cnbeta_comments/*" 2>@ stderr >@ stdout
         puts "Deleting old files on remote host -- DONE"
     }
 
     catch {
         puts "Copying new files on remote host"
-        exec scp -r data/cnbeta_comments/ $env(WEB2RSSROOT)/ 2>@ stderr >@ stdout
+        exec [scp_prog] -r data/cnbeta_comments/ $env(WEB2RSSROOT)/ 2>@ stderr >@ stdout
         puts "Copying new files on remote DONE"
 
     }

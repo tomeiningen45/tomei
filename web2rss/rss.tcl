@@ -173,3 +173,20 @@ proc read_links {datadir} {
 
     return $list
 }
+
+proc ssh_prog {} {
+    global env
+    if {[info exists env(RSS_SSH)]} {
+        return $env(RSS_SSH)
+    }
+    return ssh
+}
+
+proc scp_prog {} {
+    global env
+    if {[info exists env(RSS_SCP)]} {
+        return $env(RSS_SCP)
+    }
+    return scp
+}
+
