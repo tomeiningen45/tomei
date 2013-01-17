@@ -1,27 +1,33 @@
 root=$WEB2RSSROOT
+
+SCP=$RSS_SCP
+if test "$SCP" = ""; then
+    SCP=scp
+fi
+
 ##while true; do
     echo start===========`date`
 
     tclsh 6park.tcl
-    scp data/6park.xml $root/test2.xml
+    $SCP data/6park.xml $root/test2.xml
 
     tclsh wforum.tcl
-    scp data/wforum.xml $root/wforum.xml
+    $SCP data/wforum.xml $root/wforum.xml
 
     tclsh yahoohk.tcl
-    scp data/hkyahoo.xml $root/test3.xml
+    $SCP data/hkyahoo.xml $root/test3.xml
 
     tclsh cnbeta.tcl
-    scp data/cnbeta.xml $root/cnbeta.xml
+    $SCP data/cnbeta.xml $root/cnbeta.xml
 
     tclsh iza.tcl
-    scp data/iza.xml $root/iza.xml
+    $SCP data/iza.xml $root/iza.xml
 
     tclsh yahoofn_top.tcl 
-    scp data/yahoofn_*.xml $root/
+    $SCP data/yahoofn_*.xml $root/
 
     tclsh bloomberg_top.tcl 
-    scp data/bloomberg_*.xml $root/
+    $SCP data/bloomberg_*.xml $root/
 
     echo done============`date`
 ##    sleep 1200
