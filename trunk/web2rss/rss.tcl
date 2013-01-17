@@ -5,8 +5,10 @@
 proc wget {url {encoding {utf-8}}} {
     global env
 
+    set started [now]
     if {[info exists env(RSSVERBOSE)]} {
-        puts "wget $url"
+        puts -nonewline "wget $url"
+	flush stdout
     }
     set data ""
     catch {
@@ -22,6 +24,11 @@ proc wget {url {encoding {utf-8}}} {
     catch {
         close $fd
     }
+
+    if {[info exists env(RSSVERBOSE)]} {
+        puts " [expr [now] - $started] secs"
+    }
+
     return $data
 }
 
@@ -190,3 +197,13 @@ proc scp_prog {} {
     return scp
 }
 
+if {[info command lreverse] == ""} {
+    proc lreverse {list} {
+	set length [llength $list]
+	set result ""
+	for {set n [expr $length - 1]} {$n >= 0} {incr n -1} {
+	    lappend result [lindex $list $n]
+	}
+	return $result
+    }
+}
