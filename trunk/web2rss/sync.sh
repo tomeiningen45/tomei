@@ -32,6 +32,9 @@ fi
     tclsh zasshi.tcl 
     $SCP data/zasshi*.xml $root/rss/
 
+    tclsh gooblog_top.tcl 
+    scp data/gooblog_*.xml $WEB2RSSROOT/rss/
+
     tclsh delete_old_files.tcl
 
     echo done============`date`

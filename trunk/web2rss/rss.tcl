@@ -103,17 +103,19 @@ proc now {} {
 proc extract_feed {url} {
     set data [wget $url]
     set list ""
-    foreach part [makelist $data <item>] {
+    foreach part [makelist $data <item] {
         if {![regexp {<title>(.*)</title>} $part dummy title]} {
             continue
         }
         if {![regexp {<link>(.*)</link>} $part dummy link]} {
             continue
         }
+
         if {![regexp {<description>(.*)</description>} $part dummy description]} {
             continue
         }
-        if {![regexp -nocase {<pubdate>(.*)</pubdate>} $part dummy pubdate]} {
+        if {![regexp -nocase {<pubdate>(.*)</pubdate>} $part dummy pubdate] &&
+            ![regexp -nocase {<dc:date>(.*)</dc:date>} $part dummy pubdate]} {
             continue
         }
 
