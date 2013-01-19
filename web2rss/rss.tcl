@@ -69,27 +69,19 @@ proc getfile {link localname {encoding utf-8}} {
 }
 
 proc makeitem {title link data date} {
-    set t {
-        <item>
-        <title><![CDATA[TITLE]]></title>
-        <link>LINK_URL</link>
-        <description><![CDATA[DESCRIPTION]]></description>
-        <pubDate>DATE</pubDate>
-        </item>
-    }
-
     catch {
         # if passed in an integer, make it into a date string
         set date [clock format $date]
     }
 
-    regsub -all TITLE       $t $title t
-    regsub -all LINK_URL    $t $link  t
-    regsub -all DATE        $t $date t
+    set t "\n\
+	<item>\n\
+	<title><!\[CDATA\[$title\]\]></title>\n\
+	<link>$link</link>\n\
+	<description><!\[CDATA\[$data\]\]></description>\n\
+	<pubDate>$date</pubDate>\n\
+	</item>"
 
-    regsub DESCRIPTION $t \uFFFF t
-    set list [split $t \uFFFF]
-    set t [lindex $list 0]$data[lindex $list 1]
     return $t
 }
 
