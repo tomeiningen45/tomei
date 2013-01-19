@@ -29,7 +29,11 @@ fi
     tclsh bloomberg_top.tcl 
     $SCP data/bloomberg_*.xml $root/
 
+    tclsh zasshi.tcl 
+    $SCP data/zasshi*.xml $root/rss/
+
     tclsh delete_old_files.tcl
+
     echo done============`date`
 ##    sleep 1200
 ##done
