@@ -4,6 +4,10 @@ set map {
     http://blog.goo.ne.jp/genre_rss/1053 drive          ドライブ 
     http://blog.goo.ne.jp/genre_rss/1356 walking        散歩
     http://blog.goo.ne.jp/genre_rss/1051 shopping       ショッピング 
+    http://blog.goo.ne.jp/genre_rss/1148 overseas       海外
+    http://blog.goo.ne.jp/genre_rss/1144 interior       インテリア
+    http://blog.goo.ne.jp/genre_rss/1144 craft          クラフト
+    http://blog.goo.ne.jp/genre_rss/1215 collection     コレクション
 }
 
 foreach {url name title} $map {
