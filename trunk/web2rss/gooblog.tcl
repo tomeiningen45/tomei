@@ -57,11 +57,15 @@ proc update {} {
         set started [now]
         set data [getfile $link $localname euc-jp]
 
-        regsub -all {<!--エントリー-->} $data {<!-- entry-body -->} data
-        regsub -all {<!--/エントリー-->} $data {<!-- /entry-body -->} data
-
-        regsub -all {<!-- エントリー -->} $data {<!-- entry-body -->} data
-        regsub -all {<!-- /エントリー -->} $data {<!-- /entry-body -->} data
+        if {[regexp {<!-- entry-body -->(.*)<!-- /entry-body -->} $data]} {
+            # OK
+        } elseif {[regsub -all {<!--エントリー-->} $data {<!-- entry-body -->} data]} {
+            regsub -all {<!--/エントリー-->} $data {<!-- /entry-body -->} data
+        } elseif {[regsub -all {<!-- エントリー -->} $data {<!-- entry-body -->} data]} {
+            regsub -all {<!-- /エントリー -->} $data {<!-- /entry-body -->} data
+        } elseif {[regsub -all {<!-- Text -->} $data {<!-- entry-body -->} data]} {
+            regsub -all {<!-- /Text -->} $data {<!-- /entry-body -->} data
+        }
 
         if {[regexp {<!-- entry-body -->(.*)<!-- /entry-body -->} $data dummy data]} {
             regsub {<!-- /entry-body -->.*} $data "" data
