@@ -11,8 +11,8 @@ fi
     tclsh 6park.tcl
     $SCP data/6park.xml $root/test2.xml
 
-    tclsh wforum.tcl
-    $SCP data/wforum.xml $root/wforum.xml
+    #tclsh wforum.tcl
+    #$SCP data/wforum.xml $root/wforum.xml
 
     tclsh yahoohk.tcl
     $SCP data/hkyahoo.xml $root/test3.xml
