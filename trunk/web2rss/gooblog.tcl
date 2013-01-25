@@ -59,12 +59,25 @@ proc update {} {
 
         if {[regexp {<!-- entry-body -->(.*)<!-- /entry-body -->} $data]} {
             # OK
-        } elseif {[regsub -all {<!--エントリー-->} $data {<!-- entry-body -->} data]} {
-            regsub -all {<!--/エントリー-->} $data {<!-- /entry-body -->} data
-        } elseif {[regsub -all {<!-- エントリー -->} $data {<!-- entry-body -->} data]} {
-            regsub -all {<!-- /エントリー -->} $data {<!-- /entry-body -->} data
-        } elseif {[regsub -all {<!-- Text -->} $data {<!-- entry-body -->} data]} {
-            regsub -all {<!-- /Text -->} $data {<!-- /entry-body -->} data
+        } else {
+            foreach {beg end} {
+                {<!--エントリー-->}
+                {<!--/エントリー-->}
+
+                {<!-- エントリー -->}
+                {<!-- /エントリー -->}
+
+                {<!-- Text -->}
+                {<!-- /Text -->}
+
+                {<!--main-->}
+                {<!--/main-->}
+            } {
+                if {[regsub -all $beg $data {<!-- entry-body -->} data]} {
+                     regsub -all $end $data {<!-- /entry-body -->} data
+                    break;
+                }
+            }
         }
 
         if {[regexp {<!-- entry-body -->(.*)<!-- /entry-body -->} $data dummy data]} {
@@ -72,6 +85,8 @@ proc update {} {
             regsub {<rdf:RDF.*</rdf:RDF>} $data "" data
 
             regsub -all {<a href="(http://blogimg.goo.ne.jp/[^>]+)"><img src=[^>]+></a>} $data {<img src='\1'>} data
+
+            regsub {<div align="right" class="etFoot"><span class="etCommentLink">.*} $data "" data
 
             #puts $data
         } else {
