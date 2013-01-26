@@ -44,6 +44,10 @@ fi
     echo wait to scp; sleep 5;
     $SCP data/gooblog_*.xml $WEB2RSSROOT/rss/ &
 
+    tclsh tiexue.tcl 
+    echo wait to scp; sleep 5;
+    $SCP data/tiexue.xml $WEB2RSSROOT/rss/ &
+
     tclsh delete_old_files.tcl
 
     echo done============`date`
