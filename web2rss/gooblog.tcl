@@ -80,6 +80,17 @@ proc update {} {
             }
         }
 
+        set mainpage ""
+        set mainname ""
+        if {[regexp {<h1[^>]*><a href="(http://blog.goo.ne.jp/[^>]+)">([^<]+)</a></h1>} $data dummy mainlink mainname] ||
+            [regexp {<a href="(http://blog.goo.ne.jp/[^>]+)" class="bTitleLink"><span class="bTitle">([^<]+)</span></a>} \
+                 $data dummy mainlink mainname]} {
+            #puts +++++$mainname
+            set mainpage "【<a href='$mainlink'>$mainname</a>】"
+        } else {
+            puts @@NONAME=$link
+        }
+
         if {[regexp {<!-- entry-body -->(.*)<!-- /entry-body -->} $data dummy data]} {
             regsub {<!-- /entry-body -->.*} $data "" data
             regsub {<rdf:RDF.*</rdf:RDF>} $data "" data
@@ -88,13 +99,14 @@ proc update {} {
 
             regsub {<div align="right" class="etFoot"><span class="etCommentLink">.*} $data "" data
 
+            set data $mainpage$data
             #puts $data
         } else {
             set title "@@$title"
             set data "-unparsable- $link"
         }
 
-        puts "$title: $link [expr [now] - $started]"
+        puts "$mainname - $title: $link [expr [now] - $started]"
 
         append out [makeitem $title $link $data $pubdate]
     }
