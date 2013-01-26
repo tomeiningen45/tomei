@@ -8,6 +8,7 @@ set map {
     http://blog.goo.ne.jp/genre_rss/1144 interior       インテリア
     http://blog.goo.ne.jp/genre_rss/1209 craft          クラフト
     http://blog.goo.ne.jp/genre_rss/1215 collection     コレクション
+    http://blog.goo.ne.jp/genre_rss/1307 car            車
 }
 
 foreach {url name title} $map {
