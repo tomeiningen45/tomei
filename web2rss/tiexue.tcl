@@ -31,7 +31,7 @@ proc compare_tiexue_date {a b} {
 }
 
 proc update {} {
-    global datadir
+    global datadir env
 
     set out  {<?xml version="1.0" encoding="utf-8"?>
 
@@ -65,7 +65,12 @@ proc update {} {
         }
     }
 
-    set list [lrange [lsort -decreasing -command compare_tiexue_id $list] 0 60]
+    set max 60
+    if {[info exists env(TIEXUE_MAX)]} {
+        set max $env(TIEXUE_MAX)
+    }
+
+    set list [lrange [lsort -decreasing -command compare_tiexue_id $list] 0 $max]
 
     # (2) Download all news (older first)
     #     Note: article number is not reliable for determining date ...
