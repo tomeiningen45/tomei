@@ -4,4 +4,10 @@ Need to
 
 sudo apt-get install tcl tcllib
 
+Start the server:
 
+tclsh tclhttpd3.5.1/bin/httpd.tcl
+
+
+For videos:
+http://localhost:8015/cgi-bin/watch.tcl?
