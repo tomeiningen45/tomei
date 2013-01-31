@@ -19,6 +19,24 @@ exec tclsh "$0" ${1+"$@"}
 source [file dirname [info script]]/../../lib/url.tcl
 package require uri
 
+proc remove_youtube_suffix {name} {
+    set p {[A-Za-z0-9_-]}
+    set p $p$p$p$p$p$p$p$p$p
+    set p (.*)\[-\]($p)
+
+    if {[regexp $p $name dummy stem tail]} {
+        set tail [string range $tail 1 end]
+        if {[regexp {[0-9]} $tail] && 
+            [string toupper $tail] != $tail &&
+            [string tolower $tail] != $tail} {
+            # If we have mixed cases here it's probably
+            # a Youtube ID
+            return $stem
+        }
+    }
+    return $name
+}
+
 proc main {} {
     global env
 
@@ -80,11 +98,14 @@ proc main {} {
     #puts stderr f=$f
 
     if {[file isdir $f]} {
+        puts "<table width = 100%><tr>"
         set pwd [pwd]
         cd $f
         set list [lsort -dict [glob -nocomplain *]]
         cd $pwd
 
+        set count 0
+        set COLS 3
         puts "<h2>[string range $f $rootlen end]</h2>"
         puts "<li><a href=$me?v=$parent>PARENT</a>"
         for {set i 0} {$i < 2} {incr i} {
@@ -108,11 +129,32 @@ proc main {} {
                         regsub {[.]m4v$} $name "" name
                         regsub {[.]f4v$} $name "" name
                         regsub {[.]flv$} $name "" name
+                        regsub -all _+ $name " " name
+                        regsub -all {[-]+} $name " " name
+
+                        set name [remove_youtube_suffix $name]
+
+                        set thumb [file dirname $sub]/.[file tail $sub].jpg
+                        if {[file exists $thumb]} {
+                            set thumbq [string range $thumb $rootlen end]
+                            set thumbq [get_video_or_thumbnail_url $host $thumbq]
+                            #puts stderr $thumbq
+                        } else {
+                            set thumbq /defaultThumbnail.png
+                        }
+                        set name "<img src=$thumbq width='256px'><br>$name"
+                    } else {
+                        set name "<img src=/videoFolder.png width='256px'><br>$name"
                     }
-                    puts "<li><a href='$me?v=[_Url_Encode $q]'>$name</a>"
+                    puts "<td valign=top><a href='$me?v=[_Url_Encode $q]'>$name</a><br>&nbsp;</td>"
+                    incr count
+                    if {($count % $COLS) == 0} {
+                        puts "</tr><tr><td colspan=$COLS><hr></td></tr><tr>"
+                    }
                 }
             }
         }
+        puts "</tr></table>"
     } else {
         set file http://$host/videos
         foreach p [file split $orig] {
@@ -124,6 +166,17 @@ proc main {} {
         puts "<body bgcolor=000000>"
         puts "<video src='$file' width='100%' height='100%' controls autoplay>"
     }
+}
+
+# The full path is /var/www/videos/$q
+proc get_video_or_thumbnail_url {host q} {
+    set url http://$host/videos
+    foreach p [file split $q] {
+        set p [_Url_Encode $p]
+        regsub -all {[+]} $p %20 p
+        append url /$p
+    }
+    return $url
 }
 
 proc _Url_Encode {x} {
