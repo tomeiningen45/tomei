@@ -11,12 +11,22 @@ proc wget {url {encoding {utf-8}}} {
 	flush stdout
     }
     set data ""
+    set tmpfile /tmp/wget-rss-[pid]
+    set comp_msg ""
     catch {
+        exec wget -q -O $tmpfile $url 2> /dev/null > /dev/null
+        set type [exec file $tmpfile]
+        if {[regexp compressed $type]} {
+            set cmd "|zcat $tmpfile"
+            set comp_msg " (gzip)"
+        } else {
+            set cmd "|cat $tmpfile"
+        }
         if {[info exists env(USEICONV)] && "$encoding" == "gb2312"} {
-            set fd [open "|wget -q -O - $url 2> /dev/null | iconv -f gbk -t utf-8"]
+            set fd [open "$cmd | iconv -f gbk -t utf-8" r]
             set encoding utf-8 
         } else {
-            set fd [open "|wget -q -O - $url 2> /dev/null"]
+            set fd [open "$cmd" r]
         }
         fconfigure $fd -encoding $encoding
         set data [read $fd]
@@ -26,9 +36,12 @@ proc wget {url {encoding {utf-8}}} {
     }
 
     if {[info exists env(RSSVERBOSE)]} {
-        puts " [expr [now] - $started] secs"
+        puts " [expr [now] - $started] secs/ [string length $data] words$comp_msg"
     }
 
+    catch {
+        file delete -force $tmpfile
+    }
     return $data
 }
 
