@@ -36,6 +36,7 @@ proc main {} {
     if {"$env(QUERY_STRING)" != ""} {
         if {[regexp {^name=(.*)} $env(QUERY_STRING) dummy name]} {
             if {[get_movie $name]} {
+		flush stdout
                 exit 0
             }
         }
@@ -80,6 +81,7 @@ proc get_movie_from_youtube {name} {
                     }
                 }
                 puts -nonewline stdout $data
+		flush stdout
             }
 
             while {![eof $fd]} {

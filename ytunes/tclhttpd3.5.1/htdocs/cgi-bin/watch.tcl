@@ -106,6 +106,7 @@ proc main {} {
 
         set count 0
         set COLS 3
+	set colw [expr 100 / $COLS]
         puts "<h2>[string range $f $rootlen end]</h2>"
         puts "<li><a href=$me?v=$parent>PARENT</a>"
         for {set i 0} {$i < 2} {incr i} {
@@ -146,7 +147,7 @@ proc main {} {
                     } else {
                         set name "<img src=/videoFolder.png width='256px'><br>$name"
                     }
-                    puts "<td valign=top><a href='$me?v=[_Url_Encode $q]'>$name</a><br>&nbsp;</td>"
+                    puts "<td width=${colw}% valign=top><a href='$me?v=[_Url_Encode $q]'>$name</a><br>&nbsp;</td>"
                     incr count
                     if {($count % $COLS) == 0} {
                         puts "</tr><tr><td colspan=$COLS><hr></td></tr><tr>"
@@ -174,6 +175,7 @@ proc get_video_or_thumbnail_url {host q} {
     foreach p [file split $q] {
         set p [_Url_Encode $p]
         regsub -all {[+]} $p %20 p
+        regsub -all {[ ]} $p %20 p
         append url /$p
     }
     return $url

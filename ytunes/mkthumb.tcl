@@ -64,16 +64,18 @@ foreach file $files {
                       [expr ($secs % 3600) / 60]  \
                       [expr ($secs % 60)]]
         puts stderr "\n\nSECS=$secs\n"
+	set tmpfile /tmp/mkthumb-pid.jpg
         if {[catch {
-            exec ffmpeg -i $file -ss $secs -f image2 -vframes 1 -vf scale=256:-1 $thumb.tmp \
+            exec ffmpeg -i $file -ss $secs -f image2 -vframes 1 -vf scale=256:-1 $tmpfile \
                 >@ stdout 2>@ stdout
         }]} {
             puts stderr "FAILED THUMB: $file"
-            file delete -force $thumb.tmp
         } else {
             puts stderr "DONE   THUMB: $file"
-            file rename -force $thumb.tmp $thumb
+	    file delete -force $thumb
+            file copy -force $tmpfile $thumb
         }
+	file delete -force $tmpfile
         #puts "start \"$thumb\""
         #exit
     }
