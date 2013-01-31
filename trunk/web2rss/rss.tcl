@@ -17,7 +17,7 @@ proc wget {url {encoding {utf-8}}} {
         exec wget -q -O $tmpfile $url 2> /dev/null > /dev/null
         set type [exec file $tmpfile]
         if {[regexp compressed $type]} {
-            set cmd "|zcat $tmpfile"
+            set cmd "|cat $tmpfile | zcat"
             set comp_msg " (gzip)"
         } else {
             set cmd "|cat $tmpfile"
