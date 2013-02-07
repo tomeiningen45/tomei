@@ -30,6 +30,15 @@ proc compare_tiexue_date {a b} {
     return [compare_file_date $filea $fileb]
 }
 
+proc remove_closure {data begin end} {
+    regsub -all $begin $data \ufffe data
+    regsub -all $end   $data \uffff data
+
+    regsub -all {\ufffe[^\uffff]*\uffff} $data "" data
+
+    return $data
+}
+
 proc update {} {
     global datadir env
 
@@ -129,8 +138,18 @@ proc update {} {
         regexp {20[0-9][0-9]/[0-9]+/[0-9]+ ..:..:..} $data pubtime
         puts ==$pubtime
 
+        set comments ""
+        if {[regexp {<!--精彩回复-->(.*)<div class="plbtu">} $data dummy comments] ||
+            [regexp {<!--精彩回复-->(.*)<div class="plbtu">} $data dummy comments]} {
+            puts "Comments = [string length $comments] words"
+
+            regsub -all {<a name="([0-9]+)"></a>} $comments #\\1 comments
+            set comments [remove_closure $comments {<script} </script>]
+        }
+
         if {[regexp {<div id="contentstopbar" class="bt">(.*)<div id="OpThreadInfo"} $data dummy data]} {
             # good
+            append data $comments
         } else {
             set title "@@$title"
             set data "-unparsable- $link"
