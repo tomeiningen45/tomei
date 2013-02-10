@@ -14,7 +14,7 @@ proc wget {url {encoding {utf-8}}} {
     set tmpfile /tmp/wget-rss-[pid]
     set comp_msg ""
     catch {
-        exec wget -q -O $tmpfile $url 2> /dev/null > /dev/null
+        exec wget --timeout=10 --tries=1 -q -O $tmpfile $url 2> /dev/null > /dev/null
         set type [exec file $tmpfile]
         if {[regexp compressed $type]} {
             set cmd "|cat $tmpfile | zcat"
