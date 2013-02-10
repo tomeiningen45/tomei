@@ -19,6 +19,40 @@ exec tclsh "$0" ${1+"$@"}
 source [file dirname [info script]]/../../lib/url.tcl
 package require uri
 
+#foreach i [array names env] {
+#    puts stderr "$i = $env($i)"
+#}
+
+set config(is_ipad) 0
+
+catch {
+    set agent $env(HTTP_USER_AGENT)
+    if {[regexp iPad $agent]} {
+	set config(is_ipad) 1
+	#puts stderr ipad
+    }
+}
+
+proc video_size {file} {
+    set width 640
+    set height 480
+
+    if {[catch {
+        set out [exec ffmpeg -i $file]
+    } err]} {
+	set out $err
+    }
+
+    #puts stderr $out
+
+    if {[regexp "Stream\[^\n\]*: Video:\[^\n\]*, (\[0-9\]+)x(\[0-9\]+)" $out dummy width height]} {
+	return [list $width $height]
+    } else {
+	return {640 480}
+    }
+}
+
+
 proc remove_youtube_suffix {name} {
     set p {[A-Za-z0-9_-]}
     set p $p$p$p$p$p$p$p$p$p
@@ -38,7 +72,7 @@ proc remove_youtube_suffix {name} {
 }
 
 proc main {} {
-    global env
+    global env config
 
     #puts stderr $env(QUERY_STRING) 
     set f ""
@@ -105,7 +139,14 @@ proc main {} {
         cd $pwd
 
         set count 0
-        set COLS 3
+
+	if {$config(is_ipad)} {
+	    set COLS 5
+	    set THUMBW 150
+	} else {
+	    set COLS 3
+	    set THUMBW 256
+	}
 	set colw [expr 100 / $COLS]
         puts "<h2>[string range $f $rootlen end]</h2>"
         puts "<li><a href=$me?v=$parent>PARENT</a>"
@@ -116,14 +157,44 @@ proc main {} {
                 set sub [file join $f $sub]
                 set q [string range $sub $rootlen end]
                 set ext [string tolower [file ext $sub]]
+
+		if {[file isdir $sub] && [regexp {EyeTV/.*.eyetvsched$} $sub]} {
+		    continue
+		}
+
+		# Special case: Martha Speaks - Martha and Skits_ Martha Plays a Part.eyetv/0000000014fdd2c1.iPhone.m4v
+		# -> make this appear as if in current directory
+		set name ""
+		if {[file isdir $sub] && [regexp {.eyetv$} $sub]} {
+		    set grandkids [glob -nocomplain $sub/*.m4v]
+		    if {[llength $grandkids] == 1} {
+			if {[regexp {/busy_} $grandkids]} {
+			    continue
+			}
+			set sub [lindex $grandkids 0]
+			append q /[file tail $sub]
+			set name $sub
+			regsub {[.]eyetv/.*} $name "" name
+			set name [file tail $name]
+			set ext .m4v
+			regsub { *[-]} $name : name
+		    } elseif {[llength $grandkids] == 0} {
+			# EyeTV has not exported iPhone/iPad m4v file for this recording
+			continue
+		    }
+		}
+
                 if {($i == 0 && [file isdir $sub]) ||
                     ($i == 1 && ($ext  == ".mp4" || $ext == ".m4v"))} {
-                    if {[file isdir $sub] && [regexp {EyeTV/} $sub]} {
-                        if {[glob -nocomplain $sub/*.m4v] == ""} {
-                            continue
-                        }
-                    }
-                    set name [file tail $q]
+                    #if {[file isdir $sub] && [regexp {EyeTV/} $sub]} {
+                    #    if {[glob -nocomplain $sub/*.m4v] == ""} {
+                    #        continue
+                    #    }
+                    #}
+
+		    if {$name == ""} {
+			set name [file tail $q]
+		    }
                     if {[file isfile $sub]} {
                         #puts stderr ===$name==[string length $name]
                         regsub {[.]mp4$} $name "" name
@@ -143,10 +214,13 @@ proc main {} {
                         } else {
                             set thumbq /defaultThumbnail.png
                         }
-                        set name "<img src=$thumbq width='256px'><br>$name"
+                        set img "<img src=$thumbq width='${THUMBW}px'>"
                     } else {
-                        set name "<img src=/videoFolder.png width='256px'><br>$name"
+                        set img "<img src=/videoFolder.png width='${THUMBW}px'>"
                     }
+
+		    set name "${img}<br><span style='WIDTH:${THUMBW}px'>$name"
+
                     puts "<td width=${colw}% valign=top><a href='$me?v=[_Url_Encode $q]'>$name</a><br>&nbsp;</td>"
                     incr count
                     if {($count % $COLS) == 0} {
@@ -157,6 +231,12 @@ proc main {} {
         }
         puts "</tr></table>"
     } else {
+	set list [video_size $f]
+	set w [lindex $list 0]
+	set h [lindex $list 1]
+
+	puts stderr "Size = $list"
+
         set file http://$host/videos
         foreach p [file split $orig] {
             set p [_Url_Encode $p]
@@ -164,8 +244,17 @@ proc main {} {
             append file /$p
         }
         #puts stderr $file
-        puts "<body bgcolor=000000>"
-        puts "<video src='$file' width='100%' height='100%' controls autoplay>"
+	if {$config(is_ipad)} {
+	    puts "Size = $w x $h<br>"
+	    if {[expr $w / $h.0] > 1.1} {
+		set h [expr int($h * 800.0 / $w)]
+		set w 800
+	    }
+	    puts "<video src='$file' width='${w}px' height='${h}px' controls autoplay><br>"
+	} else {
+	    puts "<body bgcolor=000000>"
+	    puts "<video src='$file' width='100%' height='100%' controls autoplay>"
+	}
     }
 }
 
