@@ -12,17 +12,17 @@ fi
     echo wait to scp; sleep 5;
     $SCP data/6park.xml $root/test2.xml &
 
-    #tclsh wforum.tcl
-    #echo wait to scp; sleep 5;
+    tclsh wforum.tcl
+    echo wait to scp; sleep 5;
     $SCP data/wforum.xml $root/wforum.xml &
 
     tclsh yahoohk.tcl
     echo wait to scp; sleep 5;
     $SCP data/hkyahoo.xml $root/test3.xml &
 
-    tclsh cnbeta.tcl
-    echo wait to scp; sleep 5;
-    $SCP data/cnbeta.xml $root/cnbeta.xml &
+#    tclsh cnbeta.tcl
+#    echo wait to scp; sleep 5;
+#    $SCP data/cnbeta.xml $root/cnbeta.xml &
 
     tclsh iza.tcl
     echo wait to scp; sleep 5;
