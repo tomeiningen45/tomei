@@ -33,7 +33,7 @@ foreach item $map {
 
     if {"$argv" == "" || [lsearch $argv $name] >= 0} {
         catch {
-            exec tclsh [file dirname [info script]]/yahoofn.tcl $name $title [list $url] 2>@ stdout >@ stdout
+            exec tclsh [file dirname [info script]]/yahoofn.tcl $name $title $url 2>@ stdout >@ stdout
         } 
     }
 }
