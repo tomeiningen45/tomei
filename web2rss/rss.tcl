@@ -2,7 +2,7 @@
 # Shared scripts [to be moved to separate file]
 #----------------------------------------------------------------------
 
-proc wget {url {encoding {utf-8}}} {
+proc wget {url {encoding utf-8}} {
     global env
 
     set started [now]
@@ -13,7 +13,7 @@ proc wget {url {encoding {utf-8}}} {
     set data ""
     set tmpfile /tmp/wget-rss-[pid]
     set comp_msg ""
-    catch {
+    if {[catch {
         exec wget --timeout=10 --tries=1 -q -O $tmpfile $url 2> /dev/null > /dev/null
         set type [exec file $tmpfile]
         if {[regexp compressed $type]} {
@@ -30,7 +30,10 @@ proc wget {url {encoding {utf-8}}} {
         }
         fconfigure $fd -encoding $encoding
         set data [read $fd]
+    } err]} {
+        puts $err
     }
+
     catch {
         close $fd
     }
@@ -228,3 +231,16 @@ if {[info command lreverse] == ""} {
 	return $result
     }
 }
+
+proc testing_get_file {data {encoding utf-8}} {
+    global env test_data
+
+    if {[info exists env(RSS_TEST_URL)]} {
+        if {![info exists test_data]} {
+            set test_data [wget $env(RSS_TEST_URL) $encoding]
+        }
+        set data $test_data
+    }
+    return $data
+}
+

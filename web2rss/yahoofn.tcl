@@ -69,8 +69,12 @@ proc update {} {
         }
         set lastdate $date
 
-        if {[regexp {<div class="yom-mod yom-art-content ">(.*)<!-- END article -->} $data dummy data]} {
+        set data [testing_get_file $data]
+
+        if {[regexp {<div class="yom-mod yom-art-content ">(.*)<!-- END article -->} $data dummy data] ||
+            [regexp {<div class="yom-mod yom-art-content ">(.*)<div class="yom-mod yom-pagination yom-pagination2" id="mediapagination">} $data dummy data]} {
             regsub {<div class="yom-mod yom-follow".*} $data "" data
+            regsub {<div class=.yfi-related-quotes.*} $data "" data
             regsub {<p class="first">By[^<]*</p>} $data "" data
            # puts $data
         } else {
