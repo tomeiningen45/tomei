@@ -38,6 +38,12 @@ proc update {} {
 
     set newlinks {}
 
+    set max 600
+    if {[info exists env(CNBETA_MAX)]} {
+        set max $env(CNBETA_MAX)
+    }
+
+    set n 0
     foreach {title link description pubdate} [extract_feed http://cnbeta.com/backend.php] {
         if {![regexp {([0-9]+)[.]htm} $link dummy localname]} {
             continue
@@ -48,18 +54,19 @@ proc update {} {
         set started [now]
 
         set fname [getcachefile $localname]
-        set data [getfile $link $localname gb2312]
+        set data [getfile $link $localname utf-8]
         puts "  [expr [now] - $started] secs"
 
         set comments "【<a href=$env(WEB2RSSHTTP)cnbeta_comments/$localname.html>网友评论</a>】"
 
-        if {[regexp {.*<div id="news_content">.*<div class="digbox">} $data]} {
-            regsub {.*<div id="news_content">} $data "" data
-            regsub {<div class="digbox">.*} $data "" data
+        if {[regexp {<div class="content">.*<div class="clear"></div>} $data]} {
+            regsub {.*<div class="content">} $data "" data
+            regsub {<div class="clear"></div>.*} $data "" data
             set data "<div lang=\"zh\" xml:lang=\"zh\">${comments}$data</div>"
             set description $data
         } else {
             puts "-- failed to parse contents"
+            set title "@@$title"
         }
 
         #puts $data
@@ -67,6 +74,11 @@ proc update {} {
         append out [makeitem $title $link $description $pubdate]
         catch {
             lappend newlinks [clock scan $pubdate] $link
+        }
+
+        incr n
+        if {$n >= $max} {
+            break
         }
     }
 
