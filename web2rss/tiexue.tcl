@@ -139,7 +139,7 @@ proc update {} {
         puts ==$pubtime
 
         set comments ""
-        if {[regexp {<!--精彩回复-->(.*)<div class="plbtu">} $data dummy comments] ||
+        if {[regexp {<!--回复-->(.*)<div class="anniu">} $data dummy comments] ||
             [regexp {<!--精彩回复-->(.*)<div class="plbtu">} $data dummy comments]} {
             puts "Comments = [string length $comments] words"
 
@@ -147,7 +147,7 @@ proc update {} {
             set comments [remove_closure $comments {<script} </script>]
         }
 
-        if {[regexp {<div id="contentstopbar" class="bt">(.*)<div id="OpThreadInfo"} $data dummy data]} {
+        if {[regexp {<div class="text" id="postContent">(.*)<div id="OpThreadInfo"} $data dummy data]} {
             # good
             append data $comments
         } else {
@@ -155,6 +155,9 @@ proc update {} {
             set data "-unparsable- $link"
         }
 
+        regsub -all {<p class='[^>]+'>} $data "<p>" data
+        regsub -all {border="0" alt="铁血网提醒您：点击查看大图" title="[^>]+"/>} $data "/>" data
+        regsub -all {onload="bbimg[(]this[)]"} $data "" data
         puts "$link = [clock format $date] $title"
 
         set data "<div lang=\"zh\" xml:lang=\"zh\">$pubtime $data</div>"
