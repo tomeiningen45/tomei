@@ -244,3 +244,19 @@ proc testing_get_file {data {encoding utf-8}} {
     return $data
 }
 
+proc foreach_json {data cmd} {
+    foreach {tag value} $data {
+        uplevel set tag [list $tag]
+        uplevel set value [list $value]
+        uplevel $cmd
+    }
+}
+
+proc split_json {data arrname} {
+    catch {
+        uplevel unset [$list $arrname]
+    }
+    foreach {tag value} $data {
+        uplevel set [set arrname]([list $tag]) [list $value]
+    }
+}
