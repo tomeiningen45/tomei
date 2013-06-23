@@ -8,6 +8,13 @@ fi
 ##while true; do
     echo start===========`date`
 
+if test -f sync_cnbeta.file; then    
+    tclsh cnbeta.tcl
+    echo wait to scp; sleep 5;
+    $SCP data/cnbeta.xml $root/cnbeta.xml &
+
+else
+
     tclsh 6park.tcl
     echo wait to scp; sleep 5;
     $SCP data/6park.xml $root/test2.xml &
@@ -47,6 +54,7 @@ fi
     tclsh tiexue.tcl 
     echo wait to scp; sleep 5;
     $SCP data/tiexue.xml $WEB2RSSROOT/rss/ &
+fi
 
     tclsh delete_old_files.tcl
 
