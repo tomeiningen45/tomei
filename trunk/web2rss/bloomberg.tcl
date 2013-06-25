@@ -14,7 +14,7 @@ source $instdir/rss.tcl
 #----------------------------------------------------------------------
 
 proc update {} {
-    global datadir argv
+    global datadir argv env
 
     set name [lindex $argv 0]
     set url [lindex $argv 1]
@@ -33,10 +33,18 @@ proc update {} {
     <sy:updateBase>2003-06-01T12:00+09:00</sy:updateBase>  
     }
 
-    puts "   >>>>>>>>>>> Syncing Bloomberg $name"
+    if {[info exists env(TEST_BLOOM_SINGLE)]} {
+        set name test
+        set l $env(TEST_BLOOM_SINGLE)
+        regsub {http://www.bloomberg.com/} $l / l
+        set data "<title>test</title> <a href=\"$l\" data-type=\"Story\">article</a>"
+    } else {
+        puts "   >>>>>>>>>>> Syncing Bloomberg $name"
 
-    set data [wget $url]
-    set title "Bloomberg - $url"
+        set data [wget $url]
+        set title "Bloomberg - $url"
+    }
+
     regexp {<title>([^<]+)</title} $data dummy title
     
     set date [clock format [clock seconds]]
@@ -77,7 +85,8 @@ proc update {} {
         }
         set lastdate $date
 
-        if {[regexp {<div id="story_display">(.*)<div id="related_news_bottom"} $data dummy data]} {
+        if {[regexp {<div id="story_display">(.*)<div id="related_news_bottom"} $data dummy data] ||
+            [regexp {<div id="story_display">(.*)<ul id="story_social_toolbar_bottom"} $data dummy data]} {
             regsub {<div class="story_inline[^>]*">.*} $data "" data
             regsub -all {<!\[CDATA\[} $data "" data
             regsub -all {//\]\]>} $data "" data
