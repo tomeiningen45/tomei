@@ -60,7 +60,9 @@ proc update {} {
         set comments "【<a href=$env(WEB2RSSHTTP)cnbeta_comments/$localname.html>网友评论</a>】"
 
         if {[regexp {<div class="content">.*<div class="clear"></div>} $data]} {
-            regsub {.*<div class="content">} $data "" data
+            if {![regsub {.*<div class="introduction">} $data "" data]} {
+                regsub {.*<div class="content">} $data "" data
+            }
             regsub {<div class="clear"></div>.*} $data "" data
             set data "<div lang=\"zh\" xml:lang=\"zh\">${comments}$data</div>"
             set description $data
