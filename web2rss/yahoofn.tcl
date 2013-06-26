@@ -35,12 +35,13 @@ proc update {} {
     }
 
     regsub -all & $title "\\\\&amp;" tit
+    set tit "YH / $tit"
+    puts "   >>>>>>>>>>> Syncing $name == $tit"
     set date [clock format [clock seconds]]
     regsub -all DATE        $out $date  out
     regsub -all DESC        $out $tit out
     regsub -all TITLE       $out $tit out
 
-    puts "   >>>>>>>>>>> Syncing $name == $title"
 
     set data [wget $url]
 
