@@ -49,13 +49,14 @@ proc update {} {
     
     set date [clock format [clock seconds]]
     regsub -all & $title "\\\\&amp;" tit
+    set tit "BB / $tit"
+
+    puts "Feed title = $tit"
 
     regsub -all LINK        $out $url  out
     regsub -all DATE        $out $date out
     regsub -all DESC        $out $tit  out
     regsub -all TITLE       $out $tit  out
-
-    puts "Feed title = $tit"
 
     set lastdate 0xffffffff
 
