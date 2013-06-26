@@ -260,3 +260,10 @@ proc split_json {data arrname} {
         uplevel set [set arrname]([list $tag]) [list $value]
     }
 }
+
+proc sub_block {data begin end rep} {
+    regsub -all $begin $data \uFFFE data
+    regsub -all $end   $data \uFFFF data
+    regsub -all {\uFFFE[^\uFFFF]*\uFFFF} $data $rep data
+    return $data
+}

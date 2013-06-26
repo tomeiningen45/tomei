@@ -14,7 +14,7 @@ source $instdir/rss.tcl
 #----------------------------------------------------------------------
 
 proc update {} {
-    global datadir argv
+    global datadir argv env
 
     set name [lindex $argv 0]
     set title [lindex $argv 1]
@@ -46,12 +46,18 @@ proc update {} {
 
     set lastdate 0xffffffff
 
-    foreach item [makelist $data <item>] {
+    set max 100000
+    catch {
+        set max $env(YAHOO_MAX)
+    }
+
+    foreach item [lrange [makelist $data <item>] 0 [expr $max - 1]] {
         if {[regexp {<link>([^<]+)</link>} $item dummy link] &&
             [regexp {<title>([^<]+)</title>} $item dummy title]} {
         } else {
             continue;
         }
+        #puts $item
 
         regsub -all {&amp;} $title \\& title
         regsub -all {&quot;} $title \" title
@@ -71,12 +77,17 @@ proc update {} {
 
         set data [testing_get_file $data]
 
-        if {[regexp {<div class="yom-mod yom-art-content ">(.*)<!-- END article -->} $data dummy data] ||
+        if {[regexp {<div class="yom-mod yom-art-content *"[^>]*>(.*)<!-- END article -->} $data dummy data] ||
+            [regexp {<div class="yom-mod yom-art-content *"[^>]*>(.*)<!-- google_ad_section_end -->} $data dummy data] ||
             [regexp {<div class="yom-mod yom-art-content ">(.*)<div class="yom-mod yom-pagination yom-pagination2" id="mediapagination">} $data dummy data]} {
             regsub {<div class="yom-mod yom-follow".*} $data "" data
             regsub {<div class=.yfi-related-quotes.*} $data "" data
             regsub {<p class="first">By[^<]*</p>} $data "" data
-           # puts $data
+            set data [sub_block $data <script> </script> ""]
+            set data [sub_block $data <noscript> </noscript> ""]
+            regsub {<!-- google_ad_section_end --></div></div>.*} $data <div data
+            regsub {<div id="footer-promo">.*} $data "" data
+            # puts $data
         } else {
             if {[regexp {(.*</item>)} $item "" item]} {
                 regsub <title> $item "<title>@@" item
