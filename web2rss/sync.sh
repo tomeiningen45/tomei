@@ -54,6 +54,10 @@ else
     tclsh tiexue.tcl 
     echo wait to scp; sleep 5;
     $SCP data/tiexue.xml $WEB2RSSROOT/rss/ &
+
+    tclsh register.tcl 
+    echo wait to scp; sleep 5;
+    $SCP data/register.xml $WEB2RSSROOT/rss/ &
 fi
 
     tclsh delete_old_files.tcl

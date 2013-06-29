@@ -111,6 +111,25 @@ proc now {} {
 proc extract_feed {url} {
     set data [wget $url]
     set list ""
+    if {[regexp {<feed xmlns="http://www.w3.org/2005/Atom"} $data]} {
+        foreach part [makelist $data <entry] {
+            if {![regexp {<link [^>]*href="([^>]+)"[^>]*/>} $part dummy link]} {
+                continue
+            }
+            if {![regexp {<title [^>]*>([^<]+)</title>} $part dummy title]} {
+                continue
+            }
+            if {![regexp {<summary [^>]*>([^<]+)</summary>} $part dummy description]} {
+                continue
+            }
+            if {![regexp {<updated>([^<]+)</updated>} $part dummy pubdate]} {
+                continue
+            }
+            lappend list $title $link $description $pubdate
+        }
+        return $list
+    }
+
     foreach part [makelist $data <item] {
         if {![regexp {<title>(.*)</title>} $part dummy title]} {
             continue
