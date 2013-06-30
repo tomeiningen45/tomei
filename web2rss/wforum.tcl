@@ -132,6 +132,8 @@ proc update {} {
         regsub -all {<img } $data {<img STYLE="max-width:80%" } data
         regsub -all {href='bbsviewer.php} $data {href='http://bbs.wforum.com/wmf/bbsviewer.php} data
 
+        regsub {.*<div class="f14 mb10" id="read_tpc" style="margin:0px 0px 10px;padding:0px;word-break:break-all;font-size:14px;">} $data "" data
+
         #puts $data
         #exit
         set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
