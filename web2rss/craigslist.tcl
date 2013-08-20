@@ -34,7 +34,7 @@ proc update {} {
 <rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:georss="http://www.georss.org/georss" version="2.0">
   <channel>
     <title>Gregslist</title>
-    <link>http://foofoo.com</link>
+    <link>http://sfbay.craigslist.org/link>
     <description>DESC</description>
     <dc:language>LANG</dc:language>
     <pubDate>DATE</pubDate>
