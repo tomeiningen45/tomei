@@ -136,7 +136,10 @@ proc update {} {
         regsub -all {<[^>]+>} $title " " title
         regsub -all { +} $title { } title
 
+        # remove "Stock XXXX"
+        regsub -nocase {(^| )stock [A-Z0-9]+ } $title " " title
         set title [lowcap $title]
+
         set location [lowcap $location]
         if {"$location" != ""} {
             set location " $location - "
@@ -145,8 +148,8 @@ proc update {} {
         regsub -all { +} $info { } info
         set info [string trim $info]
 
-
-        set title "\[$info\] -${location}$title"
+        set title "\[$info\] -${location} $title"
+        regsub -all { +} $title { } title
 
 
         set link http://sfbay.craigslist.org$link
@@ -178,10 +181,10 @@ proc update {} {
                     #puts $img
                     set img "<img src=$img>"
                     if {$first} {
-                        set data "$img<p><hr>$data<hr>"
+                        set data "$img<p><hr>\n$data\n<hr>\n"
                         set first 0
                     } else {
-                        set data "$data<p>$img"
+                        set data "$data<p>\n$img"
                     }
                 }
             }
