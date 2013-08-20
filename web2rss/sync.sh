@@ -58,6 +58,10 @@ else
     tclsh register.tcl 
     echo wait to scp; sleep 5;
     $SCP data/register.xml $WEB2RSSROOT/rss/ &
+
+    tclsh craigslist.tcl 
+    echo wait to scp; sleep 5;
+    $SCP data/craigslist.xml $WEB2RSSROOT/rss/ &
 fi
 
     tclsh delete_old_files.tcl
