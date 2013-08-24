@@ -52,150 +52,169 @@ proc update {} {
     set newlinks {}
 
     set max 50
-    if {[info exists env(CRAIG_MAX)]} {
+    catch {
         set max $env(CRAIG_MAX)
     }
 
-    set n 0
-    set data [wget {http://sfbay.craigslist.org/search/cta?query=911%20|930%20|964%20|%20carrera&srchType=T}]
-    set lastdate 0xffffffff
+    set max_cities 99999
+    set max_cities 1
+    catch {
+        set max_cities $env(CRAIG_MAX_CITIES)
+    }
 
-    foreach line [makelist $data {<span class="date">}] {
-        if {![regexp {<a href="([^>]+.html)">(.*)<span class="px">} $line dummy link title]} {
-            continue
-        }
+    set sites {
+        sfbay
+        losangeles
+    }
 
-        # Price
-        set price ""
-        set pat {<span class="price">([^<]+)</span>}
-        if {[regexp $pat $title dummy price]} {
-            regsub $pat $title " " title
-        }
+    set nc 0
+    foreach s $sites {
+        puts --[format %15s $s]--------------------------------------------------------------
+        set n 0
+        set data [wget "http://${s}.craigslist.org/search/cta?query=911%20|930%20|964%20|%20carrera&srchType=T"]
+        set lastdate 0xffffffff
 
-        # Location
-        set location ""
-        set pat {<span class="pnr"> <small>([^<]+)</small>}
-        if {[regexp $pat $title dummy location]} {
-            regsub \\( $location "" location
-            regsub \\) $location "" location
-            set location [string trim $location]
-            regsub $pat $title " " title
-        }
-
-        regsub -all { +} $title { } title
-
-        # Type
-        set type ""
-        set pats {
-            {Carrera S}
-            {Carrera 4}
-            {Carrera 4S}
-            {Turbo}
-            {Convertible}
-            {Cabriolet}
-            {Targa}
-        }
-
-        set prefix ""
-        foreach pat $pats {
-            if {[regexp -nocase $pat $title]} {
-                append type $prefix$pat
-                set prefix " "
+        foreach line [makelist $data {<span class="date">}] {
+            if {![regexp {<a href="([^>]+.html)">(.*)<span class="px">} $line dummy link title]} {
+                continue
             }
-        }
 
-        regsub {Convertible Cabriolet} $type "Convertible" type
-        regsub {Cabriolet} $type "Convertible" type
-        if {"$type" == ""} {
-            set type Carrera
-        }
+            # Price
+            set price ""
+            set pat {<span class="price">([^<]+)</span>}
+            if {[regexp $pat $title dummy price]} {
+                regsub $pat $title " " title
+            }
 
-        # Year
-        set year ""
-        set pats {
-            (20[0-9][0-9])
-            (19[0-9][0-9])
-            ([6-9][0-9])
-            ([0-1][0-9])
-        }
-        foreach pat $pats {
-            set pat "(^| |'|`|>)${pat}(\$|\[^0-9\])"
-            if {[regexp $pat $title dummy dummy year]} {
-                if {[string length $year] == 2} {
-                    if {[regexp {^[01]} $year]} {
-                        set year 20$year
-                    } else {
-                        set year 19$year
+            # Location
+            set location ""
+            set pat {<span class="pnr"> <small>([^<]+)</small>}
+            if {[regexp $pat $title dummy location]} {
+                regsub \\( $location "" location
+                regsub \\) $location "" location
+                set location [string trim $location]
+                regsub $pat $title " " title
+            }
+
+            regsub -all { +} $title { } title
+
+            # Type
+            set type ""
+            set pats {
+                {Carrera S}
+                {Carrera 4}
+                {Carrera 4S}
+                {Turbo}
+                {Convertible}
+                {Cabriolet}
+                {Targa}
+            }
+
+            set prefix ""
+            foreach pat $pats {
+                if {[regexp -nocase $pat $title]} {
+                    append type $prefix$pat
+                    set prefix " "
+                }
+            }
+
+            regsub {Convertible Cabriolet} $type "Convertible" type
+            regsub {Cabriolet} $type "Convertible" type
+            if {"$type" == ""} {
+                set type Carrera
+            }
+
+            # Year
+            set year ""
+            set pats {
+                (20[0-9][0-9])
+                (19[0-9][0-9])
+                ([6-9][0-9])
+                ([0-1][0-9])
+            }
+            foreach pat $pats {
+                set pat "(^| |'|`|>)${pat}(\$|\[^0-9\])"
+                if {[regexp $pat $title dummy dummy year]} {
+                    if {[string length $year] == 2} {
+                        if {[regexp {^[01]} $year]} {
+                            set year 20$year
+                        } else {
+                            set year 19$year
+                        }
+                    }
+                    break
+                }
+            }
+
+            # Remove other junk
+            regsub -all {<[^>]+>} $title " " title
+            regsub -all { +} $title { } title
+
+            # remove "Stock XXXX"
+            regsub -nocase {(^| )stock [A-Z0-9]+ } $title " " title
+            set title [lowcap $title]
+
+            set location [lowcap $location]
+            if {"$location" != ""} {
+                set location " $location - "
+            }
+            set info "$year $type $price"
+            regsub -all { +} $info { } info
+            set info [string trim $info]
+
+            set title "\[$info\] -${location} $title"
+            regsub -all { +} $title { } title
+
+
+            set link http://sfbay.craigslist.org$link
+
+            puts "$link=$title"
+
+            set fname [getcachefile $link]
+
+            set data [getfile $link [file tail $link]]
+            set date [file mtime $fname]
+            if {$date >= $lastdate} {
+                set date [expr $lastdate - 1]
+            }
+            set lastdate $date
+
+
+            regsub {<section class="cltags".*} $data "" data
+            regsub {.*<section class="userbody">} $data "" data
+
+            #puts ==$data==
+
+            set pat {<figure class="iw">.*</figure>}
+            if {[regexp $pat $data images]} {
+                regsub $pat $data "" data
+
+                set first 1
+                foreach item [makelist $images {<a href=}] {
+                    if {[regexp {^"([^<]+[.]jpg)"} $item dummy img]} {
+                        #puts $img
+                        set img "<img src=$img>"
+                        if {$first} {
+                            set data "$img<p><hr>\n$data\n<hr>\n"
+                            set first 0
+                        } else {
+                            set data "$data<p>\n$img"
+                        }
                     }
                 }
+            }
+
+            set data [sub_block $data {<script[^>]*>} </script> ""]
+
+            append out [makeitem $title $link $data $date]
+
+            incr n
+            if {$n >= $max} {
                 break
             }
         }
-
-        # Remove other junk
-        regsub -all {<[^>]+>} $title " " title
-        regsub -all { +} $title { } title
-
-        # remove "Stock XXXX"
-        regsub -nocase {(^| )stock [A-Z0-9]+ } $title " " title
-        set title [lowcap $title]
-
-        set location [lowcap $location]
-        if {"$location" != ""} {
-            set location " $location - "
-        }
-        set info "$year $type $price"
-        regsub -all { +} $info { } info
-        set info [string trim $info]
-
-        set title "\[$info\] -${location} $title"
-        regsub -all { +} $title { } title
-
-
-        set link http://sfbay.craigslist.org$link
-
-        puts "$link=$title"
-
-        set fname [getcachefile $link]
-
-        set data [getfile $link [file tail $link]]
-        set date [file mtime $fname]
-        if {$date >= $lastdate} {
-            set date [expr $lastdate - 1]
-        }
-        set lastdate $date
-
-
-        regsub {<section class="cltags".*} $data "" data
-        regsub {.*<section class="userbody">} $data "" data
-
-        #puts ==$data==
-
-        set pat {<figure class="iw">.*</figure>}
-        if {[regexp $pat $data images]} {
-            regsub $pat $data "" data
-
-            set first 1
-            foreach item [makelist $images {<a href=}] {
-                if {[regexp {^"([^<]+[.]jpg)"} $item dummy img]} {
-                    #puts $img
-                    set img "<img src=$img>"
-                    if {$first} {
-                        set data "$img<p><hr>\n$data\n<hr>\n"
-                        set first 0
-                    } else {
-                        set data "$data<p>\n$img"
-                    }
-                }
-            }
-        }
-
-        set data [sub_block $data {<script[^>]*>} </script> ""]
-
-        append out [makeitem $title $link $data $date]
-
-        incr n
-        if {$n >= $max} {
+        incr nc
+        if {$nc >= $max_cities} {
             break
         }
     }
