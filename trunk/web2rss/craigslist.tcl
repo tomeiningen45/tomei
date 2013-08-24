@@ -26,6 +26,96 @@ proc lowcap {line} {
     return $val
 }
 
+proc convert_title {title} {
+    # Price
+    set price ""
+    set pat {<span class="price">([^<]+)</span>}
+    if {[regexp $pat $title dummy price]} {
+        regsub $pat $title " " title
+    }
+
+    # Location
+    set location ""
+    set pat {<span class="pnr"> <small>([^<]+)</small>}
+    if {[regexp $pat $title dummy location]} {
+        regsub \\( $location "" location
+        regsub \\) $location "" location
+        set location [string trim $location]
+        regsub $pat $title " " title
+    }
+
+    regsub -all { +} $title { } title
+
+    # Type
+    set type ""
+    set pats {
+        {Carrera S}
+        {Carrera 4}
+        {Carrera 4S}
+        {Turbo}
+        {Convertible}
+        {Cabriolet}
+                {Targa}
+    }
+
+    set prefix ""
+    foreach pat $pats {
+        if {[regexp -nocase $pat $title]} {
+            append type $prefix$pat
+            set prefix " "
+        }
+    }
+
+    regsub {Convertible Cabriolet} $type "Convertible" type
+    regsub {Cabriolet} $type "Convertible" type
+    if {"$type" == ""} {
+        set type Carrera
+    }
+
+    # Year
+    set year ""
+    set pats {
+        (20[0-9][0-9])
+        (19[0-9][0-9])
+        ([6-9][0-9])
+        ([0-1][0-9])
+    }
+    foreach pat $pats {
+        set pat "(^| |'|`|>)${pat}(\$|\[^0-9\])"
+        if {[regexp $pat $title dummy dummy year]} {
+            if {[string length $year] == 2} {
+                if {[regexp {^[01]} $year]} {
+                    set year 20$year
+                } else {
+                    set year 19$year
+                }
+            }
+            break
+        }
+    }
+
+    # Remove other junk
+    regsub -all {<[^>]+>} $title " " title
+    regsub -all { +} $title { } title
+
+    # remove "Stock XXXX"
+    regsub -nocase {(^| )stock [A-Z0-9]+ } $title " " title
+    set title [lowcap $title]
+
+    set location [lowcap $location]
+    if {"$location" != ""} {
+        set location " $location - "
+    }
+    set info "$year $type $price"
+    regsub -all { +} $info { } info
+    set info [string trim $info]
+
+    set title "\[$info\] -${location} $title"
+    regsub -all { +} $title { } title
+
+    return $title
+}
+
 proc update {} {
     global datadir env
 
@@ -79,95 +169,8 @@ proc update {} {
                 continue
             }
 
-            # Price
-            set price ""
-            set pat {<span class="price">([^<]+)</span>}
-            if {[regexp $pat $title dummy price]} {
-                regsub $pat $title " " title
-            }
-
-            # Location
-            set location ""
-            set pat {<span class="pnr"> <small>([^<]+)</small>}
-            if {[regexp $pat $title dummy location]} {
-                regsub \\( $location "" location
-                regsub \\) $location "" location
-                set location [string trim $location]
-                regsub $pat $title " " title
-            }
-
-            regsub -all { +} $title { } title
-
-            # Type
-            set type ""
-            set pats {
-                {Carrera S}
-                {Carrera 4}
-                {Carrera 4S}
-                {Turbo}
-                {Convertible}
-                {Cabriolet}
-                {Targa}
-            }
-
-            set prefix ""
-            foreach pat $pats {
-                if {[regexp -nocase $pat $title]} {
-                    append type $prefix$pat
-                    set prefix " "
-                }
-            }
-
-            regsub {Convertible Cabriolet} $type "Convertible" type
-            regsub {Cabriolet} $type "Convertible" type
-            if {"$type" == ""} {
-                set type Carrera
-            }
-
-            # Year
-            set year ""
-            set pats {
-                (20[0-9][0-9])
-                (19[0-9][0-9])
-                ([6-9][0-9])
-                ([0-1][0-9])
-            }
-            foreach pat $pats {
-                set pat "(^| |'|`|>)${pat}(\$|\[^0-9\])"
-                if {[regexp $pat $title dummy dummy year]} {
-                    if {[string length $year] == 2} {
-                        if {[regexp {^[01]} $year]} {
-                            set year 20$year
-                        } else {
-                            set year 19$year
-                        }
-                    }
-                    break
-                }
-            }
-
-            # Remove other junk
-            regsub -all {<[^>]+>} $title " " title
-            regsub -all { +} $title { } title
-
-            # remove "Stock XXXX"
-            regsub -nocase {(^| )stock [A-Z0-9]+ } $title " " title
-            set title [lowcap $title]
-
-            set location [lowcap $location]
-            if {"$location" != ""} {
-                set location " $location - "
-            }
-            set info "$year $type $price"
-            regsub -all { +} $info { } info
-            set info [string trim $info]
-
-            set title "\[$info\] -${location} $title"
-            regsub -all { +} $title { } title
-
-
             set link http://sfbay.craigslist.org$link
-
+            set title [convert_title $title]
             puts "$link=$title"
 
             set fname [getcachefile $link]
