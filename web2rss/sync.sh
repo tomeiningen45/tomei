@@ -62,6 +62,13 @@ else
     tclsh craigslist.tcl 
     echo wait to scp; sleep 5;
     $SCP data/craigslist.xml $WEB2RSSROOT/rss/ &
+
+    for site in pelican; do 
+        tclsh multicar.tcl $site
+        echo wait to scp; sleep 5;
+        $SCP data/$site.xml $WEB2RSSROOT/rss/ &
+    done
+
 fi
 
     tclsh delete_old_files.tcl
