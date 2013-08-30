@@ -13,19 +13,6 @@ source $instdir/rss.tcl
 # Site specific scripts
 #----------------------------------------------------------------------
 
-proc lowcap {line} {
-    set prefix ""
-    set val ""
-    foreach word [split $line " "] {
-        if {[regexp {^([A-Z])([A-Za-z].*)$} $word dummy first rest]} {
-            set word ${first}[string tolower $rest]
-        }
-        append val ${prefix}${word}
-        set prefix " "
-    }
-    return $val
-}
-
 proc convert_title {title city {year_checker {}}} {
     # Price
     set price ""

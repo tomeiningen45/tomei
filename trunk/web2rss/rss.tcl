@@ -280,9 +280,25 @@ proc split_json {data arrname} {
     }
 }
 
+# subsritute block(s) between two regexps
 proc sub_block {data begin end rep} {
     regsub -all $begin $data \uFFFE data
     regsub -all $end   $data \uFFFF data
     regsub -all {\uFFFE[^\uFFFF]*\uFFFF} $data $rep data
     return $data
 }
+
+proc lowcap {line} {
+    set prefix ""
+    set val ""
+    foreach word [split $line " "] {
+        if {[regexp {^([A-Z])([A-Za-z].*)$} $word dummy first rest]} {
+            set word ${first}[string tolower $rest]
+        }
+        append val ${prefix}${word}
+        set prefix " "
+    }
+    return $val
+}
+
+
