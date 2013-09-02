@@ -12,6 +12,7 @@ source $instdir/rss.tcl
 #----------------------------------------------------------------------
 # Site specific scripts
 #----------------------------------------------------------------------
+package require ncgi
 
 proc update {} {
     global datadir env
@@ -66,8 +67,11 @@ proc update {} {
         set gotit 0
 
         set comments ""
-        if {[regexp {[-]([0-9]+)(([-][-][0-9a-z]+)|)[.]html} $link dummy id]} {
-            set comments "【<a href=$env(WEB2RSSHTTP)hkyahoo_comments/$id.html>网友评论</a>】"
+        if {[regexp {<link rel="canonical" href="([^>]+)"/>} $data dummy canlink]} {
+            puts $canlink
+            set cmt http://freednsnow.no-ip.biz:9015/cgi-bin/hky.cgi?a=$canlink
+            puts $cmt
+            set comments "【<a href=$cmt>网友评论</a>】"
         }
         
         if {[regsub {.*<p class="first">} $data "" data] && 
