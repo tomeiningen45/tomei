@@ -41,10 +41,18 @@ if {[catch {
 
             regsub {<style[^>]*>.*</style>} $data "" data
             regsub -all {<a href=.http://t} $data <xx data
+            regsub -all {<a href=.http://blog.e2bo} $data <xx data
+            regsub -all {<font color=000000><u>..</u><font></a>} $data " " data
+            regsub -all {<font color=000000><u>..</u><font></a>} $data " " data
+            regsub -all {.<a onClick="[^>]+">..</a>.<B>.....</B>} $data " " data
+            regsub -all {<B>..</B>:} $data "" data
+
             regsub -all {table width="800"} $data {table width="100%"} data
             regsub -all {table width=800} $data {table width="100%"} data
             regsub -all {<td([^>]*)>} $data {<td\1><font size=+1>} data
             regsub -all {</td>} $data {</font></td>} data
+
+
             puts $data
 
             

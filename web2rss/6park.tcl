@@ -69,7 +69,7 @@ proc update {} {
         regsub {.*</script>} $data "" data 
 
         set id [file tail [file root $link]]
-        set comment " 【<a href=http://www.6park.com/news/newscom/${id}.shtml>网友评论</a>】 "
+        set comment " 【<a href=http://freednsnow.no-ip.biz:9015/cgi-bin/6pcmt.cgi?a=http%3A%2F%2Fwww.6park.com%2Fnews%2Fnewscom%2F${id}.shtml>网友评论</a>】 "
         set data "$comment $data"
 
         if {"$from" != ""} {
