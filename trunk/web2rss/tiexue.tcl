@@ -12,6 +12,8 @@ source $instdir/rss.tcl
 #----------------------------------------------------------------------
 # Site specific scripts
 #----------------------------------------------------------------------
+package require ncgi
+ 
 proc compare_tiexue_id {a b} {
     if {[regexp {_([0-9]+)_} $a dummy ia] &&
         [regexp {_([0-9]+)_} $b dummy ib]} {
@@ -159,6 +161,17 @@ proc update {} {
         regsub -all {border="0" alt="铁血网提醒您：点击查看大图" title="[^>]+"/>} $data "/>" data
         regsub -all {onload="bbimg[(]this[)]"} $data "" data
         puts "$link = [clock format $date] $title"
+
+        # fix images
+
+        set pat "src=\"(http://\[^/\"\]+tiexue.net\[^\"\]+)\""
+        while {[regexp $pat $data dummy img]} {
+            puts $img
+            set rep src=\"http://freednsnow.no-ip.biz:9015/cgi-bin/im.cgi?
+            append rep "a=[ncgi::encode $img]\\&"
+            append rep "b=[ncgi::encode $link]\""
+            regsub $pat $data $rep data
+        }
 
         set data "<div lang=\"zh\" xml:lang=\"zh\">$pubtime $data</div>"
         append out [makeitem $title $link $data $date]
