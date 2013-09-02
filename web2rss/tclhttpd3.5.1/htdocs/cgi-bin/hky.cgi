@@ -51,6 +51,13 @@ if {[catch {
             set url $value
         }
     }
+    # mac --
+    catch {
+	set x $env(QUERY_STRING)
+	regsub ^a= $x "" url
+	regsub -all %2F $url / url
+	regsub -all %3A $url : url
+    }
 
     puts "<a href=$url>Orig</a><hr>"
     foreach wget {/usr/bin/wget /opt/local/bin/wget} {
@@ -67,7 +74,7 @@ if {[catch {
             }
 
             set url1 http://hk.news.yahoo.com/_xhr/ugccomments/?method=get_list&context_id=${context}&ugccmtnav=v1%2Fcomments%2Fcontext%2F${context}%2Fcomments%3Fcount%3D100%26sortBy%3DhighestRated%26isNext%3Dtrue%26offset%3D0%26pageNumber%3D1&mode=list
-            puts stderr $url1
+            #puts stderr $url1
 
             set fd [open "|$wget -O - $url1"]
             fconfigure $fd -encoding utf-8
