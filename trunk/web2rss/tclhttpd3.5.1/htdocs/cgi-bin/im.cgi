@@ -38,20 +38,24 @@ if {[catch {
         }
     }
 
-    puts stderr "$ref => $url"
-
     foreach wget {/usr/bin/wget /opt/local/bin/wget} {
         if {[file exists $wget]} {
             set fd [open "|$wget -O - --referer=$ref $url"]
             fconfigure $fd -translation binary -encoding binary
             fconfigure stdout -translation binary -encoding binary
 
+            set n 0
             while {![eof $fd]} {
                 set data [read $fd 4096]
                 puts -nonewline stdout $data
+                incr n [string length $data]
             }
-            close $fd
+            catch {close $fd}
             flush stdout
+
+            puts stderr "[clock format [clock seconds] -format %y%m%d-%H%M%S] [format %8d $n]: $ref => $url"
+            flush stderr
+            
             exit
         }
     }

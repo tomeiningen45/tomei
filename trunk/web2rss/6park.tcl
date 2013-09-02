@@ -12,7 +12,8 @@ source $instdir/rss.tcl
 #----------------------------------------------------------------------
 # Site specific scripts
 #----------------------------------------------------------------------
-
+package require ncgi
+ 
 proc update {} {
     global datadir
 
@@ -74,6 +75,17 @@ proc update {} {
         if {"$from" != ""} {
             set data "【$from】 $data"
         }
+
+        # fix images
+        set pat {src=(http://www.popo8.com/[^> ]+)}
+        while {[regexp $pat $data dummy img]} {
+            puts $img
+            set rep src=http://freednsnow.no-ip.biz:9015/cgi-bin/im.cgi?
+            append rep "a=[ncgi::encode $img]\\&"
+            append rep "b=[ncgi::encode $link]"
+            regsub $pat $data $rep data
+        }
+
         set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
         append out [makeitem $title $link $data $date]
 
