@@ -1,6 +1,6 @@
 while true; do
     echo SVN Update ===========`date`
-    svn update
+    (cd ..; svn update)
     echo SVN Done ===========`date`
 
     cp sync.sh run_sync.sh
