@@ -77,6 +77,8 @@ proc update {} {
         }
 
         # fix images
+        regsub -all "src=\['\"\](\[^> '\"\]+)" $data src=\\1 data
+
         set pat {src=(http://www.popo8.com/[^> ]+)}
         while {[regexp $pat $data dummy img]} {
             puts $img
