@@ -7,6 +7,8 @@ source [file dirname [info script]]/rss.tcl
 # Standard site-specific routines
 #----------------------------------------------------------------------
 
+
+#--[pelican]-----------------------------------------------------------
 proc pelican_index_proc {url} {
     return [filter_out \
                 [standard_index_proc $url {
@@ -37,9 +39,22 @@ proc pelican_body_proc {data} {
     return $results
 }
 
+#--[roadsport]-----------------------------------------------------------
+proc roadsport_index_proc {url} {
+    return [process_indices \
+                [standard_index_proc $url {
+                    "<a class=\"wideLargeVehicleDescription\" href=\"(\[^\"]+)\"\[^>\]*>(\[^<\]+)</a>" 0 1
+                }] {
+                    set url http://roadsport.ebizautos.com/$url
+                }]
+}
+
 #----------------------------------------------------------------------
 # Standard epilog (new gen)
 #----------------------------------------------------------------------
+
+
+#     {roadsport  http://roadsport.ebizautos.com/website.aspx?_used=true&_page=&_makef=porsche}
 
 do_multi_sites {
     {pelican    http://forums.pelicanparts.com/porsche-cars-sale/}

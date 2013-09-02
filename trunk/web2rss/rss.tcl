@@ -369,6 +369,10 @@ proc do_one_site {siteinfo} {
         set title  [lindex $item 1]
         set fname  [lindex $item 2]
 
+        if {[info exists env(DEBUG_TIT_ONLY)]} {
+            puts $url=$title
+            continue
+        }
         if {"$fname" == ""} {
             set fname [getcachefile $url]
         }
@@ -443,6 +447,19 @@ proc filter_out {list script} {
     return $results
 }
 
+proc process_indices {list script} {
+    set results {}
+
+    foreach item $list {
+        set url   [lindex $item 0]
+        set title [lindex $item 1]
+        catch {eval $script} code
+        lappend results [list $url $title]
+    }
+
+    return $results
+}
+
 proc extract_and_junk_one_block {dataName begin end} {
     upvar $dataName data
 
@@ -460,3 +477,4 @@ proc extract_and_junk_one_block {dataName begin end} {
 
     return $result
 }
+
