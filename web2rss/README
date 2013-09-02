@@ -1,0 +1,5 @@
+tclsh tclhttpd3.5.1/bin/httpd.tcl
+
+
+For test: 
+http://localhost:8016/cgi-bin/test.cgi
