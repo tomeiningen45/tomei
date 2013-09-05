@@ -335,6 +335,8 @@ proc do_one_site {siteinfo} {
     set lang en
     set date [clock format [clock seconds]]
 
+    regsub -all & $mainurl "&amp;" mainurl_s
+
     set out "<?xml version=\"1.0\" encoding=\"utf-8\"?> \n\
         <rss xmlns:dc=\"http://purl.org/dc/elements/1.1/\" \n\
              xmlns:sy=\"http://purl.org/rss/1.0/modules/syndication/\" \n\
@@ -343,7 +345,7 @@ proc do_one_site {siteinfo} {
              xmlns:georss=\"http://www.georss.org/georss\" version=\"2.0\"> \n\
        <channel> \n\
          <title>$sitename</title> \n\
-         <link>$mainurl</link> \n\
+         <link>$mainurl_s</link> \n\
          <description>$sitename</description> \n\
          <dc:language>$lang</dc:language> \n\
          <pubDate>$date</pubDate> \n\
@@ -368,6 +370,7 @@ proc do_one_site {siteinfo} {
         set url    [lindex $item 0]
         set title  [lindex $item 1]
         set fname  [lindex $item 2]
+        set body   [lindex $item 3]
 
         if {[info exists env(DEBUG_TIT_ONLY)]} {
             puts $url=$title
@@ -377,14 +380,18 @@ proc do_one_site {siteinfo} {
             set fname [getcachefile $url]
         }
 
-        set data [getfile $url $fname]
-        set date [file mtime $fname]
-        if {$date >= $lastdate} {
-            set date [expr $lastdate - 1]
+        if {"$body" != ""} {
+            set date [clock seconds]
+            set data $body
+        } else {
+            set data [getfile $url $fname]
+            set date [file mtime $fname]
+            if {$date >= $lastdate} {
+                set date [expr $lastdate - 1]
+            }
+            set lastdate $date
+            set data [$body_proc $data]
         }
-        set lastdate $date
-
-        set data [$body_proc $data]
 
         puts $url=$title=$date
         append out [makeitem $title $url $data $date]
