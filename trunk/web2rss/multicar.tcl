@@ -41,12 +41,45 @@ proc pelican_body_proc {data} {
 
 #--[roadsport]-----------------------------------------------------------
 proc roadsport_index_proc {url} {
-    return [process_indices \
-                [standard_index_proc $url {
-                    "<a class=\"wideLargeVehicleDescription\" href=\"(\[^\"]+)\"\[^>\]*>(\[^<\]+)</a>" 0 1
-                }] {
-                    set url http://roadsport.ebizautos.com/$url
-                }]
+    set list ""
+    foreach part [makelist [wget $url] {<a href=.webdetail.aspx[?]iid=}] {
+
+        if {[regexp {^([0-9]+)} $part dummy link] &&
+            [regexp {<img src="([^>]+.jpg)" +alt="([^>]+)" title=} $part dummy img title]} {
+            set miles ""
+            regexp {([0-9,]+) Miles} $part dummy miles
+
+            set link http://roadsport.ebizautos.com/webdetail.aspx?iid=$link
+            set title "$title - $miles"
+            set fname ""
+            set body "$title<p><img src=$img><p>"
+
+            lappend list [list $link $title $fname $body]
+        }
+    }
+    return $list
+}
+
+#--[mohr]-----------------------------------------------------------
+proc mohr_index_proc {url} {
+    set list ""
+    foreach part [makelist [wget $url] {<td width="160" valign="top">}] {
+        if {[regexp {<img src="([^>]+.jpg)" class="img_border"} $part dummy img] &&
+            [regexp {<strong>([^<]+)} $part dummy title] &&
+            [regexp "<a href=\"(\[^>\"]+)\"" $part dummy link]} {
+            set price "??"
+            regexp {Floor Price<br />[^<]*<span class="yellow_txt">([^<]+)</span>} $part dummy price
+            set price [string trim $price]
+            
+            set link http://www.mohrimports.com/$link
+            set fname ""
+            set body "$title<p>$price<p><img src=$img><p>"
+            set title "$title - $price"
+
+            lappend list [list $link $title $fname $body]
+        }
+    }
+    return $list
 }
 
 #----------------------------------------------------------------------
@@ -54,8 +87,10 @@ proc roadsport_index_proc {url} {
 #----------------------------------------------------------------------
 
 
-#     {roadsport  http://roadsport.ebizautos.com/website.aspx?_used=true&_page=&_makef=porsche}
+#     
 
 do_multi_sites {
+    {mohr       http://www.mohrimports.com/view_inventory.php?make_id=16}
     {pelican    http://forums.pelicanparts.com/porsche-cars-sale/}
+    {roadsport  http://roadsport.ebizautos.com/website.aspx?_used=true&_page=&_makef=porsche}
 } $argv
