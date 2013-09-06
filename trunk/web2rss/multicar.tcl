@@ -129,6 +129,11 @@ proc ebay_index_proc {url} {
                     set year "$year \[$location\]"
                 }
 
+                regsub -all {</a>} $part "" part
+                regsub -all {<div[^>]*>} $part "" part
+                regsub -all {</div[^>]*>} $part "<br>\n" part
+                regsub -all {<img src="http://q.ebaystatic.com/aw/pics/s.gif"[^>]*><wbr/>} $part "" part
+                regsub -all "<br>\n&nbsp;<br>\n<br>" $part "" part
 
                 set fname ""
                 set body "$part"
