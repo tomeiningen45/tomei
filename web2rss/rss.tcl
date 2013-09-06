@@ -371,6 +371,7 @@ proc do_one_site {siteinfo} {
         set title  [lindex $item 1]
         set fname  [lindex $item 2]
         set body   [lindex $item 3]
+        set date   [lindex $item 4]
 
         if {[info exists env(DEBUG_TIT_ONLY)]} {
             puts $url=$title
@@ -381,7 +382,9 @@ proc do_one_site {siteinfo} {
         }
 
         if {"$body" != ""} {
-            set date [clock seconds]
+            if {"$date" == ""} {
+                set date [clock seconds]
+            }
             set data $body
         } else {
             set data [getfile $url $fname]
@@ -485,3 +488,6 @@ proc extract_and_junk_one_block {dataName begin end} {
     return $result
 }
 
+proc quoted_exp {} {
+    return "\[^\"\]"
+}
