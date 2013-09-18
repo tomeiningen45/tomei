@@ -33,6 +33,8 @@ if {[catch {
     foreach "name value" [ncgi::nvlist] {
         if {"$name" == "a"} {
             set url $value
+            regsub "\"\$" $url "" url
+            regsub "\'\$" $url "" url
         } elseif {"$name" == "b"} {
             set ref $value
         }
