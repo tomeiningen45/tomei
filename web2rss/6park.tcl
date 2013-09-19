@@ -42,9 +42,19 @@ proc update {} {
     regsub {.*<td class=td1>} $data "" data
     regsub {</table>.*} $data "" data
 
+    set max 50
+    catch {
+        set max $env(MAXRSS)
+    }
+    set n 0
     set lastdate 0xffffffff
 
     foreach line [makelist $data <li>] {
+        incr n
+        if {$n > $max} {
+            break
+        }
+
         if {[regexp {href="([^>]+)"} $line dummy link] &&
             [regexp {>([^<]+)<} $line dummy title]} {
             puts $title==$link
@@ -66,6 +76,7 @@ proc update {} {
         regsub {<!--bodyend-->.*} $data "" data
         regsub -all {<font color=E6E6DD> www.6park.com</font>} $data "\n\n" data
         regsub -all {onclick=document.location=} $data "xx=" data
+        regsub -all {onload[ ]*=} $data "xx=" data
         regsub {.*</script>} $data "" data 
 
         set id [file tail [file root $link]]
@@ -77,7 +88,7 @@ proc update {} {
         }
 
         # fix images
-        regsub -all "src=\['\"\](\[^> '\"\]+)" $data src=\\1 data
+        regsub -all "src=\['\"\](\[^> '\"\]+)\['\"\]" $data src=\\1 data
 
         set pat {src=(http://www.popo8.com/[^> ]+)}
         while {[regexp $pat $data dummy img]} {

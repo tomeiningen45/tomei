@@ -396,7 +396,7 @@ proc do_one_site {siteinfo} {
             set data [$body_proc $data]
         }
 
-        puts $url=$title=$date
+        puts "[clock format $date] $url=$title"
         append out [makeitem $title $url $data $date]
     }
 
