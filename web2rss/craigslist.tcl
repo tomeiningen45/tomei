@@ -32,6 +32,13 @@ proc convert_title {title city {year_checker {}}} {
     }
 
     regsub -all { +} $title { } title
+    # Remove other junk
+    regsub -all {<[^>]+>} $title " " title
+    regsub -all { +} $title { } title
+
+    # remove "Stock XXXX"
+    regsub -nocase {(^| )stock [A-Z0-9]+ } $title " " title
+    set title [lowcap $title]
 
     # Type
     set type ""
@@ -41,10 +48,17 @@ proc convert_title {title city {year_checker {}}} {
         {Carrera 4S}
         {Carrera S}
         {Carrera 4}
+        {Turbo Look}
+        {Turbo S}
         {Turbo}
         {Convertible}
         {Cabriolet}
+        {Cabrio}
         {Targa}
+        {Coupe}
+        {Carrera}
+        {C2S}
+        {C4S}
     }
 
     set prefix ""
@@ -58,10 +72,17 @@ proc convert_title {title city {year_checker {}}} {
         }
     }
 
+    regsub {Convertible Cabrio} $type "Convertible" type
     regsub {Convertible Cabriolet} $type "Convertible" type
     regsub {Cabriolet} $type "Convertible" type
+    regsub {Cabrio} $type "Convertible" type
+    regsub {Convertible Carrera} $type "Convertible" type
+    regsub {Targa Coupe} $type "Targa" type
+    regsub {Targa Carrera} $type "Targa" type
+    regsub {Coupe Carrera} $type "Coupe" type
+
     if {"$type" == ""} {
-        set type Carrera
+        set type ""
     }
 
     # Year
@@ -91,14 +112,6 @@ proc convert_title {title city {year_checker {}}} {
             return ""
         }
     }
-
-    # Remove other junk
-    regsub -all {<[^>]+>} $title " " title
-    regsub -all { +} $title { } title
-
-    # remove "Stock XXXX"
-    regsub -nocase {(^| )stock [A-Z0-9]+ } $title " " title
-    set title [lowcap $title]
 
     set location [lowcap $location]
     if {"$location" != ""} {
@@ -194,18 +207,40 @@ proc update {} {
         sandiego
         seattle
         washingtondc
+        bakersfield
+        chico
+        fresno
+        hanford
+        humboldt
+        medford
+        mendocino
+        merced
+        modesto
+        monterey
+        orangecounty
+        redding
+        reno
+        slo
+        stockton
+        susanville
+        ventura
     }
 
     set allitems {}
     set nc 0
+    set n 0
     foreach s $sites {
-        puts --[format %15s $s]--------------------------------------------------------------
-        set n 0
+        puts -nonewline --[format %15s $s]--------------------------------------------------------------
         set data [wget "http://${s}.craigslist.org/search/cta?query=911%20|930%20|964%20|%20carrera&srchType=T"]
         set lastdate 0xffffffff
 
+        set cars 0
+
         foreach line [makelist $data {<span class="date">}] {
             if {![regexp {<a href="([^>]+.html)">(.*)<span class="px">} $line dummy link title]} {
+                continue
+            }
+            if {[regexp http:// $link]} {
                 continue
             }
 
@@ -231,6 +266,7 @@ proc update {} {
                 # just another car with 911 or 930, etc, in the title
                 continue
             }
+            incr cars
 
             if {[regexp {<date title="([0-9]+)">201} $data dummy d]} {
                 catch {
@@ -274,9 +310,11 @@ proc update {} {
 
             incr n
             if {$n >= $max} {
+                set nc 1000000
                 break
             }
         }
+        puts " \[$cars\]"
         incr nc
         if {$nc >= $max_cities} {
             break
@@ -289,7 +327,7 @@ proc update {} {
         set data  [lindex $item 2]
         set date  [lindex $item 3]
 
-        puts [clock format $date -format %D]=$title
+        puts [clock format $date -format %D]=$title=
 
         append out [makeitem $title $link $data $date]
     }
