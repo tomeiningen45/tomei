@@ -15,7 +15,7 @@ source $instdir/rss.tcl
 package require ncgi
  
 proc update {} {
-    global datadir
+    global datadir env
 
     set out  {<?xml version="1.0" encoding="utf-8"?>
 
@@ -37,10 +37,10 @@ proc update {} {
     regsub -all LANG        $out zh    out
     regsub -all DESC        $out 6prk  out
 
-    set data [wget http://www.6park.com/news/multi1.shtml gb2312]
+    set data [wget http://news.6park.com/newspark/index.php gb2312]
 
-    regsub {.*<td class=td1>} $data "" data
-    regsub {</table>.*} $data "" data
+    regsub {<div id="d_list"} $data "" data
+    regsub {<div id="d_list_foot"} $data "" data
 
     set max 50
     catch {
@@ -57,12 +57,16 @@ proc update {} {
 
         if {[regexp {href="([^>]+)"} $line dummy link] &&
             [regexp {>([^<]+)<} $line dummy title]} {
+            set link http://news.6park.com/newspark/$link
             puts $title==$link
         }
 
-        set fname [getcachefile $link]
+        if {![regexp {nid=([0-9]+)$} $link dummy id]} {
+            continue;
+        }
+        set fname [getcachefile $id]
 
-        set data [getfile $link [file tail $link] gb2312]
+        set data [getfile $link [file tail $fname] gb2312]
         set date [file mtime $fname]
         if {$date >= $lastdate} {
             set date [expr $lastdate - 1]
@@ -101,7 +105,6 @@ proc update {} {
 
         set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
         append out [makeitem $title $link $data $date]
-
     }
 
     append out {</channel></rss>}
