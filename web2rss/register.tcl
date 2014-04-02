@@ -60,7 +60,7 @@ proc update {} {
         set data [getfile $link $localname utf-8]
         puts "  [expr [now] - $started] secs"
 
-        if {[regexp {<div id="body">(.*)((<div id=in_article_forums>)|(<div class="post reply edited">))} $data dummy data] ||
+        if {[regexp {<div id="body">(.*)((<div id=in_article_forums>)|(<div id=article_body_btm>)|(<div class="post reply edited">))} $data dummy data] ||
             [regexp {<section id="body">(.*)<section class="comments">} $data dummy data]} {
             regsub {<div id=in_article_forums>.*} $data "" data
             regsub {<div class="post reply edited">.*} $data "" data
@@ -96,6 +96,5 @@ proc update {} {
     puts -nonewline $fd $out
     close $fd
 }
-
 
 update
