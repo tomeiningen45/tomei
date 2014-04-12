@@ -1,4 +1,5 @@
 set map {
+    top        http://www.bloomberg.com/news/ 
     main       http://www.bloomberg.com/news/worldwide/
     asia       http://www.bloomberg.com/news/asia/
     economy    http://www.bloomberg.com/news/economy/
