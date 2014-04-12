@@ -60,6 +60,9 @@ proc update {} {
 
     set lastdate 0xffffffff
 
+    set max 1000000
+    catch {set max $env(RSSMAX)}
+
     foreach item [makelist $data {<a href=}] {
         if {[regexp {^"/([^<]+[.]html)"[^>]*data-type="Story"} $item dummy link] &&
             [regexp {>([^<]+)</a>} $item dummy title]} {
@@ -87,6 +90,7 @@ proc update {} {
         set lastdate $date
 
         if {[regexp {<div id="story_display">(.*)<div id="related_news_bottom"} $data dummy data] ||
+            [regexp {<div itemprop='articleBody'>(.*)<ul class='entry_sharing'} $data dummy data] ||
             [regexp {<div id="story_display">(.*)<ul id="story_social_toolbar_bottom"} $data dummy data]} {
             regsub {<div class="story_inline[^>]*">.*} $data "" data
             regsub -all {<!\[CDATA\[} $data "" data
@@ -101,6 +105,10 @@ proc update {} {
         puts $title==$link
 
         append out [makeitem $title $link $data $date]
+        incr max -1
+        if {$max <= 0} {
+            break
+        }
     }
 
     append out {</channel></rss>}
