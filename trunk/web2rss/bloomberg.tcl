@@ -46,6 +46,10 @@ proc update {} {
         set title "Bloomberg - $url"
     }
 
+    foreach other [lrange $argv 2 end] {
+        append data [wget $other]
+    }
+
     regexp {<title>([^<]+)</title} $data dummy title
     
     set date [clock format [clock seconds]]
@@ -80,6 +84,11 @@ proc update {} {
         if {![regexp {/(20..-..-../[^/]+[.]html)$} $link dummy localname]} {
             continue
         }
+        if {[info exists seen($link)]} {
+            continue
+        }
+        set seen($link) 1
+
         regsub / $localname - localname
 
         set fname [getcachefile $localname]
