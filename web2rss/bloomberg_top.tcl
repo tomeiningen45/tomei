@@ -1,3 +1,15 @@
+exec tclsh [file dirname [info script]]/bloomberg.tcl \
+    top \
+    http://www.bloomberg.com/news/  \
+    http://www.bloomberg.com/news/worldwide/ \
+    http://www.bloomberg.com/news/asia/ \
+    http://www.bloomberg.com/news/economy/ \
+    http://www.bloomberg.com/news/currencies/ \
+    http://www.bloomberg.com/news/stocks/ \
+    2>@ stdout >@ stdout
+
+exit
+
 set map {
     top        http://www.bloomberg.com/news/ 
     main       http://www.bloomberg.com/news/worldwide/
