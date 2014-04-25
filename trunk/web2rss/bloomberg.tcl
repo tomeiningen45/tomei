@@ -1,3 +1,4 @@
+# env RSSMAX=3 tclsh bloomberg.tcl top http://www.bloomberg.com/news/ 
 #----------------------------------------------------------------------
 # Standard prolog
 #----------------------------------------------------------------------
@@ -91,6 +92,7 @@ proc update {} {
 
         if {[regexp {<div id="story_display">(.*)<div id="related_news_bottom"} $data dummy data] ||
             [regexp {<div itemprop='articleBody'>(.*)<ul class='entry_sharing'} $data dummy data] ||
+            [regexp {<div class='article_body' itemprop='articleBody'>(.*)<ul class='entry_sharing'} $data dummy data] ||
             [regexp {<div id="story_display">(.*)<ul id="story_social_toolbar_bottom"} $data dummy data]} {
             regsub {<div class="story_inline[^>]*">.*} $data "" data
             regsub -all {<!\[CDATA\[} $data "" data
