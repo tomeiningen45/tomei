@@ -58,6 +58,7 @@ proc update {} {
         puts "  [expr [now] - $started] secs"
 
         set comments "【<a href=$env(WEB2RSSHTTP)cnbeta_comments/$localname.html>网友评论</a>】"
+        set comments ""
 
         if {[regexp {<div class="content">.*<div class="clear"></div>} $data]} {
             if {![regsub {.*<div class="introduction">} $data "" data]} {
