@@ -83,8 +83,9 @@ proc update {} {
         regsub -all {onload[ ]*=} $data "xx=" data
         regsub {.*</script>} $data "" data 
 
-        set id [file tail [file root $link]]
-        set comment " 【<a href=http://news.6park.com/newspark/index.php?act=newsreply&nid=${id}>网友评论</a>】 "
+        set id ""
+        regexp {nid=([0-9]+)$} $link dummy id
+        set comment " 【<a href=http://news.6park.com/newspark/index.php?act=newsreply&nnid=${id}&nid=${id}>网友评论</a>】 "
         set data "$comment $data"
 
         if {"$from" != ""} {
