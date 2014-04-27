@@ -37,7 +37,7 @@ proc update {} {
     regsub -all LANG        $out zh    out
     regsub -all DESC        $out 6prk  out
 
-    set data [wget http://hk.news.yahoo.com/]
+    set data [wget https://hk.news.yahoo.com/business/archive/]
 
     regsub {.*<div class="yog-col yog-11u yom-primary">} $data "" data
     regsub {<div class="yog-col yog-8u yog-col-last yom-secondary">.*} $data "" data
@@ -46,9 +46,8 @@ proc update {} {
     set lastdate 0xffffffff
 
     set n 1
-    foreach line [makelist $data {<a href=}] {
-        if {[regexp {"(/[^>]+[.]html)"} $line dummy link] &&
-            [regexp {>([^<]+)</a>((<cite>)|(</h2>))} $line dummy title]} {
+    foreach line [makelist $data {<h4><a href=}] {
+        if {[regexp {"(/[^>]+[.]html)" alt="([^>\"]+)"} $line dummy link title]} {
             puts $n>>>>>>>>>>>>>>$title==$link
         } else {
             continue
@@ -67,11 +66,13 @@ proc update {} {
         set gotit 0
 
         set comments ""
+        if {0} {
         if {[regexp {<link rel="canonical" href="([^>]+)"/>} $data dummy canlink]} {
             puts $canlink
             set cmt http://freednsnow.no-ip.biz:9015/cgi-bin/hky.cgi?a=$canlink
             puts $cmt
             set comments "【<a href=$cmt>网友评论</a>】"
+        }
         }
         
         if {[regsub {.*<p class="first">} $data "" data] && 
@@ -83,6 +84,8 @@ proc update {} {
             [regsub {<div class="yom-mod yom-videometadata-prvdr">.*} $data "" data]} {
             set gotit 1
         }
+
+        regsub {<!-- google_ad_section_end --></div></div>.*} $data "" data
 
         if {$gotit} {
             set data "<div lang='zh' xml:lang='zh'>$comments $data</div>"
