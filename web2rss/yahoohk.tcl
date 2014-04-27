@@ -38,9 +38,14 @@ proc update {} {
     regsub -all DESC        $out 6prk  out
 
     set data [wget https://hk.news.yahoo.com/business/archive/]
+    append data [wget https://hk.news.yahoo.com/business/archive/2.html]
+    append data [wget https://hk.news.yahoo.com/business/archive/3.html]
+    append data [wget https://hk.news.yahoo.com/business/archive/4.html]
 
-    regsub {.*<div class="yog-col yog-11u yom-primary">} $data "" data
-    regsub {<div class="yog-col yog-8u yog-col-last yom-secondary">.*} $data "" data
+    #puts $data
+
+    #regsub {.*<div class="yog-col yog-11u yom-primary">} $data "" data
+    #regsub {<div class="yog-col yog-8u yog-col-last yom-secondary">.*} $data "" data
 
     set newlinks {}
     set lastdate 0xffffffff
