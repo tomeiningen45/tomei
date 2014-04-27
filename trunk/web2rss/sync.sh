@@ -25,7 +25,7 @@ else
 
     tclsh yahoohk.tcl
     echo wait to scp; sleep 5;
-    $SCP data/hkyahoo.xml $root/test3.xml &
+    $SCP data/hkyahoo.xml $root/rss/hkyahoo.xml &
 
 #    tclsh cnbeta.tcl
 #    echo wait to scp; sleep 5;
