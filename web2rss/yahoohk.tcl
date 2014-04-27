@@ -108,8 +108,8 @@ proc update {} {
     puts -nonewline $fd $out
     close $fd
 
-    set links [save_links $datadir $newlinks 40]
-    puts "hkyahoo: [llength $links] comments to update"
+    #set links [save_links $datadir $newlinks 40]
+    #puts "hkyahoo: [llength $links] comments to update"
 
 }
 
