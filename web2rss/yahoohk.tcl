@@ -52,7 +52,7 @@ proc update {} {
         } else {
             continue
         }
-        set link http://hk.news.yahoo.com/$link
+        set link https://hk.news.yahoo.com/$link
         set fname [getcachefile $link]
         set data [getfile $link [file tail $link]]
 
