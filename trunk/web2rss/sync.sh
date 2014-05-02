@@ -19,6 +19,10 @@ else
     echo wait to scp; sleep 5;
     $SCP data/6park.xml $root/test2.xml &
 
+    tclsh 6park_forum_top.tcl
+    echo wait to scp; sleep 5;
+    $SCP data/6park-*.xml $root/rss/ &
+
     tclsh wforum.tcl
     echo wait to scp; sleep 5;
     $SCP data/wforum.xml $root/wforum.xml &
