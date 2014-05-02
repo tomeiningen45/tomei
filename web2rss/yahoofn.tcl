@@ -80,6 +80,7 @@ proc update {} {
 
         if {[regexp {<div class="yom-mod yom-art-content *"[^>]*>(.*)<!-- END article -->} $data dummy data] ||
             [regexp {<div class="yom-mod yom-art-content *"[^>]*>(.*)<!-- google_ad_section_end -->} $data dummy data] ||
+            [regexp {<div class=.body[^>]*>(.*)<!-- google_ad_section_end -->} $data dummy data] ||
             [regexp {<div class="yom-mod yom-art-content ">(.*)<div class="yom-mod yom-pagination yom-pagination2" id="mediapagination">} $data dummy data]} {
             regsub {<div class="yom-mod yom-follow".*} $data "" data
             regsub {<div class=.yfi-related-quotes.*} $data "" data
