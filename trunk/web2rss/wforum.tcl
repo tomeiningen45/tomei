@@ -134,6 +134,13 @@ proc update {} {
 
         regsub {.*<div class="f14 mb10" id="read_tpc" style="margin:0px 0px 10px;padding:0px;word-break:break-all;font-size:14px;">} $data "" data
 
+        regsub -all {<img STYLE="max-width:80%"} $data "<img " data
+        regsub -all { width=.640. } $data " " data
+        regsub -all {<div id='[^>]*' style='width:300px; height:250px;'>} $data "<div>" data
+        regsub -all {width:640px;} $data " " data
+        regsub -all {height='25' class='size14'} $data " " data
+        regsub -all {<div id="[^>]+" style="width:300px;height:250px;">} $data "<div>" data
+
         #puts $data
         #exit
         set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
