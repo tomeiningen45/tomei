@@ -69,7 +69,7 @@ proc getfile {link localname {encoding utf-8}} {
         set encoding utf-8
     }
 
-    if {![file exists $fname]} {
+    if {![file exists $fname] || [file size $fname] == 0} {
         set data [wget $link $x]
         set fd [open $fname w+]
         fconfigure $fd -encoding $encoding
