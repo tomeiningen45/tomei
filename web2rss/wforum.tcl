@@ -42,7 +42,7 @@ proc update {} {
         puts "cannot get index header";
         return
     }
-    regsub {</table>.*} $data "" data
+    #regsub {</table>.*} $data "" data
 
     if 0 {
         set data2 [wget http://www.wforum.com/news/headline/ gb2312]
@@ -58,13 +58,18 @@ proc update {} {
     foreach line [makelist $data <td] {
         if {[regexp {<a href='([^']+)' title='([^']+)'} $line dummy link title]} {
             set type 1
+        } elseif {[regexp {<a href='([^']+)' class='thread_title'>([^<]+)} $line dummy link title]} {
+            set type 2
         } elseif {[regexp {href='([^'>]+)'} $line dummy link] &&
             [regexp {>([^<]+)<} $line dummy title]} {
             set type 2
+            regsub -all \u3000 $title " " title
+            if {[string trim $title] == ""} {
+                continue
+            }
         } else {
             continue;
         }
-        puts $type:$title==$link
 
         if {$type == 1} {
             set link http://www.wforum.com/news/headline/$link
@@ -78,6 +83,11 @@ proc update {} {
                 continue
             }
         }
+        if {[info exists seen($link)]} {
+            continue
+        }
+        set seen($link) 1
+        puts $type:$title==$link
 
         set fname [getcachefile $localname]
         set data [getfile $link $localname gb2312]
