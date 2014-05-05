@@ -39,7 +39,7 @@ else
     echo wait to scp; sleep 5;
     $SCP data/iza.xml $root/iza.xml &
 
-    tclsh yahoofn_top.tcl 
+    tclsh yahoofn.tcl 
     echo wait to scp; sleep 5;
     $SCP data/yahoofn_*.xml $root/ &
 
