@@ -109,9 +109,8 @@ proc fortune_get_articles {} {
 proc fortune_parse_article {data} {
     set title notitle
 
-    if {![regexp {<h1>([^<]+)</h1>} $data dummy title] ||
-        ![regexp {<title>([^<]+)</title>} $data dummy title]} {
-        
+    if {![regexp {<h1>([^<]+)</h1>} $data dummy title]} {
+        regexp {<title>([^<]+)</title>} $data dummy title
     }
 
 
