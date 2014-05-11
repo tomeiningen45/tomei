@@ -99,7 +99,12 @@ proc update {} {
             regsub $pat $data $rep data
         }
 
+        if {[regexp <pre> $data] && ![regexp </pre> $data]} {
+            regsub <pre> $data " " data
+        }
+        regsub -all "<img " $data " <img " data
         set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
+        regsub -all {[&]} $link "&amp;" link
         append out [makeitem $title $link $data $date]
     }
 
