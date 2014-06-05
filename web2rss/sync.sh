@@ -59,6 +59,10 @@ else
     echo wait to scp; sleep 5;
     $SCP data/tiexue.xml $WEB2RSSROOT/rss/ &
 
+    tclsh rennlist.tcl 
+    echo wait to scp; sleep 5;
+    $SCP data/rennlist.xml $WEB2RSSROOT/rss/ &
+
     tclsh register.tcl 
     echo wait to scp; sleep 5;
     $SCP data/register.xml $WEB2RSSROOT/rss/ &

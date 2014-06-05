@@ -173,7 +173,7 @@ proc update {} {
 
     set newlinks {}
 
-    set max 50
+    set max 500000
     catch {
         set max $env(CRAIG_MAX)
     }
@@ -224,6 +224,9 @@ proc update {} {
         stockton
         susanville
         ventura
+    }
+    catch {
+        set sites $env(CRAIG_SITES)
     }
 
     set allitems {}
@@ -276,6 +279,16 @@ proc update {} {
 
             regsub {<section class="cltags".*} $data "" data
             regsub {.*<section class="userbody">} $data "" data
+            regsub {<ul class="notices">.*} $data "" data
+            regsub {<div class="postinginfos">.*} $data "" data
+
+            regsub {<div class="mapAndAttrs">} $data "" data
+            regsub {<div class="mapbox">} $data "" data
+            regsub {<div id="map" [^>]*>} $data "" data
+            regsub {<p class="mapaddress">} $data "" data
+            regsub {.<a target="_blank" [^>]*>google map</a>.} $data "" data
+            regsub {.<a target="_blank" [^>]*>yahoo map</a>.}  $data "" data
+            regsub {<div class="mapaddress">[^<]*</div>}  $data "" data
 
             #puts ==$data==
 
