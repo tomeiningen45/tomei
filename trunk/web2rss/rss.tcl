@@ -48,10 +48,10 @@ proc wget {url {encoding utf-8}} {
     return $data
 }
 
-proc makelist {data splitter} {
+proc makelist {data splitter {startidx 1}} {
     regsub -all $splitter $data \uFFFF data
     set list [split $data \uFFFF]
-    return [lrange $list 1 end]
+    return [lrange $list $startidx end]
 }
 
 proc getcachefile {localname} {
