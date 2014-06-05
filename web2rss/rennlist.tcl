@@ -27,8 +27,14 @@ proc update {} {
             puts -nonewline $link
             set data [getfile $link $name]
             if {[regexp {<strong>Price[^<]*</strong> .([^<]+)<br />} $data dummy price]} {
-                puts -nonewline ": $price"
-                regsub </title> $item " - \$$price</title>" item
+                set mileage ""
+                if {[regexp {<strong>Mileage[^<]*</strong>([^<]+)<} $data dummy mileage]} {
+                    catch {
+                        set mileage " @ [expr [string trim $mileage] / 1000]K mi"
+                    }
+                }
+                puts -nonewline ": $price$mileage"
+                regsub </title> $item " - \$$price$mileage</title>" item
                 regsub -all {<div style="padding:[0-9]+px">} $item "" item
                 regsub -all {<fieldset class="fieldset">} $item "" item
                 regsub -all {<legend>Attached Images</legend>} $item "" item
