@@ -249,7 +249,7 @@ proc update {} {
 
             set link http://${s}.craigslist.org$link
 
-            set year_checker {"$year" == "" || $year >= 1999}
+            set year_checker {"$year" == "" || ($year >= 1999 && $year <= 2004) || ($year > 2010)}
 
             set title [convert_title $title $s $year_checker]
             if {"$title" == ""} {
