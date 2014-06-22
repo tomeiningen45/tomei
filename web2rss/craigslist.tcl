@@ -183,47 +183,53 @@ proc update {} {
         set max_cities $env(CRAIG_MAX_CITIES)
     }
 
-    set sites {
-        sfbay
-        losangeles
-        atlanta
-        austin
-        boston
-        chicago
-        dallas
-        denver
-        detroit
-        houston
-        lasvegas
-        miami
-        minneapolis
-        newyork
-        orangecounty
-        philadelphia
-        phoenix
-        portland
-        raleigh
-        sacramento
-        sandiego
-        seattle
-        washingtondc
-        bakersfield
-        chico
-        fresno
-        hanford
-        humboldt
-        medford
-        mendocino
-        merced
-        modesto
-        monterey
-        orangecounty
-        redding
-        reno
-        slo
-        stockton
-        susanville
-        ventura
+    if {[info exists env(CRAIG_LOCAL)]} {
+        set sites {
+            sfbay
+            losangeles
+            orangecounty
+            monterey
+            sacramento
+            bakersfield
+            chico
+            fresno
+            stockton
+            ventura
+            hanford
+            humboldt
+            medford
+            mendocino
+            merced
+            modesto
+            redding
+            reno
+            slo
+            susanville
+        }
+        set extra _local
+    } else {
+        set sites {
+            atlanta
+            austin
+            boston
+            chicago
+            dallas
+            denver
+            detroit
+            houston
+            lasvegas
+            miami
+            minneapolis
+            newyork
+            philadelphia
+            phoenix
+            portland
+            raleigh
+            sandiego
+            seattle
+            washingtondc
+        }
+        set extra ""
     }
     catch {
         set sites $env(CRAIG_SITES)
@@ -249,7 +255,7 @@ proc update {} {
 
             set link http://${s}.craigslist.org$link
 
-            set year_checker {"$year" == "" || ($year >= 1999 && $year <= 2004) || ($year > 2010)}
+            set year_checker {"$year" == "" || ($year >= 1999 && $year <= 2004) || ($year > 2012)}
 
             set title [convert_title $title $s $year_checker]
             if {"$title" == ""} {
@@ -348,7 +354,7 @@ proc update {} {
 
     append out {</channel></rss>}
 
-    set fd [open $datadir.xml w+]
+    set fd [open $datadir$extra.xml w+]
     fconfigure $fd -encoding utf-8
     puts -nonewline $fd $out
     close $fd

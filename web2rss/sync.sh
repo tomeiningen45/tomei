@@ -5,6 +5,17 @@ if test "$SCP" = ""; then
     SCP=scp
 fi
 
+function dosync () {
+    if test "$2" = ""; then
+        dest=$WEB2RSSROOT/rss/
+    else
+        dest=$2
+    fi
+    echo wait to scp; sleep 5;
+    $SCP $1 $dest &
+}
+
+
 ##while true; do
     echo start===========`date`
 
@@ -70,6 +81,9 @@ else
     tclsh craigslist.tcl 
     echo wait to scp; sleep 5;
     $SCP data/craigslist.xml $WEB2RSSROOT/rss/ &
+
+    env CRAIG_LOCAL=1 tclsh craigslist.tcl 
+    dosync data/craigslist_local.xml
 
     tclsh fortune.tcl 
     echo wait to scp; sleep 5;
