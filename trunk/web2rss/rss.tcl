@@ -492,7 +492,7 @@ proc quoted_exp {} {
     return "\[^\"\]"
 }
 
-proc generic_news_site {list_proc parse_proc} {
+proc generic_news_site {list_proc parse_proc {max 50}} {
     global datadir env site
 
     set out  {<?xml version="1.0" encoding="utf-8"?>
@@ -516,7 +516,7 @@ proc generic_news_site {list_proc parse_proc} {
     regsub -all DESC        $out $site(desc) out
     regsub -all URL         $out $site(url)  out
 
-    set max 50
+    #set max 50
     catch {
         set max $env(MAXRSS)
     }
