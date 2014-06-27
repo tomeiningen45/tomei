@@ -88,6 +88,9 @@ else
     tclsh autotrader.tcl
     dosync data/autotrader.xml
 
+    tclsh autotrader.tcl
+    env AUTOTRADER_REMOTE=1 dosync data/autotrader_remote.xml
+
     tclsh fortune.tcl 
     echo wait to scp; sleep 5;
     $SCP data/fortune.xml $WEB2RSSROOT/rss/ &
