@@ -85,6 +85,9 @@ else
     env CRAIG_LOCAL=1 tclsh craigslist.tcl 
     dosync data/craigslist_local.xml
 
+    tclsh autotrader.tcl
+    dosync data/autotrader.xml
+
     tclsh fortune.tcl 
     echo wait to scp; sleep 5;
     $SCP data/fortune.xml $WEB2RSSROOT/rss/ &
