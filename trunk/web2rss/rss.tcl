@@ -5,6 +5,34 @@
 proc wget {url {encoding utf-8}} {
     global env
 
+    if {[info exists env(WGET_INIT_WAIT)]} {
+        set initwait $env(WGET_INIT_WAIT)
+    } else {
+        set initwait [list 0]
+    }
+
+    if {[info exists env(WGET_RETRY)]} {
+        if {"$env(WGET_RETRY)" == "default"} {
+            set env(WGET_RETRY) {100 400 1000 2000 4000}
+        }
+        set initwait [concat $initwait $env(WGET_RETRY)]
+    }
+
+    foreach time $initwait {
+        after $time
+        set data [wget_inner $url $encoding]
+        if {[string length $data] > 0} {
+            return $data
+        }
+        puts "--- RETRY --- $url"
+    }
+
+    return ""
+}
+
+proc wget_inner {url {encoding utf-8}} {
+    global env
+
     set started [now]
     if {[info exists env(RSSVERBOSE)]} {
         puts -nonewline "wget $url"
@@ -543,11 +571,12 @@ proc generic_news_site {list_proc parse_proc {max 50}} {
         set item [$parse_proc $data]
         set title [lindex $item 0]
         set data  [lindex $item 1]
+        set extra [lindex $item 2]
 
         puts $link=$id=$title
 
         set data "<div lang=\"$site(lang)\" xml:lang=\"$site(lang)\">$data</div>"
-        append out [makeitem $title $link $data $date]
+        append out [makeitem $title "<!\[CDATA\[$link$extra\]\]>" $data $date]
     }
 
     append out {</channel></rss>}

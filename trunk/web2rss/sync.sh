@@ -86,7 +86,7 @@ else
     dosync data/craigslist_local.xml
 
     tclsh autotrader.tcl
-    dosync data/autotrader.xml
+    dosync data/autotrader.xml $WEB2RSSROOT/rss/autotrader1.xml
 
     #env AUTOTRADER_REMOTE=1 tclsh autotrader.tcl
     #dosync data/autotrader_remote.xml
