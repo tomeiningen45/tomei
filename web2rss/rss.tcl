@@ -572,8 +572,13 @@ proc generic_news_site {list_proc parse_proc {max 50}} {
         set title [lindex $item 0]
         set data  [lindex $item 1]
         set extra [lindex $item 2]
+        set delete_if_old [lindex $item 3]
 
         puts $link=$id=$title
+        if {"$delete_if_old" == "1" && ([now] - [file mtime $fname] > 86400)} {
+            puts "too old $fname"
+            catch {file delete $fname}
+        }
 
         set data "<div lang=\"$site(lang)\" xml:lang=\"$site(lang)\">$data</div>"
         append out [makeitem $title "<!\[CDATA\[$link$extra\]\]>" $data $date]

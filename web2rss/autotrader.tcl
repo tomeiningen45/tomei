@@ -33,8 +33,8 @@ set site(url)      http://www.autotrader.com/cars-for-sale/Porsche/911/Mountain+
 
 set env(WGET_RETRY) {default}
 
-set env(WGET_INIT_WAIT) {1000}
-set env(WGET_RETRY) {2000 1000 2000 4000 8000 1000 1000}
+set env(WGET_INIT_WAIT) {3000}
+set env(WGET_RETRY) {4000 4000 2000 4000 8000 1000 1000 8000 8000 8000}
 
 proc autotrader_get_articles {} {
     global site env
@@ -74,6 +74,10 @@ proc autotrader_get_articles {} {
         incr first $step
         set suffix "&firstRecord=$first"
         puts "PARSED = $parsed, FOUND = $found, USED = $used, TOTAL = $total"
+        if {$first > 1500} {
+            # too many!
+            break
+        }
     }
 
 
@@ -135,9 +139,14 @@ proc autotrader_parse_article {data} {
             incr hasimg 1
         }
     }
-    append title " ($hasimg) - $price$hascf"
+    append title " ($hasimg) - [string trim $price$hascf]"
 
-    return [list $title $content "&hasimg=$hasimg"]
+    set delete_if_old 0
+    if {$hasimg < 1} {
+        set delete_if_old 1
+    }
+
+    return [list $title $content "&hasimg=$hasimg" $delete_if_old]
 }
 
 
