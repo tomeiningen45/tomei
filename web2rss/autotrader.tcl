@@ -31,27 +31,40 @@ set site(url)      http://www.autotrader.com/cars-for-sale/Porsche/911/Mountain+
 # Site specific scripts
 #----------------------------------------------------------------------
 
+set env(WGET_RETRY) {default}
+
+set env(WGET_INIT_WAIT) {1000}
+set env(WGET_RETRY) {2000 1000 2000 4000 8000 1000 1000}
+
 proc autotrader_get_articles {} {
-    global site
+    global site env
 
     set first 1
     set step  $site(step)
     set suffix ""
+    set total 0
 
     set list ""
     while 1 {
+        set parsed 0
+        set found 0
+        set used 0
         set data [wget $site(url)$suffix]
         if {[regexp {<div class="no-results">} $data]} {
             break
         }
 
         foreach item [makelist $data listingId=] {
+            incr parsed
             if {[regexp {^([0-9]+)} $item id]} {
-                if {![info exists found($id)]} {
-                    set found($id) 1
+                if {![info exists has($id)]} {
+                    set has($id) 1
+                    incr found
                     if {![file exists $site(otherdir)/$id]} {
-                        puts $id
-                        lappend list [list "http://www.autotrader.com/cars-for-sale/vehicledetails.xhtml?listingId=$id" $id]
+                        #puts $id
+                        lappend list $id
+                        incr used
+                        incr total
                     } else {
                         puts $id-other
                     }
@@ -60,19 +73,29 @@ proc autotrader_get_articles {} {
         }
         incr first $step
         set suffix "&firstRecord=$first"
+        puts "PARSED = $parsed, FOUND = $found, USED = $used, TOTAL = $total"
     }
 
-    return $list
-}
 
+    set result {}
+    foreach id [lsort -integer -decreasing $list] {
+        lappend result [list "http://www.autotrader.com/cars-for-sale/vehicledetails.xhtml?listingId=$id" $id]
+    }
+
+    return $result
+}
 
 
 proc autotrader_parse_article {data} {
     set title notitle
+    set hasimg 0
 
     if {[regexp {<title>([^<]+)</title>} $data dummy title]} {
         regsub "Cars for Sale: " $title "" title
+        regsub "Porsche 911 " $title "" title
+        regsub "Porsche " $title "" title
         regsub {, CA [0-9][0-9][0-9][0-9][0-9]:} $title {:} title
+        regsub {, ([A-Z][A-Z]) [0-9][0-9][0-9][0-9][0-9]:} $title ", \\1:" title
         regsub {Details -.*} $title "" title
     }
 
@@ -104,16 +127,17 @@ proc autotrader_parse_article {data} {
         set title "Certified $title"
     }
 
-    append title " - $price$hascf"
     set content "$list_title - $price $carfax"
 
     foreach item [makelist $data {"url":}] {
         if {[regexp {^\"(http[^\"]+jpg)\",\"thumbnail} $item dummy image]} {
             append content "\n<p><a href=$image><img src=$image></a>\n"
+            incr hasimg 1
         }
     }
+    append title " ($hasimg) - $price$hascf"
 
-    return [list $title $content]
+    return [list $title $content "&hasimg=$hasimg"]
 }
 
 
