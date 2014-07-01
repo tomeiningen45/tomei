@@ -150,4 +150,4 @@ proc autotrader_parse_article {data} {
 }
 
 
-generic_news_site autotrader_get_articles autotrader_parse_article 10000
+generic_news_site autotrader_get_articles autotrader_parse_article 10000 20
