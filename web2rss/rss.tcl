@@ -88,9 +88,13 @@ proc getcachefile {localname} {
     return $datadir/[file tail $localname]
 }
 
-proc getfile {link localname {encoding utf-8}} {
+proc getfile {link localname {encoding utf-8} {isnew_ret {}}} {
     global env
     set fname [getcachefile $localname]
+
+    if {$isnew_ret != {}} {
+        upvar $isnew_ret isnew
+    }
 
     set x $encoding
     if {[info exists env(USEICONV)] && "$encoding" == "gb2312"} {
@@ -103,11 +107,13 @@ proc getfile {link localname {encoding utf-8}} {
         fconfigure $fd -encoding $encoding
         puts -nonewline $fd $data
         close $fd
+        set isnew 1
     } else {
         set fd [open $fname]
         fconfigure $fd -encoding $encoding
         set data [read $fd]
         close $fd
+        set isnew 0
     }
     return $data
 }
@@ -520,7 +526,7 @@ proc quoted_exp {} {
     return "\[^\"\]"
 }
 
-proc generic_news_site {list_proc parse_proc {max 50}} {
+proc generic_news_site {list_proc parse_proc {max 50} {maxnew 1000000}} {
     global datadir env site
 
     set out  {<?xml version="1.0" encoding="utf-8"?>
@@ -548,20 +554,24 @@ proc generic_news_site {list_proc parse_proc {max 50}} {
     catch {
         set max $env(MAXRSS)
     }
+    catch {
+        set maxnew $env(MAXRSSNEW)
+    }
     set n 0
     set lastdate 0xffffffff
 
-    foreach article [$list_proc] {
-        incr n
-        if {$n > $max} {
-            break
-        }
+    set list [lrange [$list_proc] 0 $max]
+
+    set gotnew 0
+    set body {}
+    foreach article [lreverse $list] {
         set link [lindex $article 0]
         set id   [lindex $article 1]
 
         set fname [getcachefile $id]
 
-        set data [getfile $link [file tail $fname] $site(encoding)]
+        set isnew 0
+        set data [getfile $link [file tail $fname] $site(encoding) isnew]
         set date [file mtime $fname]
         if {$date >= $lastdate} {
             set date [expr $lastdate - 1]
@@ -574,16 +584,26 @@ proc generic_news_site {list_proc parse_proc {max 50}} {
         set extra [lindex $item 2]
         set delete_if_old [lindex $item 3]
 
-        puts $link=$id=$title
+        puts $isnew/$gotnew=$link=$id=$title
         if {"$delete_if_old" == "1" && ([now] - [file mtime $fname] > 86400)} {
             puts "too old $fname"
             catch {file delete $fname}
         }
 
         set data "<div lang=\"$site(lang)\" xml:lang=\"$site(lang)\">$data</div>"
-        append out [makeitem $title "<!\[CDATA\[$link$extra\]\]>" $data $date]
+        set newitem [makeitem $title "<!\[CDATA\[$link$extra\]\]>" $data $date]
+        set body "$newitem$body"
+
+        if {$isnew} {
+            incr gotnew
+            if {$gotnew >= $maxnew} {
+                puts "Got new $gotnew article exceeded max $maxnew"
+                break
+            }
+        }
     }
 
+    append out $body 
     append out {</channel></rss>}
 
     set fd [open $datadir.xml w+]
