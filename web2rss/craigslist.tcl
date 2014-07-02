@@ -205,6 +205,7 @@ proc update {} {
             reno
             slo
             susanville
+            sandiego
         }
         set extra _local
     } else {
@@ -225,7 +226,6 @@ proc update {} {
             phoenix
             portland
             raleigh
-            sandiego
             seattle
             washingtondc
         }
