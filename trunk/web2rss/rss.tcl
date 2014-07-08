@@ -18,6 +18,10 @@ proc wget {url {encoding utf-8}} {
         set initwait [concat $initwait $env(WGET_RETRY)]
     }
 
+    if {[info exists env(WGET_NOWAIT)]} {
+        set initwait 0
+    }
+
     foreach time $initwait {
         after $time
         set data [wget_inner $url $encoding]
@@ -88,7 +92,7 @@ proc getcachefile {localname} {
     return $datadir/[file tail $localname]
 }
 
-proc getfile {link localname {encoding utf-8} {isnew_ret {}}} {
+proc getfile {link localname {encoding utf-8} {isnew_ret {}} {extralinks {}}} {
     global env
     set fname [getcachefile $localname]
 
@@ -106,6 +110,11 @@ proc getfile {link localname {encoding utf-8} {isnew_ret {}}} {
         set fd [open $fname w+]
         fconfigure $fd -encoding $encoding
         puts -nonewline $fd $data
+        foreach elink $extralinks {
+            set d [wget $elink $x]
+            puts -nonewline $fd $d
+            append data $d
+        }
         close $fd
         set isnew 1
     } else {
@@ -565,13 +574,14 @@ proc generic_news_site {list_proc parse_proc {max 50} {maxnew 1000000}} {
     set gotnew 0
     set body {}
     foreach article [lreverse $list] {
-        set link [lindex $article 0]
-        set id   [lindex $article 1]
+        set link  [lindex $article 0]
+        set id    [lindex $article 1]
+        set extra [lindex $article 2]
 
         set fname [getcachefile $id]
 
         set isnew 0
-        set data [getfile $link [file tail $fname] $site(encoding) isnew]
+        set data [getfile $link [file tail $fname] $site(encoding) isnew $extra]
         set date [file mtime $fname]
         if {$date >= $lastdate} {
             set date [expr $lastdate - 1]

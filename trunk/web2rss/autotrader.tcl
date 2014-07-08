@@ -4,11 +4,34 @@
 set instdir [file dirname [info script]]
 set datadir $instdir/data/autotrader
 
-if {[info exists env(AUTOTRADER_REMOTE)]} {
+
+set site(start) 2005
+set site(end)   2011
+set site(trans) MAN
+
+if {[info exists env(AUTOTRADER_AUTO)]} {
+    set site(desc)   "Autotrader Local 2009 - 2013 auto 911"
+    set site(radius) 300
+    set site(otherdir) /no.such/file
+    set site(start) 2009
+    set site(end)   2013
+    set site(trans) AUT
+    append datadir _auto
+} elseif {[info exists env(AUTOTRADER_AUTO_REMOTE)]} {
+    set site(desc)   "Autotrader Remote 2009 - 2013 auto 911"
+    set site(radius)    0
+    set site(otherdir)  ${datadir}_auto
+    set site(start)     2009
+    set site(end)       2013
+    set site(trans) AUT
+    append datadir      _auto_remote
+} elseif {[info exists env(AUTOTRADER_REMOTE)]} {
+    set site(desc)   "Autotrader Remote 2005 - 2011 manual 911"
     set site(radius) 0
     set site(otherdir) $datadir
     append datadir _remote
 } else {
+    set site(desc)   "Autotrader Local 2005 - 2011 manual 911"
     set site(otherdir) /no/such/file
     set site(radius) 300
 }
@@ -22,10 +45,11 @@ source $instdir/rss.tcl
 
 set site(lang)     en
 set site(encoding) utf-8
-set site(desc)     Autotrader
 set site(step)     100
 #set site(step)     50
-set site(url)      http://www.autotrader.com/cars-for-sale/Porsche/911/Mountain+View+CA-94040?endYear=2011&lastExec=1403591852000&listingTypes=all&makeCode1=POR&mmt=%5BPOR%5B911%5B%5D%5D%5B%5D%5D&modelCode1=911&numRecords=$site(step)&searchRadius=$site(radius)&startYear=2005&transmissionCode=MAN&transmissionCodes=MAN&Log=0
+set site(url)      http://www.autotrader.com/cars-for-sale/Porsche/911/Mountain+View+CA-94040?endYear=$site(end)&lastExec=1403591852000&listingTypes=all&makeCode1=POR&mmt=%5BPOR%5B911%5B%5D%5D%5B%5D%5D&modelCode1=911&numRecords=$site(step)&searchRadius=$site(radius)&startYear=$site(start)&transmissionCode=$site(trans)&Log=0
+
+parray site
 
 #----------------------------------------------------------------------
 # Site specific scripts
@@ -89,7 +113,8 @@ proc autotrader_get_articles {} {
 
     set result {}
     foreach id [lsort -integer -decreasing $list] {
-        lappend result [list "http://www.autotrader.com/cars-for-sale/vehicledetails.xhtml?listingId=$id" $id]
+        lappend result [list "http://www.autotrader.com/cars-for-sale/vehicledetails.xhtml?listingId=$id" $id \
+                             "http://www.autotrader.com/cars-for-sale/vehicledetails/overview-tab.xhtml?listingId=$id"]
     }
 
     return $result
@@ -144,12 +169,20 @@ proc autotrader_parse_article {data} {
 
     set content "$list_title - $price $carfax"
 
+    set overview ""
+    if {[regexp {<div class="overview-comments">.*} $data o]} {
+        set overview <hr>$o<hr>
+    }
+
     foreach item [makelist $data {"url":}] {
         if {[regexp {^\"(http[^\"]+jpg)\",\"thumbnail} $item dummy image]} {
             append content "\n<p><a href=$image><img src=$image></a>\n"
             incr hasimg 1
+            append content $overview
+            set overview ""
         }
     }
+    append content $overview
     append title " ($hasimg) - [string trim $price$hascf]"
 
     set delete_if_old ""
