@@ -45,7 +45,13 @@ proc autotrader_get_articles {} {
     set total 0
 
     set list ""
-    while 1 {
+    set maxpages 100000
+    catch {
+        set maxpages $env(MAX_AUTOTRADER_PAGES)
+    }
+    puts $maxpages
+
+    for {set p 0} {$p < $maxpages || $p == 0} {incr p} {
         set parsed 0
         set found 0
         set used 0
@@ -94,6 +100,11 @@ proc autotrader_parse_article {data} {
     set title notitle
     set hasimg 0
 
+    if {[regexp {<title>AutoTrader.com</title>} $data]} {
+        # page is not ready yet
+        return [list *abort* "" "" 0]
+    }
+
     if {[regexp {<title>([^<]+)</title>} $data dummy title]} {
         regsub "Cars for Sale: " $title "" title
         regsub "Porsche 911 " $title "" title
@@ -141,9 +152,9 @@ proc autotrader_parse_article {data} {
     }
     append title " ($hasimg) - [string trim $price$hascf]"
 
-    set delete_if_old 0
+    set delete_if_old ""
     if {$hasimg < 1} {
-        set delete_if_old 1
+        set delete_if_old 86400
     }
 
     return [list $title $content "&hasimg=$hasimg" $delete_if_old]

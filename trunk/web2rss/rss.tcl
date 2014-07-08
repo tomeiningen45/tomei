@@ -585,14 +585,16 @@ proc generic_news_site {list_proc parse_proc {max 50} {maxnew 1000000}} {
         set delete_if_old [lindex $item 3]
 
         puts $isnew/$gotnew=$link=$id=$title
-        if {"$delete_if_old" == "1" && ([now] - [file mtime $fname] > 86400)} {
+        if {"$delete_if_old" != "" && ([now] - [file mtime $fname] > $delete_if_old)} {
             puts "too old $fname"
             catch {file delete $fname}
         }
 
-        set data "<div lang=\"$site(lang)\" xml:lang=\"$site(lang)\">$data</div>"
-        set newitem [makeitem $title "<!\[CDATA\[$link$extra\]\]>" $data $date]
-        set body "$newitem$body"
+        if {"$title" != "*abort*"} {
+            set data "<div lang=\"$site(lang)\" xml:lang=\"$site(lang)\">$data</div>"
+            set newitem [makeitem $title "<!\[CDATA\[$link$extra\]\]>" $data $date]
+            set body "$newitem$body"
+        }
 
         if {$isnew} {
             incr gotnew
