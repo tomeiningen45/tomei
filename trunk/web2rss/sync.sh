@@ -92,10 +92,17 @@ else
     dosync data/autotrader_remote.xml $WEB2RSSROOT/rss/autotrader_remote1.xml
 
     env AUTOTRADER_AUTO=1 tclsh autotrader.tcl
-    dosync data/autotrader_auto.xml
+    dosync data/autotrader_auto.xml $WEB2RSSROOT/rss/autotrader_auto1.xml
 
     env AUTOTRADER_AUTO_REMOTE=1 tclsh autotrader.tcl
-    dosync data/autotrader_auto_remote.xml
+    dosync data/autotrader_auto_remote.xml  $WEB2RSSROOT/rss/autotrader_auto_remote1.xml
+
+    env AUTOTRADER_CAYMAN=1 tclsh autotrader.tcl
+    dosync data/autotrader_cayman.xml
+
+    env AUTOTRADER_CAYMAN_REMOTE=1 tclsh autotrader.tcl
+    dosync data/autotrader_cayman_remote.xml
+
 
     tclsh fortune.tcl 
     echo wait to scp; sleep 5;

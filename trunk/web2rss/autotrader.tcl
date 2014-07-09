@@ -8,8 +8,27 @@ set datadir $instdir/data/autotrader
 set site(start) 2005
 set site(end)   2011
 set site(trans) MAN
+set site(model) 911
 
-if {[info exists env(AUTOTRADER_AUTO)]} {
+if {[info exists env(AUTOTRADER_CAYMAN)]} {
+    set site(desc)   "Autotrader Cayman Local"
+    set site(radius) 300
+    set site(otherdir) /no.such/file
+    set site(start) 2008
+    set site(end)   2014
+    set site(trans) ""
+    append datadir _cayman
+    set site(model) cayman
+} elseif {[info exists env(AUTOTRADER_CAYMAN_REMOTE)]} {
+    set site(desc)   "Autotrader Cayman Remote"
+    set site(radius) 0
+    set site(otherdir) ${datadir}_cayman
+    set site(start) 2008
+    set site(end)   2014
+    set site(trans) ""
+    append datadir _cayman_remote
+    set site(model) cayman
+} elseif {[info exists env(AUTOTRADER_AUTO)]} {
     set site(desc)   "Autotrader Local 2009 - 2013 auto 911"
     set site(radius) 300
     set site(otherdir) /no.such/file
@@ -47,7 +66,18 @@ set site(lang)     en
 set site(encoding) utf-8
 set site(step)     100
 #set site(step)     50
-set site(url)      http://www.autotrader.com/cars-for-sale/Porsche/911/Mountain+View+CA-94040?endYear=$site(end)&lastExec=1403591852000&listingTypes=all&makeCode1=POR&mmt=%5BPOR%5B911%5B%5D%5D%5B%5D%5D&modelCode1=911&numRecords=$site(step)&searchRadius=$site(radius)&startYear=$site(start)&transmissionCode=$site(trans)&Log=0
+
+if {$site(model) == "911"} {
+    set site(url) http://www.autotrader.com/cars-for-sale/Porsche/911/Mountain+View+CA-94040?lastExec=1403591852000&listingTypes=all&makeCode1=POR&mmt=%5BPOR%5B911%5B%5D%5D%5B%5D%5D&modelCode1=911
+} else {
+    set site(url) http://www.autotrader.com/cars-for-sale/Porsche/Cayman/Mountain+View+CA-94040?lastExec=1403591852000&listingTypes=all&makeCode1=POR&mmt=%5BPOR%5BCAYMAN%5B%5D%5D%5B%5D%5D&modelCode1=CAYMAN
+}
+
+append site(url) &numRecords=$site(step)&searchRadius=$site(radius)&endYear=$site(end)&startYear=$site(start)&Log=0
+
+if {$site(trans) != ""} {
+    append site(url) &transmissionCode=$site(trans)
+}
 
 parray site
 
@@ -159,6 +189,9 @@ proc autotrader_parse_article {data} {
     regsub -all {<span title=[^>]+>} $data "" data
     regexp {<h4 class="primary-price"[^>]*>([^<]+)} $data dummy price
 
+    set pp ""
+    regsub -all {[^0-9]} $price "" pp
+
     if {$mileage != ""} {
         append price " @ $mileage mi"
     }
@@ -190,7 +223,7 @@ proc autotrader_parse_article {data} {
         set delete_if_old 86400
     }
 
-    return [list $title $content "&hasimg=$hasimg" $delete_if_old]
+    return [list $title $content "&hasimg=$hasimg&pp=$pp" $delete_if_old]
 }
 
 
