@@ -26,6 +26,25 @@ if test -f sync_cnbeta.file; then
 
 else
 
+    tclsh autotrader.tcl
+    dosync data/autotrader.xml $WEB2RSSROOT/rss/autotrader2.xml
+
+    env AUTOTRADER_REMOTE=1 tclsh autotrader.tcl
+    dosync data/autotrader_remote.xml $WEB2RSSROOT/rss/autotrader_remote2.xml
+
+    env AUTOTRADER_AUTO=1 tclsh autotrader.tcl
+    dosync data/autotrader_auto.xml $WEB2RSSROOT/rss/autotrader_auto1.xml
+
+    env AUTOTRADER_AUTO_REMOTE=1 tclsh autotrader.tcl
+    dosync data/autotrader_auto_remote.xml  $WEB2RSSROOT/rss/autotrader_auto_remote1.xml
+
+    env AUTOTRADER_CAYMAN=1 tclsh autotrader.tcl
+    dosync data/autotrader_cayman.xml
+
+    env AUTOTRADER_CAYMAN_REMOTE=1 tclsh autotrader.tcl
+    dosync data/autotrader_cayman_remote.xml
+
+
     tclsh 6park.tcl
     echo wait to scp; sleep 5;
     $SCP data/6park.xml $root/test2.xml &
@@ -46,9 +65,9 @@ else
 #    echo wait to scp; sleep 5;
 #    $SCP data/cnbeta.xml $root/cnbeta.xml &
 
-    tclsh iza.tcl
-    echo wait to scp; sleep 5;
-    $SCP data/iza.xml $root/iza.xml &
+#   tclsh iza.tcl
+#   echo wait to scp; sleep 5;
+#   $SCP data/iza.xml $root/iza.xml &
 
     tclsh yahoofn.tcl 
     echo wait to scp; sleep 5;
@@ -66,9 +85,9 @@ else
     echo wait to scp; sleep 5;
     $SCP data/gooblog_*.xml $WEB2RSSROOT/rss/ &
 
-    tclsh tiexue.tcl 
-    echo wait to scp; sleep 5;
-    $SCP data/tiexue.xml $WEB2RSSROOT/rss/ &
+#   tclsh tiexue.tcl 
+#   echo wait to scp; sleep 5;
+#   $SCP data/tiexue.xml $WEB2RSSROOT/rss/ &
 
     tclsh rennlist.tcl 
     echo wait to scp; sleep 5;
@@ -84,25 +103,6 @@ else
 
     env CRAIG_LOCAL=1 tclsh craigslist.tcl 
     dosync data/craigslist_local.xml
-
-    tclsh autotrader.tcl
-    dosync data/autotrader.xml $WEB2RSSROOT/rss/autotrader1.xml
-
-    env AUTOTRADER_REMOTE=1 tclsh autotrader.tcl
-    dosync data/autotrader_remote.xml $WEB2RSSROOT/rss/autotrader_remote1.xml
-
-    env AUTOTRADER_AUTO=1 tclsh autotrader.tcl
-    dosync data/autotrader_auto.xml $WEB2RSSROOT/rss/autotrader_auto1.xml
-
-    env AUTOTRADER_AUTO_REMOTE=1 tclsh autotrader.tcl
-    dosync data/autotrader_auto_remote.xml  $WEB2RSSROOT/rss/autotrader_auto_remote1.xml
-
-    env AUTOTRADER_CAYMAN=1 tclsh autotrader.tcl
-    dosync data/autotrader_cayman.xml
-
-    env AUTOTRADER_CAYMAN_REMOTE=1 tclsh autotrader.tcl
-    dosync data/autotrader_cayman_remote.xml
-
 
     tclsh fortune.tcl 
     echo wait to scp; sleep 5;
