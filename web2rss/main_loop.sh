@@ -5,5 +5,6 @@ while true; do
 
     cp sync.sh run_sync.sh
     sh run_sync.sh
-    sleep 1200
+    #sleep 1200
+    sleep 600
 done
