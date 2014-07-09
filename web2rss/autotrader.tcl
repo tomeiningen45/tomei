@@ -11,7 +11,7 @@ set site(trans) MAN
 set site(model) 911
 
 if {[info exists env(AUTOTRADER_CAYMAN)]} {
-    set site(desc)   "Autotrader Cayman Local"
+    set site(desc)   "AT: Cayman Local"
     set site(radius) 300
     set site(otherdir) /no.such/file
     set site(start) 2008
@@ -20,7 +20,7 @@ if {[info exists env(AUTOTRADER_CAYMAN)]} {
     append datadir _cayman
     set site(model) cayman
 } elseif {[info exists env(AUTOTRADER_CAYMAN_REMOTE)]} {
-    set site(desc)   "Autotrader Cayman Remote"
+    set site(desc)   "AT: Cayman Remote"
     set site(radius) 0
     set site(otherdir) ${datadir}_cayman
     set site(start) 2008
@@ -29,7 +29,7 @@ if {[info exists env(AUTOTRADER_CAYMAN)]} {
     append datadir _cayman_remote
     set site(model) cayman
 } elseif {[info exists env(AUTOTRADER_AUTO)]} {
-    set site(desc)   "Autotrader Local 2009 - 2013 auto 911"
+    set site(desc)   "AT: 911 Local/Auto"
     set site(radius) 300
     set site(otherdir) /no.such/file
     set site(start) 2009
@@ -37,7 +37,7 @@ if {[info exists env(AUTOTRADER_CAYMAN)]} {
     set site(trans) AUT
     append datadir _auto
 } elseif {[info exists env(AUTOTRADER_AUTO_REMOTE)]} {
-    set site(desc)   "Autotrader Remote 2009 - 2013 auto 911"
+    set site(desc)   "AT: 911 Remote/Auto"
     set site(radius)    0
     set site(otherdir)  ${datadir}_auto
     set site(start)     2009
@@ -45,12 +45,12 @@ if {[info exists env(AUTOTRADER_CAYMAN)]} {
     set site(trans) AUT
     append datadir      _auto_remote
 } elseif {[info exists env(AUTOTRADER_REMOTE)]} {
-    set site(desc)   "Autotrader Remote 2005 - 2011 manual 911"
+    set site(desc)   "AT: 911 Remote/man"
     set site(radius) 0
     set site(otherdir) $datadir
     append datadir _remote
 } else {
-    set site(desc)   "Autotrader Local 2005 - 2011 manual 911"
+    set site(desc)   "AT: 911 Local/man"
     set site(otherdir) /no/such/file
     set site(radius) 300
 }
