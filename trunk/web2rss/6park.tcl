@@ -95,7 +95,7 @@ proc update {} {
         # fix images
         regsub -all "src=\['\"\](\[^> '\"\]+)\['\"\]" $data src=\\1 data
 
-        set pat {src=(http://www.popo8.com/[^> ]+)}
+        set pat {src=(http://[^>]*.popo8.com/[^> ]+)}
         while {[regexp $pat $data dummy img]} {
             puts $img
             set rep src=http://freednsnow.no-ip.biz:9015/cgi-bin/im.cgi?
