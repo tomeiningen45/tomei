@@ -26,23 +26,23 @@ if test -f sync_cnbeta.file; then
 
 else
 
-    tclsh autotrader.tcl
-    dosync data/autotrader.xml $WEB2RSSROOT/rss/autotrader2.xml
+    #tclsh autotrader.tcl
+    #dosync data/autotrader.xml $WEB2RSSROOT/rss/autotrader2.xml
 
-    env AUTOTRADER_REMOTE=1 tclsh autotrader.tcl
-    dosync data/autotrader_remote.xml $WEB2RSSROOT/rss/autotrader_remote2.xml
+    #env AUTOTRADER_REMOTE=1 tclsh autotrader.tcl
+    #dosync data/autotrader_remote.xml $WEB2RSSROOT/rss/autotrader_remote2.xml
 
-    env AUTOTRADER_AUTO=1 tclsh autotrader.tcl
-    dosync data/autotrader_auto.xml $WEB2RSSROOT/rss/autotrader_auto1.xml
+    #env AUTOTRADER_AUTO=1 tclsh autotrader.tcl
+    #dosync data/autotrader_auto.xml $WEB2RSSROOT/rss/autotrader_auto1.xml
 
-    env AUTOTRADER_AUTO_REMOTE=1 tclsh autotrader.tcl
-    dosync data/autotrader_auto_remote.xml  $WEB2RSSROOT/rss/autotrader_auto_remote1.xml
+    #env AUTOTRADER_AUTO_REMOTE=1 tclsh autotrader.tcl
+    #dosync data/autotrader_auto_remote.xml  $WEB2RSSROOT/rss/autotrader_auto_remote1.xml
 
-    env AUTOTRADER_CAYMAN=1 tclsh autotrader.tcl
-    dosync data/autotrader_cayman.xml
+    #env AUTOTRADER_CAYMAN=1 tclsh autotrader.tcl
+    #dosync data/autotrader_cayman.xml
 
-    env AUTOTRADER_CAYMAN_REMOTE=1 tclsh autotrader.tcl
-    dosync data/autotrader_cayman_remote.xml
+    #env AUTOTRADER_CAYMAN_REMOTE=1 tclsh autotrader.tcl
+    #dosync data/autotrader_cayman_remote.xml
 
 
     tclsh 6park.tcl
