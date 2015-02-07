@@ -21,6 +21,7 @@
 # the root of your document tree.  This is conditional so you
 # can run from the source distribution or after doing "make install"
 
+if 0 {
 foreach d [list \
 	[file join [Config home] ../htdocs] \
 	[file join [Config home] ../tclhttpd/htdocs]] {
@@ -28,6 +29,8 @@ foreach d [list \
 	Config docRoot $d
     }
 }
+
+Config docRoot [file join [Config home] .]
 
 # library - the name of the file system directory containing
 # custom code you want to graft into TclHttpd.
@@ -38,6 +41,7 @@ foreach d [list \
     if {[file isdirectory $d]} {
 	Config library $d
     }
+}
 }
 
 # main - Main per-thread startup script.
@@ -134,10 +138,13 @@ Config LogDebug 0
 # CompressProg - the program to use to compress log files and such
 
 Config CompressProg gzip
+
+if 0 {
 foreach d {/bin /usr/bin /usr/local/bin} {
     if {[file exists [file join $d gzip]]} {
         Config CompressProg [file join $d gzip]
     }
+}
 }
 
 # MaxFileDescriptors - the maximum number of file descriptors the
@@ -161,7 +168,9 @@ Config SSL_REQUIRE	0
 # certificate files.  If you have only one such file, you can use
 # SSL_CAFILE described below.
 
+if 0 {
 Config SSL_CADIR	[file join [file dirname [Config home]] certs]
+}
 
 # SSL_CAFILE - the file containing the Certificate Authority
 # certificate.  If this is empty, then the directory specified by

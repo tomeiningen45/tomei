@@ -11,6 +11,10 @@ if [ -e /usr/bin/tclsh8.4 ]; then exec /usr/bin/tclsh8.4 "$0" ${1+"$@"} ; fi
 exec tclsh "$0" ${1+"$@"}
 
 if {[catch {
+    catch {unset env(SERVER_NAME)}
+    catch {unset env(PWD)}
+    catch {unset env(SERVER_SOFTWARE)}
+
     package require ncgi
     package require html
 
