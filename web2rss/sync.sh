@@ -5,13 +5,24 @@ if test "$SCP" = ""; then
     SCP=scp
 fi
 
+function waitscp () {
+    echo wait to scp; sleep 5;
+}
+
+if test "$NOSCP" != 0; then
+    SCP=true
+    function waitscp () {
+        true
+    }
+fi
+
 function dosync () {
     if test "$2" = ""; then
         dest=$WEB2RSSROOT/rss/
     else
         dest=$2
     fi
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP $1 $dest &
 }
 
@@ -21,7 +32,7 @@ function dosync () {
 
 if test -f sync_cnbeta.file; then    
     tclsh cnbeta.tcl
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/cnbeta.xml $root/cnbeta.xml &
 
 else
@@ -44,76 +55,76 @@ else
     #env AUTOTRADER_CAYMAN_REMOTE=1 tclsh autotrader.tcl
     #dosync data/autotrader_cayman_remote.xml
 
-
     tclsh 6park.tcl
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/6park.xml $root/test2.xml &
 
+  if false; then
     tclsh 6park_forum_top.tcl
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/6park-*.xml $root/rss/ &
 
     tclsh wforum.tcl
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/wforum.xml $root/wforum.xml &
 
     tclsh yahoohk.tcl
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/hkyahoo.xml $root/rss/hkyahoo.xml &
 
 #    tclsh cnbeta.tcl
-#    echo wait to scp; sleep 5;
+#    waitscp
 #    $SCP data/cnbeta.xml $root/cnbeta.xml &
 
 #   tclsh iza.tcl
-#   echo wait to scp; sleep 5;
+#   waitscp
 #   $SCP data/iza.xml $root/iza.xml &
 
     tclsh yahoofn.tcl 
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/yahoofn_*.xml $root/ &
 
     tclsh bloomberg_top.tcl 
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/bloomberg_*.xml $root/ &
 
     tclsh zasshi.tcl 
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/zasshi*.xml $root/rss/ &
 
     tclsh gooblog_top.tcl 
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/gooblog_*.xml $WEB2RSSROOT/rss/ &
 
 #   tclsh tiexue.tcl 
-#   echo wait to scp; sleep 5;
+#   waitscp
 #   $SCP data/tiexue.xml $WEB2RSSROOT/rss/ &
 
     tclsh rennlist.tcl 
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/rennlist.xml $WEB2RSSROOT/rss/ &
 
     tclsh register.tcl 
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/register.xml $WEB2RSSROOT/rss/ &
 
     tclsh craigslist.tcl 
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/craigslist.xml $WEB2RSSROOT/rss/ &
 
     env CRAIG_LOCAL=1 tclsh craigslist.tcl 
     dosync data/craigslist_local.xml
 
     tclsh fortune.tcl 
-    echo wait to scp; sleep 5;
+    waitscp
     $SCP data/fortune.xml $WEB2RSSROOT/rss/ &
 
     for site in ebay_911 ebay_930 mohr pelican roadsport; do 
         tclsh multicar.tcl $site
-        echo wait to scp; sleep 5;
+        waitscp
         $SCP data/$site.xml $WEB2RSSROOT/rss/ &
     done
-
+  fi
 fi
 
     tclsh delete_old_files.tcl

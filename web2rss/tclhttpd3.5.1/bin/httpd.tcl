@@ -55,8 +55,10 @@ exec tclsh "$0" ${1+"$@"}
 # Configure the auto_path so we can find the script library.
 # home is the directory containing this script
 
+cd /opt/tclhttpd/
 set home [string trimright [file dirname [info script]] ./]
 set home [file join [pwd] $home]
+set home /opt/tclhttpd/bin
 
 # Auto-detect the configuration
 # 1. Development - look for $home/../lib and $home/../../tcllib/modules
