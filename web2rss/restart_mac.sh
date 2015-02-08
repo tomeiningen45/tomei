@@ -38,7 +38,8 @@ for app in main_loop http_server; do
                 if test "$thepgid" != ""; then
                     ps -eo pid,pgid | while read p pgid; do
                         if test "$pgid" = "$thepgid"; then
-                            bash -c "set -x; kill $SIGNAL $p"
+                            printf "kill $SIGNAL: %s\n" "$(ps -p $p | tail -1)"
+                            kill $SIGNAL $p
                         fi
                     done
                     FOUND=1
@@ -61,7 +62,7 @@ for app in main_loop http_server; do
     done
 
     if test "$1" != "-k"; then
-        nohup bash -c "$PROG 2>&1 > $LOG.1" > /dev/null &
+        nohup bash -c "bash $PROG 2>&1 > $LOG.1" > /dev/null &
     fi
 done
 
