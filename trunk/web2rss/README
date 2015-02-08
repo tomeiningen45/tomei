@@ -1,3 +1,14 @@
+HOW TO auto-launch
+
+# In Automator.app, create a new app to launch this script:
+
+osascript -e 'tell app "Terminal"
+   do script "sleep 5; cd ~/tomei/web2rss; bash ./restart_mac.sh"
+end tell'
+
+
+
+
 tclsh tclhttpd3.5.1/bin/httpd.tcl
 
 
