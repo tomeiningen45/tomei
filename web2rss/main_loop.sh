@@ -1,3 +1,5 @@
+#! /bin/bash
+
 while true; do
     echo SVN Update ===========`date`
     (cd ..; svn update --trust-server-cert --non-interactive)

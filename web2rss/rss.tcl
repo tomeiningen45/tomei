@@ -133,6 +133,10 @@ proc makeitem {title link data date} {
         set date [clock format $date]
     }
 
+    if {[regexp "&" $link] && ![regexp "&amp;" $link]} {
+        regsub -all & $link "&amp;" link
+    }
+
     set t "\n\
 	<item>\n\
 	<title><!\[CDATA\[$title\]\]></title>\n\
