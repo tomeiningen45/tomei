@@ -98,9 +98,9 @@ proc update {} {
         set pat {src=(http://[^>]*.popo8.com/[^> ]+)}
         while {[regexp $pat $data dummy img]} {
             puts $img
-            set rep src=http://freednsnow.no-ip.biz:9015/cgi-bin/im.cgi?
+            set rep src=\"http://freednsnow.no-ip.biz:9015/cgi-bin/im.cgi?
             append rep "a=[ncgi::encode $img]\\&"
-            append rep "b=[ncgi::encode $link]"
+            append rep "b=[ncgi::encode $link]\""
             regsub $pat $data $rep data
         }
 
