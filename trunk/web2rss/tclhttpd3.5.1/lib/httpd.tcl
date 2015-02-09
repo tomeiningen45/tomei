@@ -610,6 +610,14 @@ proc HttpdRead {sock} {
 		    $line x data(proto) data(url) data(query) data(version)]} {
 		
 		# data(uri) is the complete URI
+                if {[regexp {^/cgi-bin/im.cgi/a=(.*)} $data(url) dummy foo]} {
+                    regsub /b= $foo {\&b=} foo
+                    set data(query) a=$foo
+                    set data(url) /cgi-bin/im.cgi
+                }
+
+                #puts $data(url)
+                #puts $data(query)
 
 		set data(uri) $data(url)
 		if {[string length $data(query)]} {
