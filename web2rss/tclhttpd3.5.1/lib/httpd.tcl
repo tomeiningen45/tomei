@@ -596,6 +596,7 @@ proc HttpdRead {sock} {
 	Httpd_SockClose $sock 1 "read error: $readCount"
 	return
     }
+   #puts "$sock $line"
 
     # State machine is a function of our state variable:
     #	start: the connection is new
