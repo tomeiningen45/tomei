@@ -205,7 +205,7 @@ proc HttpdRespond {sock} {
     } elseif {![file readable $mypath]} {
 	HttpdError $sock 404 $mypath
     } else {
-	puts $sock "HTTP/1.$data(version) 200 Data follows"
+	puts $sock "HTTP/1.$data(version) 200 OK"
 	puts $sock "Date: [HttpdDate [clock seconds]]"
 	puts $sock "Last-Modified: [HttpdDate [file mtime $mypath]]"
 	puts $sock "Content-Type: [HttpdContentType $mypath]"

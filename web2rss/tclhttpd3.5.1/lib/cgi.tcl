@@ -247,7 +247,7 @@ proc CgiSpawn {sock script} {
     set data(infile) $fd	;# So close happens in Httpd_SockClose
     set data(header) 0		;# Have not read header yet
     set data(headerlist) {}	;# list of read headers
-    set data(headercode) "200 data follows"	;# normal return
+    set data(headercode) "200 OK"	;# normal return
     fconfigure $fd -blocking 0
 
     # Set up a timer in case it hangs
@@ -404,10 +404,10 @@ proc CgiRead {fd sock} {
 		# Blocked means we have a partial line, just wait.
 	    } elseif {$n == 0} {
 		set data(header) 1
-		append header "HTTP/1.0 $data(headercode)\n"
-		append header "Server: $Httpd(server)\n"
+		append header "HTTP/1.1 $data(headercode)\n"
+		append header "Server: Apache/2.4.10 (Raspbian)\n"
 		append header "Date: [HttpdDate [clock seconds]]\n"
-		append header "Connection: Close\n"
+		append header "Connection: close\n"
 		foreach line $data(headerlist) {
 		    append header $line\n
 		}

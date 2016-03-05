@@ -33,7 +33,7 @@ set Httpd(library) [file dirname [info script]]
 
 # HTTP/1.0 error codes (the ones we use)
 array set Httpd_Errors {
-    200 {Data follows}
+    200 {OK}
     204 {No Content}
     302 {Found}
     304 {Not Modified}
@@ -1221,7 +1221,7 @@ proc HttpdRespondHeader {sock type close size {code 200}} {
     append reply "Server: $Httpd(server)\n"
 
     if {$close} {
-	append reply "Connection: Close" \n
+	append reply "Connection: close" \n
     } elseif {$data(version) == 1.0 && !$close} {
 	append reply "Connection: Keep-Alive" \n
     }

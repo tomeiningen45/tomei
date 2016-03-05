@@ -174,7 +174,7 @@ proc HttpdRespond {sock} {
     }
 
     if {![catch {open $mypath} in]} {
-	puts $sock "HTTP/1.1 200 Data follows"
+	puts $sock "HTTP/1.1 200 OK"
 	puts $sock "Date: [HttpdDate [clock clicks]]"
 	puts $sock "Last-Modified: [HttpdDate [file mtime $mypath]]"
 	puts $sock "Content-Type: [HttpdContentType $mypath]"
