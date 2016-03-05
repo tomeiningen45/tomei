@@ -55,7 +55,7 @@ proc doit {} {
             if {$iphone} {
                 set body "<font size=+4>$body</font>"
             }
-            set data =====$body$data
+            set data $body$data
         }
     }
     
