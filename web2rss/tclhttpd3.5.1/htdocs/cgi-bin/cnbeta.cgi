@@ -10,21 +10,6 @@ if [ -e /usr/bin/tclsh8.4 ]; then exec /usr/bin/tclsh8.4 "$0" ${1+"$@"} ; fi
 # \
 exec tclsh "$0" ${1+"$@"}
 
-set hdr0 {HTTP/1.0 200 OK
-Content-Type: application/rss+xml;charset=UTF-8
-}
-set hdr1 {HTTP/1.1 302 Moved Temporarily
-Server: nginx/1.4.1
-Content-Type: text/html
-Location: /data/mcnbeta.xml
-Age: 0
-}
-set hdr2 {HTTP/1.1 302 Moved Temporarily
-Server: nginx/1.4.1
-Content-Type: text/html
-Location: http://freednsnow.no-ip.biz/rss/mcnbeta.xml
-Age: 0
-}
 
 proc HttpdDate {seconds} {
     return [clock format $seconds -format {%a, %d %b %Y %T GMT} -gmt true]
@@ -42,7 +27,7 @@ if {[catch {
     set data ""
     set index ""
     set cache /tmp/cnbeta.saved.rss
-    if {![file exists $cache] || [clock seconds] - [file mtime $cache] > 260} {
+    if {![file exists $cache] || [clock seconds] - [file mtime $cache] > 180} {
         catch {exec wget -O $cache http://rss.cnbeta.com/rss 2> /dev/null}
     }
     set fd [open $cache]
@@ -66,44 +51,24 @@ if {[catch {
 
     regsub {<rss version="2.0">} $data {<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:georss="http://www.georss.org/georss" version="2.0">} data
 
-    if {1 || ![file exists /var/www/html/rss/]} {
-        fconfigure stdout -encoding utf-8
-        set hdr {
-            Last-Modified: DATE
-            Accept-Ranges: bytes
-            Vary: Accept-Encoding
-            Content-Encoding: identity
-            Content-Length: LENGTH
-            Content-Type: application/xml
-        }
-
-        #set data <xxx></xxx>
-
-        set tmp /tmp/cnbeta.cgi.out
-        set tmpfd [open $tmp w+]
-        fconfigure $tmpfd -encoding utf-8
-        puts -nonewline $tmpfd $data
-        close $tmpfd
-
-        regsub LENGTH $hdr [file size $tmp] hdr
-        put_header stdout $hdr
-        #puts -nonewline $data
-        puts -nonewline $data
-        close stdout
-    } else {
-        if {[file exists /var/www/html/rss/]} {
-            set file /var/www/html/rss/mcnbeta.xml
-            set hdr $hdr2
-        } else {
-            set file /opt/tclhttpd/htdocs/data/mcnbeta.xml
-            set hdr $hdr1
-        }
-        set fd [open $file w+]
-        fconfigure $fd -encoding utf-8
-        puts $fd $data
-        close $fd
-        puts $hdr
+    fconfigure stdout -encoding utf-8
+    set hdr {
+        Last-Modified: DATE
+        Accept-Ranges: bytes
+        Content-Length: LENGTH
+        Connection: close
+        Content-Type: application/xml
     }
+    set tmp /tmp/cnbeta.cgi.out
+    set tmpfd [open $tmp w+]
+    fconfigure $tmpfd -encoding utf-8
+    puts -nonewline $tmpfd $data
+    close $tmpfd
+
+    regsub LENGTH $hdr [file size $tmp] hdr
+    put_header stdout $hdr
+    puts -nonewline $data
+    close stdout
 }]} {
     puts "Content-Type: text/html\n"
     puts "<h1>CGI Error</h1>"
