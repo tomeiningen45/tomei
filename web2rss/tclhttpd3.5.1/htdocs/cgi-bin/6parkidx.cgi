@@ -45,12 +45,12 @@ proc doit {} {
 
         regsub -all \r $data "" data
         set wsn "\[\t\r\n \]*"
-        set ws  "\[\t　 \]*"
+        set ws  "\[\t\u3000 \]*"
         set pat "^$wsn<pre>(.*)<!--bodyend-->$wsn</pre>"
         if {[regexp $pat $data dummy body]} {
             regsub $pat $data "" data
 
-            regsub -all "\n$ws\n+$ws" $body "<p>\n\n　" body
+            regsub -all "\n$ws\n+$ws" $body "<p>\n\n\u3000" body
         
             if {$iphone} {
                 set body "<font size=+4>$body</font>"
