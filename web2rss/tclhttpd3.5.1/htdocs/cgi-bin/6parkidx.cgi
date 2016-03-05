@@ -50,8 +50,9 @@ proc doit {} {
         if {[regexp $pat $data dummy body]} {
             regsub $pat $data "" data
 
-            regsub -all "\n$ws\n+$ws" $body "<p>\n\n\u3000" body
-        
+            regsub -all "\n$ws\n+$ws" $body "<p>\u3000" body
+            regsub -all "\n" $body "" body
+
             if {$iphone} {
                 set body "<font size=+4>$body</font>"
             }
