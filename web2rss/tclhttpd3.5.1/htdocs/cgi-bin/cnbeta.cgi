@@ -38,11 +38,12 @@ if {[catch {
     foreach line [split $src \n] {
         if {[regexp {<link>[^<]+/articles/([0-9]+).htm</link>} $line dummy n]} {
             set index $n
-
             catch {
-                global env
-                set root $env(REQUEST_URI)
-                regsub {/cgi-bin/.*} $root "" root
+                set root http://$env(HTTP_HOST)
+                regsub {:[0-9]+} $root "" root
+                if {"$env(SERVER_PORT)" != "80"} {
+                    append root ":$env(SERVER_PORT)"
+                }
                 set line "<link>$root/cgi-bin/cnbetaview.cgi?ref=/view/$index.htm</link>"
             }
         }
