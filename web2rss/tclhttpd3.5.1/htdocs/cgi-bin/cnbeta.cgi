@@ -38,8 +38,20 @@ if {[catch {
     foreach line [split $src \n] {
         if {[regexp {<link>[^<]+/articles/([0-9]+).htm</link>} $line dummy n]} {
             set index $n
+
+            catch {
+                global env
+                set root $env(REQUEST_URI)
+                regsub {/cgi-bin/.*} $root "" root
+                set line "<link>$root/cgi-bin/cnbetaview.cgi?ref=/view/$index.htm</link>"
+            }
         }
-        regsub {[\]][\]]></description>} $line "<p><p><a href=http://m.cnbeta.com/view/$index.htm>GO TO MOBILE SITE</a><p><p>\]\]></description>" line
+
+        set links "<a href=/cgi-bin/cnbetaview.cgi?ref=/view/$index.htm>GO TO NAKED SITE</a>"
+        append links "<p><p><a href=http://m.cnbeta.com/view/$index.htm>GO TO MOBILE SITE</a>"
+        append links "<p><p><a href=http://www.cnbeta.com/articles/$index.htm>GO TO DESKTOP SITE</a>"
+
+        regsub {[\]][\]]></description>} $line "<font size=+1><p><p>$links</font>\]\]></description>" line
         append data $line\n
     }
 
