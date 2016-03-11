@@ -47,10 +47,11 @@ if {[catch {
     foreach line [split $src \n] {
         if {[regexp {<link>[^<]+/articles/([0-9]+).htm</link>} $line dummy n]} {
             set index $n
-            set line "<link>$root/cgi-bin/cnbetaview.cgi?ref=/view/$index.htm</link>"
+            #set line "<link>$root/cgi-bin/cnbetaview.cgi?ref=/view/$index.htm</link>"
         }
 
         set links "<a href=$root/cgi-bin/cnbetaview.cgi?ref=/view/$index.htm>GO TO NAKED SITE</a>"
+        append links " | <a href=http://192.168.2.113/cgi-bin/cnbetaview.cgi?ref=/view/$index.htm>GO TO NAKED SITE2</a>"
         append links "<p><p><a href=http://m.cnbeta.com/view/$index.htm>GO TO MOBILE SITE</a>"
         append links "<p><p><a href=http://www.cnbeta.com/articles/$index.htm>GO TO DESKTOP SITE</a>"
 
