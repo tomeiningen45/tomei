@@ -49,7 +49,7 @@ proc doit {} {
         regsub {.*<article id="[^>]*" class="article-holder">} $data "" data
         regsub {(<a href="[^>]*" class="artBt publishComment">更多评论</a>).*} $data \\1 data
         regsub {<!-- /content-->.*} $data "" data
-        set tail "<iframe width=776 src=\"/cgi-bin/cnbetacmt.cgi?ref=$page\"></iframe>"
+        set tail "<iframe width=100% src=\"/cgi-bin/cnbetacmt.cgi?ref=$page\"></iframe>"
     } elseif {[regexp "^http://m.cnbeta.com/comments_" $src]} {
         regsub {.*<span class="morComment">} $data "" data
         regsub {<!-- /content-->.*} $data "" data

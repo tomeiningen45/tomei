@@ -105,7 +105,7 @@ proc doit {} {
         set width 250
     }
 
-    set data "<table width=$width border=0 align=center cellspacing=0 cellpadding=5><tr><td>$data</td></tr></table>"
+    set data "<table width=100% border=0 align=center cellspacing=0 cellpadding=5><tr><td>$data</td></tr></table>"
 
     return "$head$data</body></html>"
 }
