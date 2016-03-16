@@ -115,18 +115,27 @@ proc doit {} {
         }
     }
 
-    set out ""
-    set prefix ""
+    if {$iphone} {
+        set f0 "<font size=+4>"
+        set f1 "</font>"
+    } else {
+        set f0 ""
+        set f1 ""
+    }
+    set out "<table width=100% borderwidth=2 cellpadding=4>"
     foreach item [lsort -decreasing -command comp $list] {
         set a [lindex $item 0]
         set b [lindex $item 1]
         set c [lindex $item 2]
-        append out $prefix
-        append out "\[$a分\] ($b楼) $c"
-        set prefix "<hr>\n"
+        append out "<tr>"
+        append out "<td style='white-space: nowrap; text-align:right;' valign=top>${f0}$b\u697c${f1}</td>"
+        append out "<td style='white-space: nowrap; text-align:right;' valign=top>${f0}\[$a\u5206\]${f1}</td>"
+        append out "<td width='99%' valign=top bgcolor='#e0e0ff'>${f0}$c${f1}</td>"
+        append out "</tr>"
     }
-
-    set data "$out<p>postdata=$postdata<br>time1=$elapsed1, time2=$elapsed2"
+    append out "</table>"
+   #set data "$out<p>postdata=$postdata<br>time1=$elapsed1, time2=$elapsed2"
+    set data "$out<p>time1=$elapsed1, time2=$elapsed2"
 
     return $data
 }
