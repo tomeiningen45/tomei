@@ -95,7 +95,11 @@ proc doit {} {
         }
     }
 
-    return "$head$out<p>postdata=$postdata<br>time1=$elapsed1, time2=$elapsed2</body></html>"
+    set data "$out<p>postdata=$postdata<br>time1=$elapsed1, time2=$elapsed2"
+    if {$iphone} {
+        set data "<font size=+4>$data</font>"
+    }
+    return "$head$data</body></html>"
 }
 
 source [file dirname [info script]]/lib.tcl
