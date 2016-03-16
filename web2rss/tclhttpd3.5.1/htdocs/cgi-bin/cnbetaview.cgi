@@ -32,7 +32,7 @@ proc doit {} {
 
     set data [wget $src]
     set head "<html><head><META HTTP-EQUIV=\"content-type\" CONTENT=\"text/html; charset=utf-8\"></head><body>"
-
+    set tail ""
 
     # (1) if article, rewrite the body
     if {"$src" == "http://rss.cnbeta.com/rss"} {
@@ -49,6 +49,7 @@ proc doit {} {
         regsub {.*<article id="[^>]*" class="article-holder">} $data "" data
         regsub {(<a href="[^>]*" class="artBt publishComment">更多评论</a>).*} $data \\1 data
         regsub {<!-- /content-->.*} $data "" data
+        set tail "<iframe width=776 src=\"/cgi-bin/cnbetacmt.cgi?ref=484209\"></iframe>"
     } elseif {[regexp "^http://m.cnbeta.com/comments_" $src]} {
         regsub {.*<span class="morComment">} $data "" data
         regsub {<!-- /content-->.*} $data "" data
@@ -61,9 +62,9 @@ proc doit {} {
     regsub -all {<script } $data "<xxscript " data
 
     if {!$iphone} {
-        set data "<table width=776 border=0 align=center cellspacing=0 cellpadding=5><tr><td>$data</td></tr></table>"
+        set data "<table width=776 border=0 align=center cellspacing=0 cellpadding=5><tr><td>$data$tail</td></tr></table>"
     } else {
-        set data "<font size=+4>$data</font>"
+        set data "<table width=776 border=0 align=center cellspacing=0 cellpadding=5><tr><td><font size=+4>$data</font>$data$tail</font></td></tr></table>"
         regsub -all "<img src=" $data "<img width=100% src=" data
     }
 
