@@ -100,7 +100,12 @@ proc doit {} {
         set data "<font size=+4>$data</font>"
     }
 
-    set data "<table width=740 border=0 align=center cellspacing=0 cellpadding=5><tr><td>$data</td></tr></table>"
+    set width 740
+    if {$iphone} {
+        set width 250
+    }
+
+    set data "<table width=$width border=0 align=center cellspacing=0 cellpadding=5><tr><td>$data</td></tr></table>"
 
     return "$head$data</body></html>"
 }
