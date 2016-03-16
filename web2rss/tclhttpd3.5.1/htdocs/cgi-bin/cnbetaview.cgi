@@ -64,7 +64,7 @@ proc doit {} {
     if {!$iphone} {
         set data "<table width=776 border=0 align=center cellspacing=0 cellpadding=5><tr><td>$data$tail</td></tr></table>"
     } else {
-        set data "<table width=776 border=0 align=center cellspacing=0 cellpadding=5><tr><td><font size=+4>$data</font>$data$tail</font></td></tr></table>"
+        set data "<table width=776 border=0 align=center cellspacing=0 cellpadding=5><tr><td><font size=+4>$data$tail</font></td></tr></table>"
         regsub -all "<img src=" $data "<img width=100% src=" data
     }
 
