@@ -48,12 +48,22 @@ if {[catch {
     set data [doit]
 
     fconfigure stdout -encoding utf-8
-    set hdr {
-        Last-Modified: DATE
-        Accept-Ranges: bytes
-        Content-Length: LENGTH
-        Connection: close
-        Content-Type: text/html
+    if {[info exists isfeed]} {
+        set hdr {
+            Last-Modified: DATE
+            Accept-Ranges: bytes
+            Content-Length: LENGTH
+            Connection: close
+            Content-Type: application/xml
+        }
+    } else {
+        set hdr {
+            Last-Modified: DATE
+            Accept-Ranges: bytes
+            Content-Length: LENGTH
+            Connection: close
+            Content-Type: text/html
+        }
     }
     set tmp /tmp/cgi-[pid].out
     file delete -force $tmp
