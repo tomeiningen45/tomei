@@ -79,35 +79,56 @@ proc doit {} {
     regsub {,"comment_num":.*} $data "" data
 
     regsub -all {"date":} $data \ufff0 data
-    set out ""
-    set prefix ""
 
+    set list ""
+    set n 0
     foreach item [split $data \ufff0] {
         set score 0
         regexp {"score":([0-9]+)} $item dummy score
 
         if {[regexp {"comment":"([^\"]+)"} $item dummy comment]} {
+            incr n
             set comment [subst $comment]
             regsub -all "\n" $comment "<br>" comment
-            append out $prefix
-            append out "\[$score\] $comment"
-            set prefix "<hr>\n"
+            lappend list [list $score $n $comment]
         }
     }
 
+    proc comp {a b} {
+        set x [lindex $a 0]
+        set y [lindex $b 0]
+
+        if {$x > $y} {
+            return 1
+        } elseif {$x < $y} {
+            return -1
+        } else {
+            set x [lindex $a 1]
+            set y [lindex $b 1]
+            if {$x > $y} {
+                return 1
+            } elseif {$x < $y} {
+                return -1
+            } else {
+                return 0
+            }
+        }
+    }
+
+    set out ""
+    set prefix ""
+    foreach item [lsort -decreasing -command comp $list] {
+        set a [lindex $item 0]
+        set b [lindex $item 1]
+        set c [lindex $item 2]
+        append out $prefix
+        append out "\[$a分\] ($b楼) $c"
+        set prefix "<hr>\n"
+    }
+
     set data "$out<p>postdata=$postdata<br>time1=$elapsed1, time2=$elapsed2"
-    if {$iphone} {
-        set data "<font size=+4>$data</font>"
-    }
 
-    set width 740
-    if {$iphone} {
-        set width 250
-    }
-
-    set data "<table width=100% border=0 align=center cellspacing=0 cellpadding=5><tr><td>$data</td></tr></table>"
-
-    return "$head$data</body></html>"
+    return $data
 }
 
 source [file dirname [info script]]/lib.tcl

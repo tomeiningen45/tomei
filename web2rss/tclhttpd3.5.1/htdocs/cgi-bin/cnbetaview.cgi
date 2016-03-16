@@ -49,7 +49,48 @@ proc doit {} {
         regsub {.*<article id="[^>]*" class="article-holder">} $data "" data
         regsub {(<a href="[^>]*" class="artBt publishComment">更多评论</a>).*} $data \\1 data
         regsub {<!-- /content-->.*} $data "" data
-        set tail "<iframe width=100% src=\"/cgi-bin/cnbetacmt.cgi?ref=$page\"></iframe>"
+        regsub {<section id="commentHolder".*} $data "" data
+
+        set tail {
+            <hr>
+            <p id="thecmt">Loading comments</p>
+            <script>
+            state = 0;
+            function doit() {
+                if (window.XMLHttpRequest)
+                {// code for IE7+, Firefox, Chrome, Opera, Safari
+                    xmlhttp=new XMLHttpRequest();
+                }
+                else
+                {// code for IE6, IE5
+                    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                xmlhttp.onreadystatechange = function() {
+                    if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+                        document.getElementById("thecmt").innerHTML = xmlhttp.responseText;
+                        state = -9999;
+                    }
+                }
+                xmlhttp.open("GET", "/cgi-bin/cnbetacmt.cgi?ref=PAGE", true);
+                xmlhttp.send();
+            }
+
+            function update () {
+                if (state < 0) {
+                    return;
+                }
+                state ++;
+                window.setTimeout(update, 1000)
+                document.getElementById("thecmt").innerHTML = "Loading comments: " + state;
+            }
+
+            document.getElementById("thecmt").innerHTML = "Loading comments: ...";
+            doit();
+            update()
+            </script>
+        }
+        regsub PAGE $tail $page tail
+        #<iframe width=100% src=\"/cgi-bin/cnbetacmt.cgi?ref=$page\"></iframe>"
     } elseif {[regexp "^http://m.cnbeta.com/comments_" $src]} {
         regsub {.*<span class="morComment">} $data "" data
         regsub {<!-- /content-->.*} $data "" data
@@ -64,7 +105,7 @@ proc doit {} {
     if {!$iphone} {
         set data "<table width=776 border=0 align=center cellspacing=0 cellpadding=5><tr><td>$data$tail</td></tr></table>"
     } else {
-        set data "<table width=776 border=0 align=center cellspacing=0 cellpadding=5><tr><td><font size=+4>$data$tail</font></td></tr></table>"
+        set data "<font size=+4>$data$tail</font>"
         regsub -all "<img src=" $data "<img width=100% src=" data
     }
 
