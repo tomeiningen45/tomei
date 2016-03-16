@@ -99,6 +99,9 @@ proc doit {} {
     if {$iphone} {
         set data "<font size=+4>$data</font>"
     }
+
+    set data "<table width=740 border=0 align=center cellspacing=0 cellpadding=5><tr><td>$data</td></tr></table>"
+
     return "$head$data</body></html>"
 }
 
