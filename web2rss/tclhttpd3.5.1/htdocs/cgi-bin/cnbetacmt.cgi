@@ -88,7 +88,7 @@ proc doit {} {
 
         if {[regexp {"comment":"([^\"]+)"} $item dummy comment]} {
             incr n
-            set comment [subst $comment]
+            set comment [subst -novariables -nocommands $comment]
             regsub -all "\n" $comment "<br>" comment
             lappend list [list $score $n $comment]
         }
