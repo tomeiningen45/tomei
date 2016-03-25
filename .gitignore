@@ -2,3 +2,10 @@
 *.cgi~
 
 *.tcl~
+
+*.mp3
+
+*.mp4
+
+web2rss/tclhttpd3.5.1/htdocs/podcasts/asakawaz/*.html
+web2rss/tclhttpd3.5.1/htdocs/podcasts/podcast/*.html
