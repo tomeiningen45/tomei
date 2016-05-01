@@ -44,6 +44,8 @@ set FILES {
     https://www.youtube.com/watch?v=OnAvw1HLu-M
     https://www.youtube.com/watch?v=yEW9ApmE3dE
 
+    https://www.youtube.com/watch?v=HzeGPY3HUmY
+    https://www.youtube.com/watch?v=dg6ZKiBIBD4
 }
 
 set album {アサカワズ}

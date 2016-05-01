@@ -23,6 +23,16 @@ set item {
     </item>
 }
 
+set dirs {}
+if {[llength $argv] >= 1} {
+    set pwd [pwd]
+    foreach dir $argv {
+        cd $dir
+        lappend dirs [pwd]
+        cd $pwd
+    }
+}
+
 set tail {
     </channel>
     </rss>
@@ -59,7 +69,11 @@ proc mycomp {a b} {
     }
 }
 
-foreach dir [glob $datadir/*] {
+if {"$dirs" == ""} {
+    set dirs [glob $datadir/*]
+}
+
+foreach dir $dirs {
     catch {unset MAIN_TITLE}
     catch {unset MAIN_DESC}
     catch {unset AUTHOR}

@@ -1,4 +1,9 @@
+youtube-podcast:
 
+cd ~/youtube/asakawaz
+update doit.tcl for latest contents
+tclsh doit.tcl
+tclsh ~/tomei/web2rss/youtube_podcasts/organize.tcl
 
 
 ======================================================================
