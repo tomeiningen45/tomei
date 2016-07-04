@@ -18,6 +18,7 @@ set item {
         
     <itunes:explicit>no</itunes:explicit>
     <itunes:duration>DURATION</itunes:duration>
+    <itunes:summary>ITEM_DESC</itunes:summary>
     <enclosure url="LINK" type="audio/mpeg" length="DURATION" />
         
     </item>
@@ -61,6 +62,9 @@ proc replace {data pattern replacement} {
 
 
 proc mycomp {a b} {
+    if {[regexp tin25000 $a]} {
+        return [string comp $a $b]
+    }
     set n [expr [file mtime $a] - [file mtime $b]]
     if {$n == 0} {
         return [string comp $a $b]
@@ -101,32 +105,51 @@ foreach dir $dirs {
             continue
         }
 
-        set fd [open $html]
-        fconfigure $fd -encoding utf-8
-        set data [read $fd]
-        close $fd
-
         set title ""
         set comments ""
         set pubdate [file mtime $mp3]
         set date    [file mtime $mp3]
-        if {[regexp {<meta itemprop="datePublished" content="([^>]+)">} $data dummy d]} {
-            catch {
-                set date [clock scan $d]
-            }
-        }
-        set pubdate [clock format $pubdate]
-        set date [clock format $date -format %Y-%m-%d]
 
-        regexp {<title>([^<]+)</title>} $data dummy title
-        regsub { - YouTube$} $title "" title
-        regexp {name="description" content="([^<]+)">} $data dummy comments
-
+        set eyed3data ""
         set duration 00:00
         catch {
-            set data [exec eyed3 --no-color $mp3 2> /dev/null]
-            regexp {Time: ([0-9:]+)} $data dummy duration
+            set eyed3data [exec eyed3 --no-color $mp3 2> /dev/null]
+            regexp {Time: ([0-9:]+)} $eyed3data dummy duration
+            regsub -all "&" $eyed3data " and " eyed3data
         }
+
+        if {[info exists $html]} {
+            set fd [open $html]
+            fconfigure $fd -encoding utf-8
+            set data [read $fd]
+            close $fd
+
+            if {[regexp {<meta itemprop="datePublished" content="([^>]+)">} $data dummy d]} {
+                catch {
+                    set pubdate [clock scan $d]
+                }
+            }
+
+            regexp {<title>([^<]+)</title>} $data dummy title
+            regsub { - YouTube$} $title "" title
+            regexp {name="description" content="([^<]+)">} $data dummy comments
+        } else {
+            regexp "title: (\[^\n\]+)" $eyed3data dummy title
+            regsub "UserTextFrame:.*" $eyed3data "" eyed3data
+            regexp "Comment: \[^\n\]+\n(\[^\n\]+)" $eyed3data dummy comments
+            set comments [string trim $comments]
+
+            if {[regexp tin25000 $mp3]} {
+                regsub {^[56][a-z0-9][a-z0-9][a-z0-9][a-z0-9] } $title "" title
+                regsub {^Bonchicast } $title "" title
+                regsub {Bonchicast$} $title "" title
+
+                catch {set pubdate [clock scan "20[string range $mp3 0 5]" -format %Y%m%d]}
+            }
+        }
+
+        set pubdate [clock format $pubdate]
+        set date [clock format $date -format %Y-%m-%d]
 
         set link http://localhost:9015/podcasts/[file tail $dir]/$mp3
 
