@@ -28,7 +28,13 @@ foreach i $FILES {
 
     set out $file.mp3
 
-    exec /Applications/VLC.app/Contents/MacOS/VLC -I dummy $file.mp4 "--sout=#transcode{acodec=mp3,vcodec=dummy}:standard{access=file,mux=raw,dst=$file.mp3}" vlc://quit \
+    if {[file exists $file.mkv]} {
+        set from $file.mkv
+    } else {
+        set from $file.mp4
+    }
+    
+    exec /Applications/VLC.app/Contents/MacOS/VLC -I dummy $from "--sout=#transcode{acodec=mp3,vcodec=dummy}:standard{access=file,mux=raw,dst=$file.mp3}" vlc://quit \
         >@ stdout 2>@ stderr
 
     exec eyed3 -2 -A $album -a $artist -c $comments -G Podcast -t $title $file.mp3 >@ stdout 2>@ stderr

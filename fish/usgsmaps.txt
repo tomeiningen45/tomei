@@ -1,0 +1,40 @@
+加州近岸海底地图安装办法
+
+这个要自己动一下手。先到USGS网站下载海底地图
+
+（呼吁一下，希望能帮助大家方便的钓到鱼，但是石斑是有限的资源，钓光了就没有了，希望大家钓够就好，没有必要每次都钓到limit为止）
+
+USGS主页 http://walrus.wr.usgs.gov/mapping/csmp/sheets.html
+
+Santa Cruz的地图在“Offshore of Santa Cruz, California”
+
+要是只想在电脑看的话，可以下载“Shaded-Relief Bathymetry (27 MB)”
+
+http://pubs.usgs.gov/of/2016/1024/ofr20161024_sheet2.pdf
+
+要是想在手机上看并用GPS定位的话，点进“Offshore of Santa Cruz, California”
+
+(今天网站有点问题，Santa Cruz的看不到，可以先试一下Half Moon Bay的资料：）
+http://pubs.usgs.gov/of/2014/1214/
+
+在这个页面右下方点 “Data Catalog—Half Moon Bay Map Area, California”， 会来到这里
+
+http://pubs.usgs.gov/ds/781/OffshoreHalfMoonBay/data_catalog_OffshoreHalfMoonBay.html
+
+在这里选“Bathymetry Hillshade (2m/pixel), Offshore of Half Moon Bay map area”， 会下载一个ZIP档案，解压后有一个叫 BathymetryHS_OffshoreHalfMoonBay.tif 的图像。
+
+到 https://www.maptiler.com/ 下载MapTiler（Windows和Mac都支持）。在MapTiler里打开 BathymetryHS_OffshoreHalfMoonBay.tif ， 再做成一个MBTiles档案，同步到DropBox，就可以下载到iOS或Android的App里面了
+
+详情请看
+https://www.maptiler.com/how-to/ios/
+https://www.maptiler.com/how-to/android/
+https://www.maptiler.com/how-to/garmin/
+
+
+另外，Santa Cruz的资料在这里，只是USGS主页有问题，没有办法从主页找到这个：
+http://walrus.wr.usgs.gov/mapping/csmp/OffshoreSantaCruz/data_catalog_OffshoreSantaCruz.html
+
+
+
+
+

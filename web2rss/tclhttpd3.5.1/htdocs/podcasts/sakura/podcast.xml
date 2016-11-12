@@ -8,1105 +8,417 @@
 
 
     <item>
-    <title>105_死後の世界</title>
-    <description>貞子さんすみません</description>
-    <pubDate>Sun Mar 13 19:22:26 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin105.mp3</guid>
+    <title>118_友達２</title>
+    <description>友達は大事ですね</description>
+    <pubDate>Sat Oct 29 23:37:54 PDT 2016</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin118.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>34:26</itunes:duration>
-    <itunes:summary>貞子さんすみません</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin105.mp3" type="audio/mpeg" length="34:26" />
+    <itunes:duration>41:35</itunes:duration>
+    <itunes:summary>友達は大事ですね</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin118.mp3" type="audio/mpeg" length="41:35" />
         
     </item>
 
 
     <item>
-    <title>106_トークイベント２</title>
-    <description>イベントは緊張するなあ</description>
-    <pubDate>Sun Mar 13 19:22:18 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin106.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>36:37</itunes:duration>
-    <itunes:summary>イベントは緊張するなあ</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin106.mp3" type="audio/mpeg" length="36:37" />
-        
-    </item>
-
-
-    <item>
-    <title>107_ドラゴンクエスト２</title>
-    <description>ボスは大神官ハーゴン</description>
-    <pubDate>Sun Mar 13 19:22:10 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin107.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>47:37</itunes:duration>
-    <itunes:summary>ボスは大神官ハーゴン</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin107.mp3" type="audio/mpeg" length="47:37" />
-        
-    </item>
-
-
-    <item>
-    <title>108_料理２</title>
-    <description>手料理は最高～！</description>
-    <pubDate>Sun Mar 13 19:22:02 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin108.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>33:21</itunes:duration>
-    <itunes:summary>手料理は最高～！</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin108.mp3" type="audio/mpeg" length="33:21" />
-        
-    </item>
-
-
-    <item>
-    <title>109_最終回２</title>
-    <description>始まりがあれば終わりがあります</description>
-    <pubDate>Sun Mar 13 19:21:54 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin109.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>33:33</itunes:duration>
-    <itunes:summary>始まりがあれば終わりがあります</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin109.mp3" type="audio/mpeg" length="33:33" />
-        
-    </item>
-
-
-    <item>
-    <title>110_学校２</title>
-    <description>さくら先生のエロ授業！</description>
-    <pubDate>Sun Mar 13 19:21:47 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin110.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>35:33</itunes:duration>
-    <itunes:summary>さくら先生のエロ授業！</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin110.mp3" type="audio/mpeg" length="35:33" />
-        
-    </item>
-
-
-    <item>
-    <title>111_テレビゲーム</title>
-    <description>テレビゲームは最高です。</description>
-    <pubDate>Sun Mar 13 19:21:40 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin111.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>46:44</itunes:duration>
-    <itunes:summary>テレビゲームは最高です。</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin111.mp3" type="audio/mpeg" length="46:44" />
-        
-    </item>
-
-
-    <item>
-    <title>112_自殺</title>
-    <description>自殺を推奨するものではありません。</description>
-    <pubDate>Sun Mar 13 19:21:34 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin112.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>41:09</itunes:duration>
-    <itunes:summary>自殺を推奨するものではありません。</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin112.mp3" type="audio/mpeg" length="41:09" />
-        
-    </item>
-
-
-    <item>
-    <title>011_ドラゴンボール</title>
-    <description>オラ猿悟空！</description>
-    <pubDate>Sun Mar 13 19:21:14 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin011.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>30:31</itunes:duration>
-    <itunes:summary>オラ猿悟空！</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin011.mp3" type="audio/mpeg" length="30:31" />
-        
-    </item>
-
-
-    <item>
-    <title>013_インターネット</title>
-    <description>特になし</description>
-    <pubDate>Sun Mar 13 19:21:06 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin013.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>24:54</itunes:duration>
-    <itunes:summary>特になし</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin013.mp3" type="audio/mpeg" length="24:54" />
-        
-    </item>
-
-
-    <item>
-    <title>014_作家</title>
-    <description>作家とはなんぞや</description>
-    <pubDate>Sun Mar 13 19:21:00 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin014.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>25:40</itunes:duration>
-    <itunes:summary>作家とはなんぞや</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin014.mp3" type="audio/mpeg" length="25:40" />
-        
-    </item>
-
-
-    <item>
-    <title>016_死後の世界２</title>
-    <description>異音について</description>
-    <pubDate>Sun Mar 13 19:20:53 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin016.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>38:25</itunes:duration>
-    <itunes:summary>異音について</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin016.mp3" type="audio/mpeg" length="38:25" />
-        
-    </item>
-
-
-    <item>
-    <title>019_ひとり旅２</title>
-    <description>旅とはなんぞや</description>
-    <pubDate>Sun Mar 13 19:20:41 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin019.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>28:34</itunes:duration>
-    <itunes:summary>旅とはなんぞや</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin019.mp3" type="audio/mpeg" length="28:34" />
-        
-    </item>
-
-
-    <item>
-    <title>022_インド</title>
-    <description>インド</description>
-    <pubDate>Sun Mar 13 19:20:35 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin022.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>30:37</itunes:duration>
-    <itunes:summary>インド</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin022.mp3" type="audio/mpeg" length="30:37" />
-        
-    </item>
-
-
-    <item>
-    <title>023_さくら通信の原稿</title>
-    <description>コミケの話など</description>
-    <pubDate>Sun Mar 13 19:20:29 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin023.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>23:38</itunes:duration>
-    <itunes:summary>コミケの話など</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin023.mp3" type="audio/mpeg" length="23:38" />
-        
-    </item>
-
-
-    <item>
-    <title>025_病院</title>
-    <description>いんきんぐ</description>
-    <pubDate>Sun Mar 13 19:20:21 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin025.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>31:41</itunes:duration>
-    <itunes:summary>いんきんぐ</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin025.mp3" type="audio/mpeg" length="31:41" />
-        
-    </item>
-
-
-    <item>
-    <title>026_恋愛と物理</title>
-    <description>物理について。</description>
-    <pubDate>Sun Mar 13 19:20:11 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin026.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>29:19</itunes:duration>
-    <itunes:summary>物理について。</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin026.mp3" type="audio/mpeg" length="29:19" />
-        
-    </item>
-
-
-    <item>
-    <title>027_エチオピア</title>
-    <description>エチオピアまんじゅう</description>
-    <pubDate>Sun Mar 13 19:19:58 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin027.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>27:47</itunes:duration>
-    <itunes:summary>エチオピアまんじゅう</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin027.mp3" type="audio/mpeg" length="27:47" />
-        
-    </item>
-
-
-    <item>
-    <title>031_北斗の拳</title>
-    <description>30点</description>
-    <pubDate>Sun Mar 13 19:19:50 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin031.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>28:22</itunes:duration>
-    <itunes:summary>30点</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin031.mp3" type="audio/mpeg" length="28:22" />
-        
-    </item>
-
-
-    <item>
-    <title>034_宇宙</title>
-    <description>宇宙</description>
-    <pubDate>Sun Mar 13 19:19:42 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin034.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>29:25</itunes:duration>
-    <itunes:summary>宇宙</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin034.mp3" type="audio/mpeg" length="29:25" />
-        
-    </item>
-
-
-    <item>
-    <title>038_ディズニーランド</title>
-    <description>世界中だれだって微笑めば仲良しだよ</description>
-    <pubDate>Sun Mar 13 19:19:37 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin038.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>31:19</itunes:duration>
-    <itunes:summary>世界中だれだって微笑めば仲良しだよ</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin038.mp3" type="audio/mpeg" length="31:19" />
-        
-    </item>
-
-
-    <item>
-    <title>039_ファミコン１</title>
-    <description>ファミコンとあまり関係無い話</description>
-    <pubDate>Sun Mar 13 19:19:30 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin039.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>31:02</itunes:duration>
-    <itunes:summary>ファミコンとあまり関係無い話</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin039.mp3" type="audio/mpeg" length="31:02" />
-        
-    </item>
-
-
-    <item>
-    <title>040_ファミコン２</title>
-    <description>懐かしいファミコン</description>
-    <pubDate>Sun Mar 13 19:19:18 PDT 2016</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin040.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>28:22</itunes:duration>
-    <itunes:summary>懐かしいファミコン</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin040.mp3" type="audio/mpeg" length="28:22" />
-        
-    </item>
-
-
-    <item>
-    <title>002_桜</title>
-    <description>第2回ですよ</description>
-    <pubDate>Sun Oct 18 21:52:40 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin002.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>24:05</itunes:duration>
-    <itunes:summary>第2回ですよ</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin002.mp3" type="audio/mpeg" length="24:05" />
-        
-    </item>
-
-
-    <item>
-    <title>104_インターネット２</title>
-    <description>インターネットはほどほどに！</description>
-    <pubDate>Sun Oct 18 21:48:28 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin104.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>30:57</itunes:duration>
-    <itunes:summary>インターネットはほどほどに！</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin104.mp3" type="audio/mpeg" length="30:57" />
-        
-    </item>
-
-
-    <item>
-    <title>020_トークイベント</title>
-    <description>トークイベント命がけ</description>
-    <pubDate>Sun Oct 18 21:48:06 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin020.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>28:42</itunes:duration>
-    <itunes:summary>トークイベント命がけ</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin020.mp3" type="audio/mpeg" length="28:42" />
-        
-    </item>
-
-
-    <item>
-    <title>018_一人旅</title>
-    <description>一人旅の良いところ♪</description>
-    <pubDate>Sun Oct 18 21:48:06 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin018.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>28:28</itunes:duration>
-    <itunes:summary>一人旅の良いところ♪</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin018.mp3" type="audio/mpeg" length="28:28" />
-        
-    </item>
-
-
-    <item>
-    <title>017_男塾</title>
-    <description>男とはなんぞや</description>
-    <pubDate>Sun Oct 18 21:48:06 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin017.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>36:14</itunes:duration>
-    <itunes:summary>男とはなんぞや</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin017.mp3" type="audio/mpeg" length="36:14" />
-        
-    </item>
-
-
-    <item>
-    <title>015_死後の世界</title>
-    <description>ゴーゴーヘブン</description>
-    <pubDate>Sun Oct 18 21:48:06 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin015.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>33:37</itunes:duration>
-    <itunes:summary>ゴーゴーヘブン</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin015.mp3" type="audio/mpeg" length="33:37" />
-        
-    </item>
-
-
-    <item>
-    <title>012_中国</title>
-    <description>中国なんて二度と行くかボケ</description>
-    <pubDate>Sun Oct 18 21:48:06 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin012.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>34:31</itunes:duration>
-    <itunes:summary>中国なんて二度と行くかボケ</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin012.mp3" type="audio/mpeg" length="34:31" />
-        
-    </item>
-
-
-    <item>
-    <title>103_さくら通信</title>
-    <description>ぶっちゃけ話です</description>
-    <pubDate>Sun Oct 18 21:46:45 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin103.mp3</guid>
+    <title>117_ゾンビ</title>
+    <description>ドーンオブザデッド</description>
+    <pubDate>Sat Oct 29 23:37:54 PDT 2016</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin117.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
     <itunes:duration>41:02</itunes:duration>
-    <itunes:summary>ぶっちゃけ話です</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin103.mp3" type="audio/mpeg" length="41:02" />
+    <itunes:summary>ドーンオブザデッド</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin117.mp3" type="audio/mpeg" length="41:02" />
         
     </item>
 
 
     <item>
-    <title>102_腹痛</title>
-    <description>ものすごい下ネタです！</description>
-    <pubDate>Sun Oct 18 21:46:45 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin102.mp3</guid>
+    <title>116_恋愛の統一ルールを作れ３</title>
+    <description>英雄色を好む</description>
+    <pubDate>Sat Oct 29 23:37:54 PDT 2016</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin116.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>33:58</itunes:duration>
-    <itunes:summary>ものすごい下ネタです！</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin102.mp3" type="audio/mpeg" length="33:58" />
+    <itunes:duration>45:30</itunes:duration>
+    <itunes:summary>英雄色を好む</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin116.mp3" type="audio/mpeg" length="45:30" />
         
     </item>
 
 
     <item>
-    <title>101_ドラえもんのひみつ道具</title>
-    <description>ドラえも～ん</description>
-    <pubDate>Sun Oct 18 21:46:45 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin101.mp3</guid>
+    <title>115_特撮ヒーロー２</title>
+    <description>特撮ヒーロー２</description>
+    <pubDate>Sat Oct 29 23:37:54 PDT 2016</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin115.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>31:56</itunes:duration>
-    <itunes:summary>ドラえも～ん</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin101.mp3" type="audio/mpeg" length="31:56" />
+    <itunes:duration>39:47</itunes:duration>
+    <itunes:summary>特撮ヒーロー２</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin115.mp3" type="audio/mpeg" length="39:47" />
         
     </item>
 
 
     <item>
-    <title>010_○○マッサージ</title>
-    <description>マッサージ</description>
-    <pubDate>Sun Oct 18 21:46:23 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin010.mp3</guid>
+    <title>114_虫２</title>
+    <description>蚊は嫌い</description>
+    <pubDate>Sat Oct 29 23:37:54 PDT 2016</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin114.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>31:40</itunes:duration>
-    <itunes:summary>マッサージ</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin010.mp3" type="audio/mpeg" length="31:40" />
+    <itunes:duration>49:51</itunes:duration>
+    <itunes:summary>蚊は嫌い</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin114.mp3" type="audio/mpeg" length="49:51" />
         
     </item>
 
 
     <item>
-    <title>008_ちょいエロマンガ</title>
-    <description>ちょいエロ</description>
-    <pubDate>Sun Oct 18 21:46:23 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin008.mp3</guid>
+    <title>113_昔の遊び２</title>
+    <description>下ネタですいません</description>
+    <pubDate>Sat Oct 29 23:37:54 PDT 2016</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin113.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>24:41</itunes:duration>
-    <itunes:summary>ちょいエロ</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin008.mp3" type="audio/mpeg" length="24:41" />
+    <itunes:duration>38:01</itunes:duration>
+    <itunes:summary>下ネタですいません</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin113.mp3" type="audio/mpeg" length="38:01" />
         
     </item>
 
 
     <item>
-    <title>007_さくら通信</title>
-    <description>さくら通信の紹介</description>
-    <pubDate>Sun Oct 18 21:46:23 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin007.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>25:24</itunes:duration>
-    <itunes:summary>さくら通信の紹介</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin007.mp3" type="audio/mpeg" length="25:24" />
-        
-    </item>
-
-
-    <item>
-    <title>004_結婚式</title>
-    <description>どなたか結婚してください</description>
-    <pubDate>Sun Oct 18 21:46:23 PDT 2015</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin004.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>26:31</itunes:duration>
-    <itunes:summary>どなたか結婚してください</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin004.mp3" type="audio/mpeg" length="26:31" />
-        
-    </item>
-
-
-    <item>
-    <title>第７４回放送　「旅の素晴らしさ」</title>
-    <description>旅の素晴らしさ</description>
-    <pubDate>Fri Oct 12 21:21:57 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/74.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>44:35</itunes:duration>
-    <itunes:summary>旅の素晴らしさ</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/74.mp3" type="audio/mpeg" length="44:35" />
-        
-    </item>
-
-
-    <item>
-    <title>第７２回放送　「お金」</title>
-    <description>お金は大切です</description>
-    <pubDate>Sun Sep 09 01:58:23 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/72.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>37:47</itunes:duration>
-    <itunes:summary>お金は大切です</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/72.mp3" type="audio/mpeg" length="37:47" />
-        
-    </item>
-
-
-    <item>
-    <title>第６９回放送　「タイムマシン」</title>
-    <description>最近眠れないです</description>
-    <pubDate>Sun Aug 12 21:32:07 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/69.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>31:23</itunes:duration>
-    <itunes:summary>最近眠れないです</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/69.mp3" type="audio/mpeg" length="31:23" />
-        
-    </item>
-
-
-    <item>
-    <title>第６６回放送　「デート」</title>
-    <description>ディズニーに2人で行ったらふってはいけません</description>
-    <pubDate>Sun Jul 22 02:58:33 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/66.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>44:41</itunes:duration>
-    <itunes:summary>ディズニーに2人で行ったらふってはいけません</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/66.mp3" type="audio/mpeg" length="44:41" />
-        
-    </item>
-
-
-    <item>
-    <title>第６５回放送　「乗り物」</title>
-    <description>乗り物というより徳島旅行の話</description>
-    <pubDate>Sun Jul 15 05:26:04 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/65.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>40:42</itunes:duration>
-    <itunes:summary>乗り物というより徳島旅行の話</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/65.mp3" type="audio/mpeg" length="40:42" />
-        
-    </item>
-
-
-    <item>
-    <title>第６４回放送　「ネットの評価」</title>
-    <description>Don't trust Wikipedia.</description>
-    <pubDate>Sun Jul 08 02:56:24 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/64.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>45:10</itunes:duration>
-    <itunes:summary>Don't trust Wikipedia.</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/64.mp3" type="audio/mpeg" length="45:10" />
-        
-    </item>
-
-
-    <item>
-    <title>第６１回放送　「スーツ」</title>
-    <description>スーツはしんどいです</description>
-    <pubDate>Sat Jun 16 21:05:51 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/61.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>38:15</itunes:duration>
-    <itunes:summary>スーツはしんどいです</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/61.mp3" type="audio/mpeg" length="38:15" />
-        
-    </item>
-
-
-    <item>
-    <title>第６０回放送　「結婚式２」</title>
-    <description>Ｋくん結婚おめでとう</description>
-    <pubDate>Sat Jun 09 23:06:49 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/60.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>38:20</itunes:duration>
-    <itunes:summary>Ｋくん結婚おめでとう</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/60.mp3" type="audio/mpeg" length="38:20" />
-        
-    </item>
-
-
-    <item>
-    <title>037_お正月</title>
-    <description>2012年、今年もよろしくお願いいたします。</description>
-    <pubDate>Fri Jun 08 00:48:44 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin037.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>32:12</itunes:duration>
-    <itunes:summary>2012年、今年もよろしくお願いいたします。</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin037.mp3" type="audio/mpeg" length="32:12" />
-        
-    </item>
-
-
-    <item>
-    <title>第５９回放送　「夢」</title>
-    <description>夢は、信じれば叶うんやで！</description>
-    <pubDate>Sun Jun 03 01:40:53 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/59.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>28:42</itunes:duration>
-    <itunes:summary>夢は、信じれば叶うんやで！</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/59.mp3" type="audio/mpeg" length="28:42" />
-        
-    </item>
-
-
-    <item>
-    <title>第５７回放送　「友達」</title>
-    <description>友達は大事にしよう</description>
-    <pubDate>Sun May 20 04:43:45 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/57.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>29:00</itunes:duration>
-    <itunes:summary>友達は大事にしよう</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/57.mp3" type="audio/mpeg" length="29:00" />
-        
-    </item>
-
-
-    <item>
-    <title>第５６回放送　「アルバイト」</title>
-    <description>怒鳴る奴はアホだ！</description>
-    <pubDate>Sat May 12 23:32:52 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/56.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>29:32</itunes:duration>
-    <itunes:summary>怒鳴る奴はアホだ！</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/56.mp3" type="audio/mpeg" length="29:32" />
-        
-    </item>
-
-
-    <item>
-    <title>第５１回放送　「恋愛の統一ルールを作れ２」</title>
+    <title>051_恋愛の統一ルールを作れ２</title>
     <description>これはさくら剛の本心ではございません。</description>
-    <pubDate>Sun Apr 08 00:36:27 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/51.mp3</guid>
+    <pubDate>Sat Feb 09 16:39:58 PST 2013</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin051.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
     <itunes:duration>41:47</itunes:duration>
     <itunes:summary>これはさくら剛の本心ではございません。</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/51.mp3" type="audio/mpeg" length="41:47" />
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin051.mp3" type="audio/mpeg" length="41:47" />
         
     </item>
 
 
     <item>
-    <title>第５０回放送　「エイプリルフール」</title>
+    <title>060_結婚式２</title>
+    <description>Ｋくん結婚おめでとう</description>
+    <pubDate>Tue Jun 05 02:42:38 PDT 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin060.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>38:20</itunes:duration>
+    <itunes:summary>Ｋくん結婚おめでとう</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin060.mp3" type="audio/mpeg" length="38:20" />
+        
+    </item>
+
+
+    <item>
+    <title>059_夢</title>
+    <description>夢は、信じれば叶うんやで！</description>
+    <pubDate>Thu May 31 02:12:20 PDT 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin059.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>28:42</itunes:duration>
+    <itunes:summary>夢は、信じれば叶うんやで！</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin059.mp3" type="audio/mpeg" length="28:42" />
+        
+    </item>
+
+
+    <item>
+    <title>058_国内旅行</title>
+    <description>地方のかたはみんな優しいですね。大阪以外。</description>
+    <pubDate>Wed May 23 00:52:12 PDT 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin058.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>35:24</itunes:duration>
+    <itunes:summary>地方のかたはみんな優しいですね。大阪以外。</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin058.mp3" type="audio/mpeg" length="35:24" />
+        
+    </item>
+
+
+    <item>
+    <title>057_友達</title>
+    <description>友達は大事にしよう</description>
+    <pubDate>Sun May 20 20:01:30 PDT 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin057.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>29:00</itunes:duration>
+    <itunes:summary>友達は大事にしよう</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin057.mp3" type="audio/mpeg" length="29:00" />
+        
+    </item>
+
+
+    <item>
+    <title>056_アルバイト</title>
+    <description>怒鳴る奴はアホだ！</description>
+    <pubDate>Sun May 13 14:27:18 PDT 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin056.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>29:32</itunes:duration>
+    <itunes:summary>怒鳴る奴はアホだ！</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin056.mp3" type="audio/mpeg" length="29:32" />
+        
+    </item>
+
+
+    <item>
+    <title>055_ホラー映画</title>
+    <description>協力者募集中です</description>
+    <pubDate>Sun May 06 17:40:02 PDT 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin055.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>38:56</itunes:duration>
+    <itunes:summary>協力者募集中です</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin055.mp3" type="audio/mpeg" length="38:56" />
+        
+    </item>
+
+
+    <item>
+    <title>054_海外の食事</title>
+    <description>蚊以外の食事</description>
+    <pubDate>Mon Apr 30 21:13:22 PDT 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin054.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>34:20</itunes:duration>
+    <itunes:summary>蚊以外の食事</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin054.mp3" type="audio/mpeg" length="34:20" />
+        
+    </item>
+
+
+    <item>
+    <title>053_一休さん</title>
+    <description>一休さんごめんなさい。</description>
+    <pubDate>Thu Apr 19 18:08:48 PDT 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin053.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>40:05</itunes:duration>
+    <itunes:summary>一休さんごめんなさい。</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin053.mp3" type="audio/mpeg" length="40:05" />
+        
+    </item>
+
+
+    <item>
+    <title>052_生放送</title>
+    <description>生放送は恐いんやで・・・（涙）</description>
+    <pubDate>Sun Apr 15 01:57:22 PDT 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin052.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>37:18</itunes:duration>
+    <itunes:summary>生放送は恐いんやで・・・（涙）</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin052.mp3" type="audio/mpeg" length="37:18" />
+        
+    </item>
+
+
+    <item>
+    <title>050_エイプリルフール</title>
     <description>ウソはダメですよ</description>
-    <pubDate>Sun Apr 01 08:37:15 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/50.mp3</guid>
+    <pubDate>Sun Apr 01 23:56:32 PDT 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin050.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
     <itunes:duration>27:46</itunes:duration>
     <itunes:summary>ウソはダメですよ</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/50.mp3" type="audio/mpeg" length="27:46" />
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin050.mp3" type="audio/mpeg" length="27:46" />
         
     </item>
 
 
     <item>
-    <title>001_選挙</title>
-    <description>記念すべき第1回放送</description>
-    <pubDate>Sun Mar 25 22:11:32 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin001.mp3</guid>
+    <title>049_特撮ヒーロー</title>
+    <description>お面ライダーマン</description>
+    <pubDate>Sun Mar 25 20:32:16 PDT 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin049.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>25:36</itunes:duration>
-    <itunes:summary>記念すべき第1回放送</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin001.mp3" type="audio/mpeg" length="25:36" />
+    <itunes:duration>36:47</itunes:duration>
+    <itunes:summary>お面ライダーマン</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin049.mp3" type="audio/mpeg" length="36:47" />
         
     </item>
 
 
     <item>
-    <title>第４８回放送　「言葉」</title>
+    <title>048_言葉</title>
     <description>言葉は変化していくものです</description>
-    <pubDate>Sun Mar 18 07:39:39 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/48.mp3</guid>
+    <pubDate>Sun Mar 18 23:31:04 PDT 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin048.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
     <itunes:duration>32:25</itunes:duration>
     <itunes:summary>言葉は変化していくものです</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/48.mp3" type="audio/mpeg" length="32:25" />
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin048.mp3" type="audio/mpeg" length="32:25" />
         
     </item>
 
 
     <item>
-    <title>第４７回放送　「宿泊」</title>
+    <title>047_宿泊</title>
     <description>１人でないと寝れません</description>
-    <pubDate>Sun Mar 11 03:39:15 PDT 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/47.mp3</guid>
+    <pubDate>Sat Mar 10 13:17:10 PST 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin047.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
     <itunes:duration>30:46</itunes:duration>
     <itunes:summary>１人でないと寝れません</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/47.mp3" type="audio/mpeg" length="30:46" />
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin047.mp3" type="audio/mpeg" length="30:46" />
         
     </item>
 
 
     <item>
-    <title>第４５回放送　「政治家」</title>
+    <title>046_誕生日</title>
+    <description>年を取りたくない</description>
+    <pubDate>Sun Mar 04 17:02:54 PST 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin046.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>30:25</itunes:duration>
+    <itunes:summary>年を取りたくない</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin046.mp3" type="audio/mpeg" length="30:25" />
+        
+    </item>
+
+
+    <item>
+    <title>045_政治家</title>
     <description>大統領を目指します</description>
-    <pubDate>Sat Feb 25 23:51:10 PST 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/45.mp3</guid>
+    <pubDate>Sun Feb 26 15:32:58 PST 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin045.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
     <itunes:duration>33:12</itunes:duration>
     <itunes:summary>大統領を目指します</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/45.mp3" type="audio/mpeg" length="33:12" />
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin045.mp3" type="audio/mpeg" length="33:12" />
         
     </item>
 
 
     <item>
-    <title>第４１回放送　「テレビドラマ」</title>
+    <title>044_虫</title>
+    <description>虫というよりヘビです</description>
+    <pubDate>Mon Feb 20 14:00:12 PST 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin044.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>34:59</itunes:duration>
+    <itunes:summary>虫というよりヘビです</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin044.mp3" type="audio/mpeg" length="34:59" />
+        
+    </item>
+
+
+    <item>
+    <title>043_恋愛の統一ルールを作れ１</title>
+    <description>ハート３つでキスまでＯＫ</description>
+    <pubDate>Sat Feb 11 19:39:18 PST 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin043.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>29:39</itunes:duration>
+    <itunes:summary>ハート３つでキスまでＯＫ</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin043.mp3" type="audio/mpeg" length="29:39" />
+        
+    </item>
+
+
+    <item>
+    <title>042_昔の遊び</title>
+    <description>子供の頃の遊び</description>
+    <pubDate>Mon Feb 06 01:10:22 PST 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin042.mp3</guid>
+    <itunes:author>さくら通信</itunes:author>
+    <dc:creator>さくら通信</dc:creator>
+        
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:duration>44:38</itunes:duration>
+    <itunes:summary>子供の頃の遊び</itunes:summary>
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin042.mp3" type="audio/mpeg" length="44:38" />
+        
+    </item>
+
+
+    <item>
+    <title>041_テレビドラマ</title>
     <description>テレビが友達</description>
-    <pubDate>Sun Jan 29 00:56:07 PST 2012</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/41.mp3</guid>
+    <pubDate>Sun Jan 29 12:52:54 PST 2012</pubDate>
+    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin041.mp3</guid>
     <itunes:author>さくら通信</itunes:author>
     <dc:creator>さくら通信</dc:creator>
         
     <itunes:explicit>no</itunes:explicit>
     <itunes:duration>34:15</itunes:duration>
     <itunes:summary>テレビが友達</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/41.mp3" type="audio/mpeg" length="34:15" />
-        
-    </item>
-
-
-    <item>
-    <title>036_外国人</title>
-    <description>いろんな国の人ごめんなさい</description>
-    <pubDate>Sun Dec 25 23:58:26 PST 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin036.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>37:25</itunes:duration>
-    <itunes:summary>いろんな国の人ごめんなさい</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin036.mp3" type="audio/mpeg" length="37:25" />
-        
-    </item>
-
-
-    <item>
-    <title>035_宇宙人</title>
-    <description>グレイさんについて</description>
-    <pubDate>Sun Dec 18 21:16:34 PST 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin035.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>37:06</itunes:duration>
-    <itunes:summary>グレイさんについて</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin035.mp3" type="audio/mpeg" length="37:06" />
-        
-    </item>
-
-
-    <item>
-    <title>033_過去放送 and 新作販売</title>
-    <description>どうぞよろしくお願いいたします。</description>
-    <pubDate>Sun Dec 04 18:24:22 PST 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin033.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>26:35</itunes:duration>
-    <itunes:summary>どうぞよろしくお願いいたします。</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin033.mp3" type="audio/mpeg" length="26:35" />
-        
-    </item>
-
-
-    <item>
-    <title>032_学校</title>
-    <description>学校は楽しいところ。</description>
-    <pubDate>Thu Nov 24 01:34:08 PST 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin032.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>31:50</itunes:duration>
-    <itunes:summary>学校は楽しいところ。</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin032.mp3" type="audio/mpeg" length="31:50" />
-        
-    </item>
-
-
-    <item>
-    <title>030_ストーカーと物理</title>
-    <description>ストーカーエネルギーについて</description>
-    <pubDate>Mon Nov 07 22:16:06 PST 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin030.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>27:35</itunes:duration>
-    <itunes:summary>ストーカーエネルギーについて</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin030.mp3" type="audio/mpeg" length="27:35" />
-        
-    </item>
-
-
-    <item>
-    <title>029_ドラゴンクエスト</title>
-    <description>ドラクエ～</description>
-    <pubDate>Sun Nov 06 17:36:38 PST 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin029.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>32:42</itunes:duration>
-    <itunes:summary>ドラクエ～</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin029.mp3" type="audio/mpeg" length="32:42" />
-        
-    </item>
-
-
-    <item>
-    <title>028_料理</title>
-    <description>奥さんの手料理が食べたい</description>
-    <pubDate>Fri Oct 28 15:37:38 PDT 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin028.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>28:24</itunes:duration>
-    <itunes:summary>奥さんの手料理が食べたい</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin028.mp3" type="audio/mpeg" length="28:24" />
-        
-    </item>
-
-
-    <item>
-    <title>024_推理マンガ</title>
-    <description>金田一くんに殺されないために</description>
-    <pubDate>Mon Sep 26 01:40:00 PDT 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin024.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>31:32</itunes:duration>
-    <itunes:summary>金田一くんに殺されないために</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin024.mp3" type="audio/mpeg" length="31:32" />
-        
-    </item>
-
-
-    <item>
-    <title>021_最終回</title>
-    <description>さとみさんすみません</description>
-    <pubDate>Wed Sep 07 22:33:40 PDT 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin021.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>34:55</itunes:duration>
-    <itunes:summary>さとみさんすみません</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin021.mp3" type="audio/mpeg" length="34:55" />
-        
-    </item>
-
-
-    <item>
-    <title>009_ドラえもん</title>
-    <description>ドラえもんさんすみません</description>
-    <pubDate>Wed Jun 15 04:50:24 PDT 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin009.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>26:22</itunes:duration>
-    <itunes:summary>ドラえもんさんすみません</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin009.mp3" type="audio/mpeg" length="26:22" />
-        
-    </item>
-
-
-    <item>
-    <title>006_地球最後の日</title>
-    <description>地球大好き</description>
-    <pubDate>Sun May 29 15:58:00 PDT 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin006.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>28:53</itunes:duration>
-    <itunes:summary>地球大好き</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin006.mp3" type="audio/mpeg" length="28:53" />
-        
-    </item>
-
-
-    <item>
-    <title>005_トイレ</title>
-    <description>汚いトイレなくなれ</description>
-    <pubDate>Sun May 22 08:52:32 PDT 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin005.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>23:17</itunes:duration>
-    <itunes:summary>汚いトイレなくなれ</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin005.mp3" type="audio/mpeg" length="23:17" />
-        
-    </item>
-
-
-    <item>
-    <title>003_ひきこもり</title>
-    <description>後半３分で山本さん声変わり</description>
-    <pubDate>Sun May 08 19:08:40 PDT 2011</pubDate>
-    <guid isPermaLink="true">http://localhost:9015/podcasts/sakura/sakuratsushin003.mp3</guid>
-    <itunes:author>さくら通信</itunes:author>
-    <dc:creator>さくら通信</dc:creator>
-        
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:duration>21:03</itunes:duration>
-    <itunes:summary>後半３分で山本さん声変わり</itunes:summary>
-    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin003.mp3" type="audio/mpeg" length="21:03" />
+    <enclosure url="http://localhost:9015/podcasts/sakura/sakuratsushin041.mp3" type="audio/mpeg" length="34:15" />
         
     </item>
 

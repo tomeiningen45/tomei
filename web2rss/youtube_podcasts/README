@@ -1,3 +1,17 @@
 Automatically download podcasts from Youtube, convert them into MP3 files, and
 organize the mp3 files into podcast XMLs that can be saved into iTunes.
 
+Sakura Tsuushin:
+
+    Copy new files under ~/tomei/web2rss/tclhttpd3.5.1/htdocs/podcasts/sakura
+    Run "organize" in a terminal window
+
+
+Ikebukuro Now
+
+    Edit ~/tomei/web2rss/tclhttpd3.5.1/htdocs/podcasts/asakawaz/doit.tcl to add new URLs
+
+    cd ~/tomei/web2rss/tclhttpd3.5.1/htdocs/podcasts/asakawaz
+    tclsh doit.tcl
+    organize0
+
