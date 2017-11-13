@@ -6,9 +6,10 @@ foreach i $FILES {
     set file ./$file
     if {[file exists $file.mp3]} {
         continue
-    }
-    if {![file exists $file.mp4]} {
-        exec ~/youtube/youtube-dl -o $file.mp4 $i >@ stdout 2>@ stderr
+    } else {
+        exec ~/youtube/youtube-dl -x --audio-format wav -o $file.wav $i >@ stdout 2>@ stderr
+        exec ffmpeg -i $file.wav -codec:a libmp3lame -qscale:a 2 $file.mp3 >@ stdout 2>@ stderr
+        file delete -force $file.wav
     }
     if {![file exists $file.html]} {
         exec wget -O $file.html $i  >@ stdout 2>@ stderr
@@ -25,17 +26,6 @@ foreach i $FILES {
     regexp {<title>([^<]+)</title>} $data dummy title
     regsub { - YouTube$} $title "" title
     regexp {name="description" content="([^<]+)">} $data dummy comments
-
-    set out $file.mp3
-
-    if {[file exists $file.mkv]} {
-        set from $file.mkv
-    } else {
-        set from $file.mp4
-    }
-    
-    exec /Applications/VLC.app/Contents/MacOS/VLC -I dummy $from "--sout=#transcode{acodec=mp3,vcodec=dummy}:standard{access=file,mux=raw,dst=$file.mp3}" vlc://quit \
-        >@ stdout 2>@ stderr
 
     exec eyed3 -2 -A $album -a $artist -c $comments -G Podcast -t $title $file.mp3 >@ stdout 2>@ stderr
 }

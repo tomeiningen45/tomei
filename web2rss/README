@@ -5,6 +5,8 @@ update doit.tcl for latest contents
 tclsh doit.tcl
 tclsh ~/tomei/web2rss/youtube_podcasts/organize.tcl
 
+http://localhost:9015/podcasts/asakawaz/podcast.xml
+
 
 ======================================================================
 The stuff below is obsolete

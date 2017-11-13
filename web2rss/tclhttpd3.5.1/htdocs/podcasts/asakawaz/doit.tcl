@@ -1,3 +1,12 @@
+set help {
+
+cd ~/youtube/asakawaz
+update doit.tcl for latest contents
+tclsh doit.tcl && time tclsh ~/tomei/web2rss/youtube_podcasts/organize.tcl
+
+
+}
+
 set FILES {
     https://www.youtube.com/watch?v=ctwF1R5hyh8
     https://www.youtube.com/watch?v=bgJojHFlA_c
@@ -55,6 +64,56 @@ set FILES {
     https://www.youtube.com/watch?v=c95PQLHj5tk
     https://www.youtube.com/watch?v=9rx9swhpyo8
     https://www.youtube.com/watch?v=_u056SuL0wE
+
+    https://www.youtube.com/watch?v=EpvwLucvTnM
+    https://www.youtube.com/watch?v=R0C9KeXNKiY
+    https://www.youtube.com/watch?v=R-zae561UYc
+    https://www.youtube.com/watch?v=dxcB5xpMV0E
+    https://www.youtube.com/watch?v=6zNe28JxWTM
+
+    https://www.youtube.com/watch?v=lqzd8NO35Ao
+    https://www.youtube.com/watch?v=fQbtmiE70RU
+    https://www.youtube.com/watch?v=Him7M8F4BGw
+    https://www.youtube.com/watch?v=xvWqpRij6O8
+    https://www.youtube.com/watch?v=Qgp_hDLvcVs
+    https://www.youtube.com/watch?v=YVLcChK9MQE
+
+    https://www.youtube.com/watch?v=2N6BDBUrJ7g
+    https://www.youtube.com/watch?v=Ki0hq9NXfGY
+    https://www.youtube.com/watch?v=SJ0XGaATuuk
+    https://www.youtube.com/watch?v=4DjBaIDHuFs
+    https://www.youtube.com/watch?v=h1Z9mqdX74A
+
+    https://www.youtube.com/watch?v=dYYYYc_mO4E
+    https://www.youtube.com/watch?v=q5O4OYXtFwY
+    
+    https://www.youtube.com/watch?v=pempuK5aeCU
+    https://www.youtube.com/watch?v=5tG9UYgdz3Y
+    https://www.youtube.com/watch?v=oiE0vKosWDM
+    https://www.youtube.com/watch?v=sgctGUElba0
+    https://www.youtube.com/watch?v=bQqqJzntZnc
+    https://www.youtube.com/watch?v=5-4cSsAkTmE
+    https://www.youtube.com/watch?v=Rk67hqfEUGI
+    https://www.youtube.com/watch?v=4O-ooGRX3DM
+    https://www.youtube.com/watch?v=r7aAwNcx15w
+    https://www.youtube.com/watch?v=L2EH2eEcCxE
+
+
+    https://www.youtube.com/watch?v=s4bFkTSTNCY
+    https://www.youtube.com/watch?v=5AiA2iT8J-M
+    https://www.youtube.com/watch?v=gvosbs2Cx7Q
+    https://www.youtube.com/watch?v=gDR-3MvZnQ0
+    https://www.youtube.com/watch?v=13dp8nIaFng
+    https://www.youtube.com/watch?v=IG5u5cQ-rOY
+    https://www.youtube.com/watch?v=mjCqKEr_Rjw
+    https://www.youtube.com/watch?v=TQyWcZ9gS7s
+    https://www.youtube.com/watch?v=C1e_u4Poi_s
+    https://www.youtube.com/watch?v=oNH9lkOf2Qs
+    https://www.youtube.com/watch?v=M8Ky6ZZHsSs
+    https://www.youtube.com/watch?v=e1OgidF-QnQ
+    https://www.youtube.com/watch?v=rtWbebVmQ-Y
+    https://www.youtube.com/watch?v=GTmLWNJUVLU
+    https://www.youtube.com/watch?v=YoAzT2LVjLM
 }
 
 set album {アサカワズ}
