@@ -1,18 +1,60 @@
+# @rss-nt-adapter@
+#
 #----------------------------------------------------------------------
 # Standard prolog
 #----------------------------------------------------------------------
-set instdir [file dirname [info script]]
-set datadir $instdir/data/6park
-catch {
-    file mkdir $datadir
+namespace eval 6park {
+
+package require ncgi
+
+proc init {first} {
+    global g h
+    #puts [namespace current]
+    #parray g
+    #parray h
 }
 
-source $instdir/rss.tcl
+proc update_index {} {
+    ::schedule_read 6park::parse_index http://news.6park.com/newspark/index.php gb2312
+}
+
+proc parse_index {url data} {
+
+    regsub {<div id="d_list"} $data "" data
+    regsub {<div id="d_list_foot"} $data "" data
+
+    foreach line [makelist $data <li>] {
+        incr n
+        if {[regexp {href="([^>]+)"} $line dummy link] &&
+            [regexp {>([^<]+)<} $line dummy title]} {
+
+        }
+
+        if {![regexp {nid=([0-9]+)$} $link dummy id]} {
+            continue;
+        }
+
+        if {![regexp {http[a-z]*://news.toutiaoabc.com} $link]} {
+            continue
+        }
+
+        ::schedule_read [list 6park::get_toutiaoabc $id $title] $link
+        if {$n > 10} {
+            break
+        }
+    }
+    #exit
+}
+
+proc get_toutiaoabc {id title url data} {
+    puts $title==$url==[string len $data]
+}
+
+if 0 {
 
 #----------------------------------------------------------------------
 # Site specific scripts
 #----------------------------------------------------------------------
-package require ncgi
  
 proc update {} {
     global datadir env
@@ -117,3 +159,5 @@ proc update {} {
 }
 
 update
+}
+}

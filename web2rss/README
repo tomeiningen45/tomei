@@ -1,4 +1,28 @@
+webrss new generation:
+=====================
+
+0. Start-up
+
+   tclsh rss-nt.sh
+
+   + automatically logs to /tmp/rssnt.log
+   
+   
+
+1. Allow parallel downloading
+   + more responsive updates
+   + one site doesn't need to wait for other sites
+   + timeouts
+
+
+
+
+
+
+
+===============================================================================
 youtube-podcast:
+===============
 
 cd ~/youtube/asakawaz
 update doit.tcl for latest contents
