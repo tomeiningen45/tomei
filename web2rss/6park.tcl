@@ -38,7 +38,7 @@ proc parse_index {url data} {
             continue
         }
 
-        ::schedule_read [list 6park::get_toutiaoabc $id $title] $link
+        ::schedule_read [list 6park::get_toutiaoabc $id $title] $link gb2312
         if {$n > 10} {
             break
         }
@@ -48,6 +48,61 @@ proc parse_index {url data} {
 
 proc get_toutiaoabc {id title url data} {
     puts $title==$url==[string len $data]
+
+    set from ""
+    regexp {新闻来源: ([^ ]+)} $data dymmy from
+
+    regsub {.*<div id="mainContent">} $data "" data
+    regsub {.*<div id='shownewsc' style="margin:15px;">} $data "" data
+    regsub {<table class='xianhua_jidan'.*} $data "" data
+    regsub {<a href=[^>]+target=_blank><img[^>]+转发本条新闻到微博'></a>} $data "" data
+
+    set data [sub_block $data "<script" "</script>" ""]
+    set data [sub_block $data {<ins class="adsbygoogle"} "</ins>" ""]=
+    
+    if {"$from" != ""} {
+        set data "【$from】 $data"
+    }
+
+    # most of the center tags are wrong on 6park
+    regsub -all <center> $data <noceneter> data
+    regsub -all {align='center'} $data "" data
+
+    # fix images
+    regsub -all "src=\['\"\](\[^> '\"\]+)\['\"\]" $data src=\\1 data
+    regsub -all {onload='javascript:if[(]this.width>600[)] this.width=600'} $data "" data
+
+    if {0} {
+        set pat {<img[^>]*src=(http://[^>]*.popo8.com/[^> ]+)[^>]*>}
+        while {[regexp $pat $data dummy img]} {
+            set imgfile 6park/foo.jpg
+            set h1 http://freednsnow.no-ip.biz/webrss/$imgfile
+        
+            set i "<img onload='javascript:if(this.width>600) this.width=600' src=XXX border='0'>"
+            regsub XXX $i $img img0
+            regsub XXX $i http://freednsnow.no-ip.biz/webrss/$imgfile img1
+            regsub XXX $i http://127.0.0.1/webrss/$imgfile img2
+
+            regsub $pat $data $img0$img1$img2 data
+        }
+    }
+
+    set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
+
+    global count
+    incr count
+    if {$count > 2} {
+        set fd [open [test_html_file] w+]
+
+        puts $fd {<html>
+            <head>
+            <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8"></head>}
+    
+        puts $fd $data
+        close $fd
+        puts $data
+        exit
+    }
 }
 
 if 0 {
@@ -137,7 +192,7 @@ proc update {} {
         # fix images
         regsub -all "src=\['\"\](\[^> '\"\]+)\['\"\]" $data src=\\1 data
 
-        set pat {src=(http://[^>]*.popo8.com/[^> ]+)}
+        set pat {<img[^>]*src=(http://[^>]*.popo8.com/[^> ]>)}
         while {[regexp $pat $data dummy img]} {
             puts $img
             set rep src=\"http://freednsnow.no-ip.biz:9015/cgi-bin/im.cgi/

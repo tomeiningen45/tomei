@@ -15,7 +15,7 @@ set g(t:discover) 20000
 
 # Max number of concurrent downloads 
 set g(maxwget) 60
-set g(maxwget) 3
+set g(maxwget) 1
 
 # Max number of concurrent downloads 
 set g(maxwgetpersite) 10
@@ -47,6 +47,15 @@ proc xafter {t script} {
 proc xlog {level s} {
     puts $s
 }
+
+proc test_html_file {} {
+    if {[file exists /opt/local/apache2/htdocs/webrss/]} {
+        return /opt/local/apache2/htdocs/webrss/test.html
+    } else {
+        return test.html
+    }
+}
+
 #======================================================================
 # SECTION: global functions
 #======================================================================
