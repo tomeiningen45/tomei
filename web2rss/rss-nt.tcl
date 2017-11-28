@@ -33,7 +33,9 @@ proc xcatch {script} {
         uplevel eval $script
     } err]} {
         if {[info exists env(DEBUG)]} {
+            global errorInfo
             puts $err
+            puts $errorInfo
         }
     }
 }
@@ -48,12 +50,38 @@ proc xlog {level s} {
     puts $s
 }
 
-proc test_html_file {} {
-    if {[file exists /opt/local/apache2/htdocs/webrss/]} {
-        return /opt/local/apache2/htdocs/webrss/test.html
-    } else {
-        return test.html
+proc storage_root {} {
+    foreach d {
+        /opt/local/apache2/htdocs/webrss
+        /var/www/html/webrss
+    } {
+        if {[file exists $d] && [file isdir $d]} {
+            return $d
+        }
     }
+
+    set a /tmp/webrss
+    file mkdir $a
+    return $a
+}
+
+proc test_html_file {} {
+    return [file join [storage_root] test.html]
+}
+
+proc save_test_html {data {encoding utf-8}} {
+    set fd [open [test_html_file] w+]
+
+    set head {<html>
+        <head>
+        <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=ENCODING"></head>}
+
+    regsub ENCODING $head $encoding head
+
+    puts $fd $head
+    
+    puts $fd $data
+    close $fd
 }
 
 #======================================================================
@@ -191,14 +219,14 @@ proc makeitem {title link data date} {
         set date [clock format $date]
     }
 
-    if {[regexp "&" $link] && ![regexp "&amp;" $link]} {
-        regsub -all & $link "&amp;" link
-    }
+    #if {[regexp "&" $link] && ![regexp "&amp;" $link]} {
+    #    regsub -all & $link "&amp;" link
+    #}
 
     set t "\n\
 	<item>\n\
 	<title><!\[CDATA\[$title\]\]></title>\n\
-	<link>$link</link>\n\
+	<link><!\[CDATA\[$link\]\]></link>\n\
 	<description><!\[CDATA\[$data\]\]></description>\n\
 	<pubDate>$date</pubDate>\n\
 	</item>"
@@ -770,14 +798,16 @@ proc adapter_init {adapter first} {
         # article delay - download the article 0 minute after it's first indexed
         # (a longer delay allows some (popular) comments to be included in the RSS feed
         set h(delay:article) [expr 0 * 60 * 1000]
-    }
 
+        set h(article_sort_byurl) 0
+    }
+    db_load $adapter
+    
     # Adapter-specific config initialization
     namespace eval $adapter "init $first"
 }
 
 proc adapter_schedule_scan {adapter} {
-
     puts "Scanning $adapter"
     namespace eval $adapter {
         variable h
@@ -852,4 +882,104 @@ proc do_read {fd} {
     }
 }
 
+proc db_exists {adapter url} {
+    return [info exists ${adapter}::dbs($url)]
+}
+
+proc save_article {adapter title url data} {
+    # dbs = db for subject
+    # dbt = db for time posted
+    # dbc = db for content
+    set ${adapter}::dbs($url) $title
+    set ${adapter}::dbt($url) [clock seconds]
+    set ${adapter}::dbc($url) $data
+}
+
+
+proc adapter_db_file {adapter} {
+    return [file join [storage_root] $adapter $adapter.db.tcl]
+}
+
+proc adapter_xml_file {adapter} {
+    return [file join [storage_root] $adapter $adapter.xml]
+}
+
+proc db_load {adapter} {
+    xcatch {
+        namespace eval $adapter source [list [adapter_db_file $adapter]]
+    }
+}
+
+proc db_sync_all_to_disk {} {
+    global g
+
+    foreach adapter $g(adapters) {
+        variable h
+        xlog 2 "syncing $adapter"
+        set fd [open [adapter_db_file $adapter] w+]
+        puts $fd "variable dbs"
+        puts $fd "variable dbt"
+        puts $fd "variable dbc"
+
+        if {[set ${adapter}::h(article_sort_byurl)]} {
+            set list [lsort -decreasing -dictionary [array names ${adapter}::dbs]]
+        } else {
+            # FIXME - sort by download time
+            set list [array names ${adapter}::dbs]
+        }
+        foreach url $list {
+            xlog 3 "... saving [set ${adapter}::dbs($url)] - $url"
+            puts $fd "set ${adapter}::dbs($url) [list [set ${adapter}::dbs($url)]]"
+            puts $fd "set ${adapter}::dbt($url) [list [set ${adapter}::dbt($url)]]"
+            puts $fd "set ${adapter}::dbc($url) [list [set ${adapter}::dbc($url)]]"
+        }
+        close $fd
+
+        set fd [open [adapter_xml_file $adapter] w+]
+        set out {<?xml version="1.0" encoding="utf-8"?>
+
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:georss="http://www.georss.org/georss" version="2.0">
+  <channel>
+    <title>DESC</title>
+    <link>URL</link>
+    <description>DESC</description>
+    <dc:language>LANG</dc:language>
+    <pubDate>DATE</pubDate>
+    <dc:date>DATE</dc:date>
+    <sy:updatePeriod>hourly</sy:updatePeriod>
+    <sy:updateFrequency>1</sy:updateFrequency>
+    <sy:updateBase>2003-06-01T12:00+09:00</sy:updateBase>
+    }
+        
+        set date [clock format [clock seconds]]
+        regsub -all DATE        $out $date out
+        regsub -all LANG        $out [set ${adapter}::h(lang)]  out
+        regsub -all DESC        $out [set ${adapter}::h(desc)] out
+        regsub -all URL         $out [set ${adapter}::h(url)]  out
+
+        puts $fd $out
+
+        set lang [set ${adapter}::h(lang)]
+        foreach url $list {
+            xlog 3 "... creating [set ${adapter}::dbs($url)] - $url"
+            set title [set ${adapter}::dbs($url)]
+            set date [set ${adapter}::dbt($url)]
+            set data [set ${adapter}::dbc($url)]
+
+            set data "<div lang=\"$lang\" xml:lang=\"$lang\">$data</div>"
+            set newitem [makeitem $title $url $data $date]
+
+            puts $fd $newitem
+        }
+        puts $fd {</channel></rss>}
+        close $fd        
+    }
+
+}
+
+proc do_exit {} {
+    xcatch {db_sync_all_to_disk}
+    exit
+}
+    
 main

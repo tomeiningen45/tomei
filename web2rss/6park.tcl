@@ -8,47 +8,62 @@ namespace eval 6park {
 package require ncgi
 
 proc init {first} {
-    global g h
-    #puts [namespace current]
-    #parray g
-    #parray h
+    global g
+    variable h
+    set h(article_sort_byurl) 1
+    set h(lang)  zh
+    set h(desc)  留园
+    set h(url)   http://www.6park.com
 }
 
 proc update_index {} {
     ::schedule_read 6park::parse_index http://news.6park.com/newspark/index.php gb2312
 }
 
-proc parse_index {url data} {
-
+proc parse_index {index_url data} {
     regsub {<div id="d_list"} $data "" data
     regsub {<div id="d_list_foot"} $data "" data
 
-    foreach line [makelist $data <li>] {
-        incr n
-        if {[regexp {href="([^>]+)"} $line dummy link] &&
-            [regexp {>([^<]+)<} $line dummy title]} {
+    set list {}
 
+    foreach line [makelist $data <li>] {
+        if {[regexp {href="([^>]+)"} $line dummy article_url] &&
+            [regexp {>([^<]+)<} $line dummy title]} {
         }
 
-        if {![regexp {nid=([0-9]+)$} $link dummy id]} {
+        if {![regexp {nid=([0-9]+)$} $article_url dummy id]} {
             continue;
         }
 
-        if {![regexp {http[a-z]*://news.toutiaoabc.com} $link]} {
+        regsub ☆ $title "" title
+        
+        if {![regexp {http[a-z]*://news.toutiaoabc.com} $article_url]} {
             continue
         }
 
-        ::schedule_read [list 6park::get_toutiaoabc $id $title] $link gb2312
-        if {$n > 10} {
-            break
+        if {![info exists seen($article_url)]} {
+            set seen($article_url) 1
+            lappend list [list $article_url $title $id]
         }
     }
-    #exit
+
+    foreach item [lsort -dictionary $list] {
+        # Get the oldest article first
+        set article_url [lindex $item 0]
+        set title       [lindex $item 1]
+        set id          [lindex $item 2]
+        if {![db_exists 6park $article_url]} {
+            ::schedule_read [list 6park::get_toutiaoabc $id $title] $article_url gb2312
+            incr n
+            if {$n > 10} {
+                # dont access the web site too heavily
+                break
+            }
+        }
+    }
 }
 
 proc get_toutiaoabc {id title url data} {
-    puts $title==$url==[string len $data]
-
     set from ""
     regexp {新闻来源: ([^ ]+)} $data dymmy from
 
@@ -64,15 +79,16 @@ proc get_toutiaoabc {id title url data} {
         set data "【$from】 $data"
     }
 
+
     # most of the center tags are wrong on 6park
     regsub -all <center> $data <noceneter> data
     regsub -all {align='center'} $data "" data
 
     # fix images
-    regsub -all "src=\['\"\](\[^> '\"\]+)\['\"\]" $data src=\\1 data
-    regsub -all {onload='javascript:if[(]this.width>600[)] this.width=600'} $data "" data
-
     if {0} {
+        regsub -all "src=\['\"\](\[^> '\"\]+)\['\"\]" $data src=\\1 data
+        regsub -all {onload='javascript:if[(]this.width>600[)] this.width=600'} $data "" data
+
         set pat {<img[^>]*src=(http://[^>]*.popo8.com/[^> ]+)[^>]*>}
         while {[regexp $pat $data dummy img]} {
             set imgfile 6park/foo.jpg
@@ -87,22 +103,19 @@ proc get_toutiaoabc {id title url data} {
         }
     }
 
-    set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
+    regsub -all {<br />.[ 　]+} $data "<br />" data
+    regsub -all {<br />.<b>[ 　]+} $data "<br /><b>" data
+    
+    save_article 6park $title $url $data
 
     global count
     incr count
-    if {$count > 2} {
-        set fd [open [test_html_file] w+]
-
-        puts $fd {<html>
-            <head>
-            <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8"></head>}
-    
-        puts $fd $data
-        close $fd
-        puts $data
-        exit
+    if {$count == 5} {
+        save_test_html $data
+        do_exit
     }
+
+    
 }
 
 if 0 {
