@@ -51,6 +51,7 @@ proc xlog {level s} {
 }
 
 proc storage_root {} {
+    
     foreach d {
         /opt/local/apache2/htdocs/webrss
         /var/www/html/webrss
