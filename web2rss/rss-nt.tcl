@@ -778,7 +778,7 @@ proc discover {} {
         }
     }
 
-    xcatch {
+    catch {
         # for debug only
         set g(adapters) $env(ONLY_ADAPTERS)
     }
