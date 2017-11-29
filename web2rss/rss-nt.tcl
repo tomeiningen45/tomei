@@ -32,7 +32,7 @@ set g(wget_later) {}
 
 set g(has_unsaved_articles) 0
 
-set g(max_articles) 60
+set g(max_articles) 140
 
 #======================================================================
 # SECTION: global debug functions
@@ -734,8 +734,8 @@ proc generic_news_site {list_proc parse_proc {max 50} {maxnew 1000000}} {
 # SECTION: main control unit
 #======================================================================
 proc main {} {
-    # restart every day to avoid accumulating too much log or Tcl memory
-    after 86400000 do_exit
+    # restart every 4 hours to avoid accumulating too much log or Tcl memory
+    after [expr 1000 * 3600 * 4] /  do_exit
     discover
     vwait forever
 }
