@@ -1,9 +1,6 @@
 # @rss-nt-adapter@
 
 namespace eval 6park_forum_mil {
-
-    package require ncgi
-
     proc init {first} {
         variable h
         set h(article_sort_byurl) 1

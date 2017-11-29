@@ -5,6 +5,8 @@
 #     in all the tcl scripts in the current directory,
 # (2) schdules all the adapters to run at regular intervals (TBD configurable)
 
+package require ncgi
+
 #======================================================================
 # SECTION: global configuration
 #======================================================================
@@ -929,17 +931,58 @@ proc do_read {fd} {
     }
 }
 
+proc atom_update_index {adapter index_url} {
+    schedule_read [list atom_parse_index $adapter] $index_url
+}
+
+proc atom_parse_index {adapter index_url data} {
+    set list {}
+    foreach line [makelist $data <item>] {
+        if {[regexp {<link>([^<]+)</link>} $line dummy link] &&
+            [regexp {<pubDate>([^<]+)</pubDate>} $line dummy pubdate]} {
+
+            if {[catch {
+                set pubdate [clock scan $pubdate]
+            }]} {
+                continue
+            }
+                 
+            lappend list [list [format 0x%016x $pubdate] [${adapter}::parse_link $link]]
+        }
+    }
+
+    # wget the oldest to newest
+    foreach item [lsort $list] {
+        # Get the oldest article first
+        set pubdate     [lindex $item 0]
+        set article_url [lindex $item 1]
+
+        if {![db_exists $adapter $link]} {        
+            ::schedule_read [list ${adapter}::parse_article [expr $pubdate + 0]] $article_url
+            incr n
+            if {$n > 10} {
+                # dont access the web site too heavily
+                break
+            }
+        }
+    }
+}
+
 proc db_exists {adapter url} {
     return [info exists ${adapter}::dbs($url)]
 }
 
-proc save_article {adapter title url data} {
+proc save_article {adapter title url data {pubdate {}}} {
     global g
+
+    if {$pubdate == {}} {
+        set pubdate [clock seconds]
+    }
     # dbs = db for subject
     # dbt = db for time posted
     # dbc = db for content
     set ${adapter}::dbs($url) $title
-    set ${adapter}::dbt($url) [clock seconds]
+    set ${adapter}::dbt($url) $pubdate
     set ${adapter}::dbc($url) $data
 
     set g(has_unsaved_articles) 1
@@ -978,11 +1021,19 @@ proc db_sync_all_to_disk {} {
         puts $fd "variable dbt"
         puts $fd "variable dbc"
 
+        # write the newest to oldest
         if {[set ${adapter}::h(article_sort_byurl)]} {
-            set list [lsort -decreasing -dictionary [array names ${adapter}::dbs]]
+            set list [lsort -decreasing [array names ${adapter}::dbs]]
         } else {
-            # FIXME - sort by download time
-            set list [array names ${adapter}::dbs]
+            set n {}
+            foreach url [array names ${adapter}::dbs] {
+                lappend n [list [format %016x [set ${adapter}::dbt($url)]] $url]
+            }
+            set list {}
+            foreach item [lsort -decreasing $n] {
+                puts [lindex $item 0]
+                lappend list [lindex $item 1]
+            }
         }
         set n 0
         foreach url $list {

@@ -1,8 +1,6 @@
 # @rss-nt-lib@
 
 namespace eval 6park_forum {
-    package require ncgi
-
     proc parse_index {forum index_url data} {
         regsub {<div id="d_list"} $data "" data
         regsub {<div id="d_list_foot"} $data "" data
