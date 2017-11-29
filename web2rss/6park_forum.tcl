@@ -1,119 +1,65 @@
-set forum     [lindex $argv 0]
-set forumurl  [lindex $argv 1]
-set forumname [lindex $argv 2]
-if {$forumname == ""} {
-    set forumname $forum
-}
-#----------------------------------------------------------------------
-# Standard prolog
-#----------------------------------------------------------------------
-set instdir [file dirname [info script]]
-set datadir $instdir/data/6park-$forum
-catch {
-    file mkdir $datadir
-}
+# @rss-nt-lib@
 
-source $instdir/rss.tcl
+namespace eval 6park_forum {
+    package require ncgi
 
-#----------------------------------------------------------------------
-# Site specific scripts
-#----------------------------------------------------------------------
-package require ncgi
- 
-proc update {} {
-    global datadir env forum forumname forumurl
+    proc parse_index {forum index_url data} {
+        regsub {<div id="d_list"} $data "" data
+        regsub {<div id="d_list_foot"} $data "" data
 
-    set out  {<?xml version="1.0" encoding="utf-8"?>
+        foreach line [makelist $data {(<ul>.			<li>)|(<br></li><li><a)}] {
+            if {[regexp {href="([^>]+)"} $line dummy link] &&
+                [regexp {>([^<]+)<} $line dummy title]} {
+                set link $index_url/$link
+                puts $title==$link
+            }
 
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:georss="http://www.georss.org/georss" version="2.0">  
-  <channel> 
-    <title>DESC</title>  
-    <link>URL</link>  
-    <description>DESC</description>  
-    <dc:language>LANG</dc:language>  
-    <pubDate>DATE</pubDate>  
-    <dc:date>DATE</dc:date>  
-    <sy:updatePeriod>hourly</sy:updatePeriod>  
-    <sy:updateFrequency>1</sy:updateFrequency>  
-    <sy:updateBase>2003-06-01T12:00+09:00</sy:updateBase>  
+            if {![regexp {tid=([0-9]+)$} $link dummy id]} {
+                continue;
+            }
+
+            lappend list [list $link $title]
+        }
+
+        foreach item [lsort -dictionary $list] {
+            # Get the oldest article first
+            set article_url [lindex $item 0]
+            set title       [lindex $item 1]
+            if {![db_exists $forum $article_url]} {
+                ::schedule_read [list 6park_forum::parse_article $forum $title] $article_url gb2312
+                incr n
+                if {$n > 10} {
+                    # dont access the web site too heavily
+                    break
+                }
+            }
+        }
     }
 
-    set date [clock format [clock seconds]]
-    regsub -all DATE        $out $date out
-    regsub -all LANG        $out zh    out
-    regsub -all DESC        $out 6prk-$forumname  out
-    regsub -all URL         $out $forumurl  out
-
-    set data [wget $forumurl gb2312]
-
-    regsub {<div id="d_list"} $data "" data
-    regsub {<div id="d_list_foot"} $data "" data
-
-    set max 50
-    catch {
-        set max $env(MAXRSS)
-    }
-    set n 0
-    set lastdate 0xffffffff
-
-    foreach line [makelist $data {(<ul>.			<li>)|(<br></li><li><a)}] {
-        incr n
-        if {$n > $max} {
-            break
-        }
-
-        if {[regexp {href="([^>]+)"} $line dummy link] &&
-            [regexp {>([^<]+)<} $line dummy title]} {
-            set link $forumurl/$link
-            puts $title==$link
-        }
-
-        if {![regexp {tid=([0-9]+)$} $link dummy id]} {
-            continue;
-        }
-        set fname [getcachefile $id]
-
-        set data [getfile $link [file tail $fname] gb2312]
-        set date [file mtime $fname]
-        if {$date >= $lastdate} {
-            set date [expr $lastdate - 1]
-        }
-        set lastdate $date
-
+    proc parse_article {forum title url data} {
         regsub {.*<!--bodybegin-->} $data "" data
         regsub {<!--bodyend-->.*} $data "" data
         regsub -all {<font color=E6E6DD> www.6park.com</font>} $data "\n\n" data
         regsub -all {onclick=document.location=} $data "xx=" data
         regsub -all {onload[ ]*=} $data "xx=" data
         regsub {.*</script>} $data "" data 
-
+        regsub -all {<h2 [^>]+>} $data "<h2>" data
+        regsub -all { style="[^\"]*"} $data "" data
+        # most of the center tags are wrong on 6park
+        regsub -all <center> $data <!--noceneter--> data
+        regsub -all {align=.center.} $data "" data
+        regsub {<h1 class="[^\"]+">[^<]+</h1>} $data "" data
+        regsub {<h1 id="[^\"]+">[^<]+</h1>} $data "" data
+        regsub {<h1>((<font[^>]*>)|)[^<]+<span class="[^\"]+"></span>((</font>)|)</h1>} $data "" data
+            
         # fix images
-        regsub -all "src=\['\"\](\[^> '\"\]+)\['\"\]" $data src=\\1 data
-
-        set pat {src=(http://www.popo8.com/[^> ]+)}
-        while {[regexp $pat $data dummy img]} {
-            puts $img
-            set rep src=http://freednsnow.no-ip.biz:9015/cgi-bin/im.cgi?
-            append rep "a=[ncgi::encode $img]\\&"
-            append rep "b=[ncgi::encode $link]"
-            regsub $pat $data $rep data
-        }
-
+        # regsub -all "src=\['\"\](\[^> '\"\]+)\['\"\]" $data src=\\1 data
+        
         if {[regexp <pre> $data] && ![regexp </pre> $data]} {
             regsub <pre> $data " " data
         }
         regsub -all "<img " $data " <img " data
-        set data "<div lang=\"zh\" xml:lang=\"zh\">$data</div>"
-        regsub -all {[&]} $link "&amp;" link
-        append out [makeitem $title $link $data $date]
+
+        save_article $forum $title $url $data
     }
-
-    append out {</channel></rss>}
-
-    set fd [open $datadir.xml w+]
-    fconfigure $fd -encoding utf-8
-    puts -nonewline $fd $out
-    close $fd
 }
-
-update 

@@ -739,7 +739,7 @@ proc main {} {
 }
 
 proc discover {} {
-    global g
+    global g env
 
     set g(adapters) {}
 
@@ -765,6 +765,9 @@ proc discover {} {
                         adapter_init $adapter $first
                     }
                     break
+                } elseif {[regexp {^# @rss-nt-lib@} $line]} {
+                    xlog 1 "loading library $file"
+                    uplevel #0 source $file
                 }
             }
         }
@@ -773,6 +776,11 @@ proc discover {} {
         }
     }
 
+    xcatch {
+        # for debug only
+        set g(adapters) $env(ONLY_ADAPTERS)
+    }
+    
     foreach adapter $g(adapters) {
         adapter_schedule_scan $adapter
     }
@@ -964,6 +972,7 @@ proc db_sync_all_to_disk {} {
     foreach adapter $g(adapters) {
         variable h
         xlog 2 "syncing $adapter"
+        file mkdir [file dirname [adapter_db_file $adapter]]
         set fd [open [adapter_db_file $adapter] w+]
         puts $fd "variable dbs"
         puts $fd "variable dbt"
