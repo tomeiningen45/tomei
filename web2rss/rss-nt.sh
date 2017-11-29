@@ -5,6 +5,9 @@
 #      pipes the stdout/stderr to /tmp/rss-nt.log
 
 while true; do
+    if [[ -f update.git ]]; then
+        git pull -u
+    fi
     echo ----------------------------------------------------------------------
     echo Restarting ..... $(date)
     echo ----------------------------------------------------------------------
