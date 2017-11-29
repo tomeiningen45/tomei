@@ -10,8 +10,13 @@
 #======================================================================
 set g(rootdir) [file dirname [info script]]
 
-# scan for adapters every 20 seconds
-set g(t:discover) 20000
+if 0 {
+    # scan for adapters every 20 seconds
+    set g(t:discover) 20000
+} else {
+    # scan for adapters every 120 seconds
+    set g(t:discover) 120000
+}
 
 # Max number of concurrent downloads 
 set g(maxwget) 60
@@ -21,6 +26,11 @@ set g(maxwget) 1
 set g(maxwgetpersite) 10
 
 set g(wgets) 0
+set g(wget_later) {}
+
+set g(has_unsaved_articles) 0
+
+set g(max_articles) 60
 
 #======================================================================
 # SECTION: global debug functions
@@ -217,7 +227,7 @@ proc getfile {link localname {encoding utf-8} {isnew_ret {}} {extralinks {}}} {
 proc makeitem {title link data date} {
     catch {
         # if passed in an integer, make it into a date string
-        set date [clock format $date]
+        set date [clock_format $date]
     }
 
     #if {[regexp "&" $link] && ![regexp "&amp;" $link]} {
@@ -467,7 +477,7 @@ proc do_one_site {siteinfo} {
     }
 
     set lang en
-    set date [clock format [clock seconds]]
+    set date [clock_format [clock seconds]]
 
     regsub -all & $mainurl "&amp;" mainurl_s
 
@@ -530,7 +540,7 @@ proc do_one_site {siteinfo} {
             set data [$body_proc $data]
         }
 
-        puts "[clock format $date] $url=$title"
+        puts "[clock_format $date] $url=$title"
         append out [makeitem $title $url $data $date]
     }
 
@@ -626,6 +636,10 @@ proc quoted_exp {} {
     return "\[^\"\]"
 }
 
+proc clock_format {date} {
+    return [clock format $date -format {%a, %d %b %Y %T %Z}]
+}
+
 proc generic_news_site {list_proc parse_proc {max 50} {maxnew 1000000}} {
     global datadir env site
 
@@ -638,13 +652,12 @@ proc generic_news_site {list_proc parse_proc {max 50} {maxnew 1000000}} {
     <description>DESC</description>
     <dc:language>LANG</dc:language>
     <pubDate>DATE</pubDate>
-    <dc:date>DATE</dc:date>
     <sy:updatePeriod>hourly</sy:updatePeriod>
     <sy:updateFrequency>1</sy:updateFrequency>
     <sy:updateBase>2003-06-01T12:00+09:00</sy:updateBase>
     }
 
-    set date [clock format [clock seconds]]
+    set date [clock_format [clock seconds]]
     regsub -all DATE        $out $date out
     regsub -all LANG        $out site(lang)  out
     regsub -all DESC        $out $site(desc) out
@@ -719,6 +732,8 @@ proc generic_news_site {list_proc parse_proc {max 50} {maxnew 1000000}} {
 # SECTION: main control unit
 #======================================================================
 proc main {} {
+    # restart every day to avoid accumulating too much log or Tcl memory
+    after 86400 do_exit
     discover
     vwait forever
 }
@@ -763,6 +778,23 @@ proc discover {} {
     }
 
     xafter $g(t:discover) discover
+
+    schedule_idle_handler
+}
+
+proc schedule_idle_handler {} {
+    global g
+    if {![info exists g(idle_handler)]} {
+        set g(idle_handler) [after idle do_idle_handler]
+        xlog 1 "scheduled idle handler $g(idle_handler)"
+    }
+}
+
+proc do_idle_handler {} {
+    global g
+    unset g(idle_handler)
+    xlog 1 "idle handler running"
+    xcatch {db_sync_all_to_disk}
 }
 
 proc adapter_init {adapter first} {
@@ -801,6 +833,8 @@ proc adapter_init {adapter first} {
         set h(delay:article) [expr 0 * 60 * 1000]
 
         set h(article_sort_byurl) 0
+
+        set h(max_articles) 100
     }
     db_load $adapter
     
@@ -880,6 +914,10 @@ proc do_read {fd} {
         } else {
             incr g(wgets) -1
         }
+
+        if {$g(wgets) == 0} {
+            xcatch {db_sync_all_to_disk}
+        }
     }
 }
 
@@ -888,12 +926,15 @@ proc db_exists {adapter url} {
 }
 
 proc save_article {adapter title url data} {
+    global g
     # dbs = db for subject
     # dbt = db for time posted
     # dbc = db for content
     set ${adapter}::dbs($url) $title
     set ${adapter}::dbt($url) [clock seconds]
     set ${adapter}::dbc($url) $data
+
+    set g(has_unsaved_articles) 1
 }
 
 
@@ -914,6 +955,12 @@ proc db_load {adapter} {
 proc db_sync_all_to_disk {} {
     global g
 
+    if {$g(has_unsaved_articles) == 0} {
+        xlog 1 "no updates ... no need to sync to disk"
+        return
+    }
+    set g(has_unsaved_articles) 0
+    
     foreach adapter $g(adapters) {
         variable h
         xlog 2 "syncing $adapter"
@@ -928,11 +975,16 @@ proc db_sync_all_to_disk {} {
             # FIXME - sort by download time
             set list [array names ${adapter}::dbs]
         }
+        set n 0
         foreach url $list {
-            xlog 3 "... saving [set ${adapter}::dbs($url)] - $url"
+            #xlog 3 "... saving [set ${adapter}::dbs($url)] - $url"
             puts $fd "set ${adapter}::dbs($url) [list [set ${adapter}::dbs($url)]]"
             puts $fd "set ${adapter}::dbt($url) [list [set ${adapter}::dbt($url)]]"
             puts $fd "set ${adapter}::dbc($url) [list [set ${adapter}::dbc($url)]]"
+            incr n
+            if {$n > $g(max_articles)} {
+                break
+            }
         }
         close $fd
 
@@ -946,13 +998,12 @@ proc db_sync_all_to_disk {} {
     <description>DESC</description>
     <dc:language>LANG</dc:language>
     <pubDate>DATE</pubDate>
-    <dc:date>DATE</dc:date>
     <sy:updatePeriod>hourly</sy:updatePeriod>
-    <sy:updateFrequency>1</sy:updateFrequency>
+    <sy:updateFrequency>12</sy:updateFrequency>
     <sy:updateBase>2003-06-01T12:00+09:00</sy:updateBase>
     }
         
-        set date [clock format [clock seconds]]
+        set date [clock_format [clock seconds]]
         regsub -all DATE        $out $date out
         regsub -all LANG        $out [set ${adapter}::h(lang)]  out
         regsub -all DESC        $out [set ${adapter}::h(desc)] out
@@ -960,9 +1011,10 @@ proc db_sync_all_to_disk {} {
 
         puts $fd $out
 
+        set n 0
         set lang [set ${adapter}::h(lang)]
         foreach url $list {
-            xlog 3 "... creating [set ${adapter}::dbs($url)] - $url"
+            #xlog 3 "... creating [set ${adapter}::dbs($url)] - $url"
             set title [set ${adapter}::dbs($url)]
             set date [set ${adapter}::dbt($url)]
             set data [set ${adapter}::dbc($url)]
@@ -971,9 +1023,14 @@ proc db_sync_all_to_disk {} {
             set newitem [makeitem $title $url $data $date]
 
             puts $fd $newitem
+            incr n
+            if {$n > $g(max_articles)} {
+                break
+            }
         }
         puts $fd {</channel></rss>}
-        close $fd        
+        close $fd
+        xlog 2 "... written $n articles"
     }
 
 }

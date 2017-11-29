@@ -79,15 +79,14 @@ proc get_toutiaoabc {id title url data} {
         set data "【$from】 $data"
     }
 
-
     # most of the center tags are wrong on 6park
-    regsub -all <center> $data <noceneter> data
+    regsub -all <center> $data <!--noceneter--> data
     regsub -all {align='center'} $data "" data
 
     # fix images
+    regsub -all {onload='javascript:if[(]this.width>600[)] this.width=600'} $data "" data
     if {0} {
         regsub -all "src=\['\"\](\[^> '\"\]+)\['\"\]" $data src=\\1 data
-        regsub -all {onload='javascript:if[(]this.width>600[)] this.width=600'} $data "" data
 
         set pat {<img[^>]*src=(http://[^>]*.popo8.com/[^> ]+)[^>]*>}
         while {[regexp $pat $data dummy img]} {
@@ -107,15 +106,6 @@ proc get_toutiaoabc {id title url data} {
     regsub -all {<br />.<b>[ 　]+} $data "<br /><b>" data
     
     save_article 6park $title $url $data
-
-    global count
-    incr count
-    if {$count == 5} {
-        save_test_html $data
-        do_exit
-    }
-
-    
 }
 
 if 0 {
