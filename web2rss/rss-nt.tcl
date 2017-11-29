@@ -1007,7 +1007,7 @@ proc db_sync_all_to_disk {} {
     global g
 
     if {$g(has_unsaved_articles) == 0} {
-        xlog 1 "no updates ... no need to sync to disk [clock format [clock seconds]]"
+        xlog 1 "no updates ... no need to sync to disk [clock format [clock seconds] -timezone :US/Pacific]"
         return
     }
     set g(has_unsaved_articles) 0
@@ -1090,7 +1090,7 @@ proc db_sync_all_to_disk {} {
         }
         puts $fd {</channel></rss>}
         close $fd
-        xlog 2 "... written $n articles [clock format [clock seconds]]"
+        xlog 2 "... written $n articles [clock format [clock seconds] -timezone :US/Pacific]"
     }
 
 }
