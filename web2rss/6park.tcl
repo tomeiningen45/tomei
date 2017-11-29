@@ -16,6 +16,7 @@ namespace eval 6park {
     proc parse_index {index_url data} {
         regsub {<div id="d_list"} $data "" data
         regsub {<div id="d_list_foot"} $data "" data
+        regsub {.*<div id="d_list_page"} $data "" data
 
         set list {}
 
