@@ -957,7 +957,7 @@ proc atom_parse_index {adapter index_url data} {
         set pubdate     [lindex $item 0]
         set article_url [lindex $item 1]
 
-        if {![db_exists $adapter $link]} {        
+        if {![db_exists $adapter $article_url]} {        
             ::schedule_read [list ${adapter}::parse_article [expr $pubdate + 0]] $article_url
             incr n
             if {$n > 10} {
@@ -1007,7 +1007,7 @@ proc db_sync_all_to_disk {} {
     global g
 
     if {$g(has_unsaved_articles) == 0} {
-        xlog 1 "no updates ... no need to sync to disk"
+        xlog 1 "no updates ... no need to sync to disk [clock format [clock seconds]]"
         return
     }
     set g(has_unsaved_articles) 0
@@ -1090,7 +1090,7 @@ proc db_sync_all_to_disk {} {
         }
         puts $fd {</channel></rss>}
         close $fd
-        xlog 2 "... written $n articles"
+        xlog 2 "... written $n articles [clock format [clock seconds]]"
     }
 
 }
