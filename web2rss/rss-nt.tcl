@@ -1031,7 +1031,7 @@ proc db_sync_all_to_disk {} {
             }
             set list {}
             foreach item [lsort -decreasing $n] {
-                puts [lindex $item 0]
+                #puts [lindex $item 0]
                 lappend list [lindex $item 1]
             }
         }
