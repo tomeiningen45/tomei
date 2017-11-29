@@ -9,7 +9,7 @@ namespace eval 6park_forum {
             if {[regexp {href="([^>]+)"} $line dummy link] &&
                 [regexp {>([^<]+)<} $line dummy title]} {
                 set link $index_url/$link
-                puts $title==$link
+                #puts $title==$link
             }
 
             if {![regexp {tid=([0-9]+)$} $link dummy id]} {
