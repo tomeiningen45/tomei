@@ -789,7 +789,7 @@ proc discover {} {
 
     xafter $g(t:discover) discover
 
-    schedule_idle_handler
+    #schedule_idle_handler
 }
 
 proc schedule_idle_handler {} {
@@ -843,7 +843,7 @@ proc adapter_init {adapter first} {
         set h(delay:article) [expr 0 * 60 * 1000]
 
         set h(article_sort_byurl) 0
-
+        set h(filter_duplicates)  0
         set h(max_articles) 100
     }
     db_load $adapter
@@ -1035,6 +1035,11 @@ proc db_sync_all_to_disk {} {
                 lappend list [lindex $item 1]
             }
         }
+
+        if {[set ${adapter}::h(filter_duplicates)]} {
+            set list [${adapter}::filter_duplicates $list]
+        }
+        
         set n 0
         foreach url $list {
             #xlog 3 "... saving [set ${adapter}::dbs($url)] - $url"

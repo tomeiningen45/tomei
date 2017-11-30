@@ -3,6 +3,7 @@
 namespace eval reuters {
     proc init {first} {
         variable h
+        set h(filter_duplicates)  1
         set h(article_sort_byurl) 0
         set h(lang)  en
         set h(desc)  Reuters
@@ -14,10 +15,12 @@ namespace eval reuters {
     }
 
     proc parse_link {link} {
+        set id ""
+        regexp {([-]id[0-9A-Za-z]+)$} $link dummy id
         regsub {/[^/]+$} $link / link
-        return $link
+        return ${link}${id}
     }
-    
+
     proc parse_article {pubdate url data} {
         set title "??"
         regexp {<title>([^<|]+)} $data dummy title
@@ -35,5 +38,19 @@ namespace eval reuters {
         }
 
         save_article reuters $title $url $data $pubdate
+    }
+
+    proc filter_duplicates {list} {
+        set f {}
+        foreach link [lreverse $list] {
+            if {[regexp {([-]id[0-9A-Za-z]+)$} $link dummy id]} {
+                #puts $id
+                if {![info exists seen($id)]} {
+                    set seen($id) 1
+                    lappend f $link
+                }
+            }
+        }
+        return [lreverse $f]
     }
 }
