@@ -1053,7 +1053,7 @@ proc db_sync_all_to_disk {} {
             puts $fd "set ${adapter}::dbt($url) [list [set ${adapter}::dbt($url)]]"
             puts $fd "set ${adapter}::dbc($url) [list [set ${adapter}::dbc($url)]]"
             incr n
-            if {$n > $g(max_articles)} {
+            if {$n >= $g(max_articles)} {
                 break
             }
         }
@@ -1095,7 +1095,7 @@ proc db_sync_all_to_disk {} {
 
             puts $fd $newitem
             incr n
-            if {$n > $g(max_articles)} {
+            if {$n >= $g(max_articles)} {
                 break
             }
         }
