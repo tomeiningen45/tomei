@@ -884,8 +884,14 @@ proc do_wget_now {doer url encoding} {
     global buff g
 
     xlog 2 "wget $doer $url $encoding"
-    
-    set fd [open "| wget --no-check-certificate --timeout=10 --tries=1 -q -O - -o /dev/null $url"]
+
+    set cmd "| wget --no-check-certificate --timeout=10 --tries=1 -q -O - -o /dev/null $url"
+    if {"$encoding" == "gb2312"} {
+        append cmd " | iconv -f gbk -t utf-8"
+        set encoding utf-8
+    }
+        
+    set fd [open $cmd]
     set buff($fd,url)  $url
     set buff($fd,doer) $doer
     set buff($fd,data) ""
