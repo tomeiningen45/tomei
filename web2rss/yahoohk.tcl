@@ -69,7 +69,7 @@ namespace eval yahoohk {
         regsub -all {<img[^>]* src="" } $data "<img " data
         regsub -all {<img[^>]* data-src=} $data "<img src=" data
 
-        regsub -all {<noscript[^>]*>&lt;(img [^<]+)&gt;</noscript>} $data "<\\1>" data
+        regsub -all {<noscript[^>]*>(<img [^<]+>)</noscript>} $data "\\1" data
 
         
         #puts $data
