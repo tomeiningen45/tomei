@@ -75,13 +75,17 @@ namespace eval 6park {
 
         # most of the center tags are wrong on 6park
         regsub -all <center> $data <!--noceneter--> data
+        regsub -all </center> $data "" data
         regsub -all {align='center'} $data "" data
 
         # fix images
         regsub -all {onload='javascript:if[(]this.width>600[)] this.width=600'} $data "" data
-
-        regsub -all {<br />.[ 　]+} $data "<br />" data
-        regsub -all {<br />.<b>[ 　]+} $data "<br /><b>" data
+        regsub -all {<br [^>]*>} $data <br> data
+        regsub -all {<br>.[ 　]+} $data "<br>" data
+        regsub -all {<br>.<b>[ 　]+} $data "<br><b>" data
+        regsub -all "\n\[ \t\r\]+<" $data "\n<" data
+        regsub -all "<br>(\n<br>)+" $data "<br><br>\n" data
+        regsub -all {>[ 　]+<} $data "><" data
         
         save_article 6park $title $url $data
     }
