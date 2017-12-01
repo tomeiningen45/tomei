@@ -1,121 +1,77 @@
-#----------------------------------------------------------------------
-# Standard prolog
-#----------------------------------------------------------------------
-set instdir [file dirname [info script]]
-set datadir $instdir/data/hkyahoo
-catch {
-    file mkdir $datadir
-}
+# @rss-nt-adapter@
 
-source $instdir/rss.tcl
-
-#----------------------------------------------------------------------
-# Site specific scripts
-#----------------------------------------------------------------------
-package require ncgi
-
-proc update {} {
-    global datadir env
-
-    set out  {<?xml version="1.0" encoding="utf-8"?>
-
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:georss="http://www.georss.org/georss" version="2.0">  
-  <channel> 
-    <title>yahou_hk</title>  
-    <link>http://yahou_hk.com</link>  
-    <description>DESC</description>  
-    <dc:language>LANG</dc:language>  
-    <pubDate>DATE</pubDate>  
-    <dc:date>DATE</dc:date>  
-    <sy:updatePeriod>hourly</sy:updatePeriod>  
-    <sy:updateFrequency>1</sy:updateFrequency>  
-    <sy:updateBase>2003-06-01T12:00+09:00</sy:updateBase>  
+namespace eval yahoohk {
+    proc init {first} {
+        variable h
+        set h(lang)  zh
+        set h(desc)  雅虎香港新聞
+        set h(url)   https://hk.news.yahoo.com/
     }
 
-    set date [clock format [clock seconds]]
-    regsub -all DATE        $out $date out
-    regsub -all LANG        $out zh    out
-    regsub -all DESC        $out 6prk  out
+    proc update_index {} {
+        ::schedule_read yahoohk::parse_index https://hk.news.yahoo.com
+    }
 
-    set data [wget https://hk.news.yahoo.com/business/archive/]
-    append data [wget https://hk.news.yahoo.com/business/archive/2.html]
-    append data [wget https://hk.news.yahoo.com/business/archive/3.html]
-    append data [wget https://hk.news.yahoo.com/business/archive/4.html]
+    proc parse_index {index_url data} {
+        set list {}
 
-    #puts $data
-
-    #regsub {.*<div class="yog-col yog-11u yom-primary">} $data "" data
-    #regsub {<div class="yog-col yog-8u yog-col-last yom-secondary">.*} $data "" data
-
-    set newlinks {}
-    set lastdate 0xffffffff
-
-    set n 1
-    foreach line [makelist $data {<h4><a href=}] {
-        if {[regexp {"(/[^>]+[.]html)" alt="([^>\"]+)"} $line dummy link title]} {
-            puts $n>>>>>>>>>>>>>>$title==$link
-        } else {
-            continue
+        foreach line [makelist $data {<a href=\"}] {
+            if {[regexp {^([^>\"]+[-][0-9]+[.]html)\"} $line dummy article_url]} {
+                if {![info exists seen($article_url)]} {
+                    set seen($article_url) 1
+                    #puts $article_url
+                    lappend list $article_url
+                }
+            }
         }
-        set link https://hk.news.yahoo.com/$link
-        set fname [getcachefile $link]
-        set data [getfile $link [file tail $link]]
-
-        set date [file mtime $fname]
-        if {$date >= $lastdate} {
-            set date [expr $lastdate - 1]
-            file mtime $fname $date
-        }
-        set lastdate $date
-
-        set gotit 0
-
-        set comments ""
-        if {0} {
-        if {[regexp {<link rel="canonical" href="([^>]+)"/>} $data dummy canlink]} {
-            puts $canlink
-            set cmt http://freednsnow.no-ip.biz:9015/cgi-bin/hky.cgi?a=$canlink
-            puts $cmt
-            set comments "【<a href=$cmt>网友评论</a>】"
-        }
-        }
-        
-        if {[regsub {.*<p class="first">} $data "" data] && 
-            [regsub {<div class="yom-mod yom-follow".*} $data "" data]} {
-            set gotit 1
-        }
-
-        if {[regsub {.*<div class="yom-mod yom-videometadata-desc">} $data "" data] &&
-            [regsub {<div class="yom-mod yom-videometadata-prvdr">.*} $data "" data]} {
-            set gotit 1
-        }
-
-        regsub {<!-- google_ad_section_end --></div></div>.*} $data "" data
-
-        if {$gotit} {
-            set data "<div lang='zh' xml:lang='zh'>$comments $data</div>"
-            append out [makeitem $title $link $data $date]
-            catch {
-                lappend newlinks $date $link
+        foreach line [makelist $data {\"url\":\"}] {
+            if {[regexp {^([^>\"]+[-][0-9]+[.]html)\"} $line dummy article_url]} {
+                set article_url [subst $article_url]
+                if {![info exists seen($article_url)]} {
+                    #puts $article_url
+                    set seen($article_url) 1
+                    lappend list $article_url
+                }
             }
         }
 
-        if {$n > 5} {
-            #break
+        foreach article_url [lsort -dictionary $list] {
+            set article_url https://hk.news.yahoo.com/$article_url
+            if {![db_exists yahoohk $article_url]} {
+                ::schedule_read yahoohk::parse_article $article_url
+                incr n
+                if {$n >= 15} {
+                    # dont access the web site too heavily
+                    break
+                }
+            }
         }
-        incr n
     }
 
-    append out {</channel></rss>}
+    proc parse_article {url data} {
+        set title ""
+        regexp {<title>([^<]+)</title>} $data dummy title
 
-    set fd [open $datadir.xml w+]
-    fconfigure $fd -encoding utf-8
-    puts -nonewline $fd $out
-    close $fd
-
-    #set links [save_links $datadir $newlinks 40]
-    #puts "hkyahoo: [llength $links] comments to update"
-
+        regsub {<header><h1>([^<]+)</h1></header>} $data "" data
+        regsub {.*<article} $data "<span " data
+        regsub {<div class=.canvas-share-buttons.*} $data "" data
+        regsub {>相關內容<.*} $data ">" data
+        regsub {>港聞<.*} $data ">" data
+        regsub {>其他內容<.*} $data ">" data
+        regsub {看更多文章<.*} $data "" data
+        regsub {奇摩新聞歡迎您投稿.*} $data "" data
+        regsub {>更多[^<]*報導<.*} $data ">" data
+        regsub {更多追蹤報導<.*} $data "" data
+        regsub {>睇更多<.*} $data ">" data
+        regsub {> *是日精選<.*} $data ">" data
+        
+        regsub -all {<img[^>]* src="" } $data "<img " data
+        regsub -all {<img[^>]* data-src=} $data "<img src=" data
+        
+        #puts $data
+        #puts ""
+        #puts $url
+        #exit
+        save_article yahoohk $title $url $data
+    }
 }
-
-update

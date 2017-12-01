@@ -22,7 +22,8 @@ if 0 {
 
 # Max number of concurrent downloads 
 set g(maxwget) 60
-set g(maxwget) 1
+set g(maxwget) 4
+#set g(maxwget) 1
 
 # Max number of concurrent downloads 
 set g(maxwgetpersite) 10

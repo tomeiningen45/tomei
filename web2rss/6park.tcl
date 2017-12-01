@@ -79,22 +79,6 @@ namespace eval 6park {
 
         # fix images
         regsub -all {onload='javascript:if[(]this.width>600[)] this.width=600'} $data "" data
-        if {0} {
-            regsub -all "src=\['\"\](\[^> '\"\]+)\['\"\]" $data src=\\1 data
-
-            set pat {<img[^>]*src=(http://[^>]*.popo8.com/[^> ]+)[^>]*>}
-            while {[regexp $pat $data dummy img]} {
-                set imgfile 6park/foo.jpg
-                set h1 http://freednsnow.no-ip.biz/webrss/$imgfile
-                
-                set i "<img onload='javascript:if(this.width>600) this.width=600' src=XXX border='0'>"
-                regsub XXX $i $img img0
-                regsub XXX $i http://freednsnow.no-ip.biz/webrss/$imgfile img1
-                regsub XXX $i http://127.0.0.1/webrss/$imgfile img2
-
-                regsub $pat $data $img0$img1$img2 data
-            }
-        }
 
         regsub -all {<br />.[ 　]+} $data "<br />" data
         regsub -all {<br />.<b>[ 　]+} $data "<br /><b>" data
