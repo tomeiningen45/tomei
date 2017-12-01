@@ -51,7 +51,8 @@ namespace eval yahoohk {
     proc parse_article {url data} {
         set title ""
         regexp {<title>([^<]+)</title>} $data dummy title
-
+        regsub {[ -]*雅虎香港新聞} $title "" title
+        
         regsub {<header><h1>([^<]+)</h1></header>} $data "" data
         regsub {.*<article} $data "<span " data
         regsub {<div class=.canvas-share-buttons.*} $data "" data
