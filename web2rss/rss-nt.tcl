@@ -435,6 +435,10 @@ proc sub_block {data begin end rep} {
     return $data
 }
 
+proc noscript {data} {
+    return [sub_block $data "<script" "</script>" ""]
+}
+
 proc lowcap {line} {
     set prefix ""
     set val ""

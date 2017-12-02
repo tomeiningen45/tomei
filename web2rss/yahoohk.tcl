@@ -48,6 +48,45 @@ namespace eval yahoohk {
         }
     }
 
+    proc consolidate_and_deduplicate_images {data} {
+        set images {}
+        set pat {<img[^>]*src="([^>\"]+)"[^>]*>}
+        while {[regexp $pat $data dummy loc]} {
+            if {[regexp {[.]png} $loc]} {
+                regsub $pat $data "<IMG src=\"$loc\">" data
+            } else {
+                if {![info exists seen($loc)]} {
+                    append images "<img src=\"$loc\"><br><br>"
+                    set seen($loc) 1
+                }
+                regsub $pat $data "" data
+            }
+        }
+
+        if {"$images" != {}} {
+            set pats {
+                {</figure>}
+                {<div class="caas-img-container"[^>]*>}
+            }
+            set sub 0
+            set x 0
+            foreach pat $pats {
+                incr x
+                if {[regexp $pat $data]} {
+                    regsub $pat $data \ufff0 data
+                    set n [string first \ufff0 $data]
+                    set data [string replace $data $n $n $images]
+                    set sub 1
+                    break
+                }
+            }
+            if {!$sub} {
+                append data "<p>$images"
+            }
+        }
+        return $data
+    }
+    
     proc parse_article {url data} {
         set title ""
         regexp {<title>([^<]+)</title>} $data dummy title
@@ -71,7 +110,27 @@ namespace eval yahoohk {
 
         regsub -all {<noscript[^>]*>(<img [^<]+>)</noscript>} $data "\\1" data
 
-        
+        regsub -all "<br>\[ \n\t\]*<br>" $data "<br><br>" data
+        regsub -all "<br>(<br>)+" $data "<br><br>" data
+
+        set data [noscript $data]
+        if {[regexp {class="caas-img"} $data]} {
+            set data [consolidate_and_deduplicate_images $data]
+        }
+
+        regsub -all {<figure[^>]*>} $data "" data
+        regsub -all {style="[^\"]+"} $data "" data
+
+
+        regsub -all {<ul class="caas-carousel-slides">} $data "" data
+        regsub -all {<li class="caas-carousel-slide">} $data "" data
+
+
+        regsub -all {<a[^>]*prev-button[^>]*>} $data "" data
+        regsub -all {<a[^>]*next-button[^>]*>} $data "" data
+        regsub -all {<svg[^>]*>} $data "" data
+        regsub -all {<path[^>]*>} $data "" data
+
         #puts $data
         #puts ""
         #puts $url
