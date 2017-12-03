@@ -38,7 +38,9 @@ namespace eval yahoohk {
         }
 
         foreach article_url [lsort -dictionary $list] {
-            set article_url https://hk.news.yahoo.com/$article_url
+            if {![regexp {^((https://)|(http://))} $article_url]} {
+                set article_url https://hk.news.yahoo.com${article_url}
+            }
             if {![db_exists yahoohk $article_url]} {
                 ::schedule_read yahoohk::parse_article $article_url
                 incr n
