@@ -10,6 +10,8 @@ namespace eval yahoohk {
 
     proc update_index {} {
         ::schedule_read yahoohk::parse_index https://hk.news.yahoo.com
+        ::schedule_read yahoohk::parse_index https://hk.news.yahoo.com/supplement
+        ::schedule_read yahoohk::parse_index https://hk.news.yahoo.com/most-popular
     }
 
     proc parse_index {index_url data} {
