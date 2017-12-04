@@ -851,10 +851,12 @@ proc adapter_init {adapter first} {
         set h(filter_duplicates)  0
         set h(max_articles) 100
     }
+    set ${adapter}::h(out) $adapter
     db_load $adapter
     
     # Adapter-specific config initialization
     namespace eval $adapter "init $first"
+
 }
 
 proc adapter_schedule_scan {adapter} {
@@ -1005,7 +1007,7 @@ proc adapter_db_file {adapter} {
 }
 
 proc adapter_xml_file {adapter} {
-    return [file join [storage_root] $adapter $adapter.xml]
+    return [file join [storage_root] [set ${adapter}::h(out)].xml]
 }
 
 proc db_load {adapter} {
@@ -1024,7 +1026,6 @@ proc db_sync_all_to_disk {} {
     set g(has_unsaved_articles) 0
     
     foreach adapter $g(adapters) {
-        variable h
         xlog 2 "syncing $adapter"
         file mkdir [file dirname [adapter_db_file $adapter]]
         set fd [open [adapter_db_file $adapter] w+]

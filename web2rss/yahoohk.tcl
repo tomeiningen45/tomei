@@ -4,8 +4,9 @@ namespace eval yahoohk {
     proc init {first} {
         variable h
         set h(lang)  zh
-        set h(desc)  雅虎香港新聞
+        set h(desc)  YHK
         set h(url)   https://hk.news.yahoo.com/
+        set h(out)   yhk
     }
 
     proc update_index {} {

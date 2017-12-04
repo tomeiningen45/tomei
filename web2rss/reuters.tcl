@@ -6,8 +6,9 @@ namespace eval reuters {
         set h(filter_duplicates)  1
         set h(article_sort_byurl) 0
         set h(lang)  en
-        set h(desc)  Reuters
+        set h(desc)  RT
         set h(url)   http://www.reuters.com
+        set h(out)   rt
     }
 
     proc update_index {} {
