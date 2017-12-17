@@ -14,3 +14,7 @@ web2rss/tclhttpd3.5.1/htdocs/podcasts/asakawaz/*.html
 web2rss/tclhttpd3.5.1/htdocs/podcasts/podcast/*.html
 
 .DS_Store
+
+web2rss/orig.html
+
+web2rss/out.html

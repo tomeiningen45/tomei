@@ -29,5 +29,6 @@ while true; do
         tclsh $(dirname $0)/rss-nt.tcl 2>&1 > $log
     else
         tclsh $(dirname $0)/rss-nt.tcl 2>&1 | tee $log
+        exit
     fi
 done

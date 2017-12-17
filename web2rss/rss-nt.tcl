@@ -63,6 +63,15 @@ proc xlog {level s} {
     puts $s
 }
 
+proc get_debug_opt {opt} {
+    global env
+    if {[info exists env($opt)]} {
+        return [string trim $env($opt)]
+    } else {
+        return ""
+    }
+}
+
 proc storage_root {} {
     
     foreach d {
@@ -398,18 +407,6 @@ if {[info command lreverse] == ""} {
     }
 }
 
-proc testing_get_file {data {encoding utf-8}} {
-    global env test_data
-
-    if {[info exists env(RSS_TEST_URL)]} {
-        if {![info exists test_data]} {
-            set test_data [wget $env(RSS_TEST_URL) $encoding]
-        }
-        set data $test_data
-    }
-    return $data
-}
-
 proc foreach_json {data cmd} {
     foreach {tag value} $data {
         uplevel set tag [list $tag]
@@ -739,8 +736,8 @@ proc generic_news_site {list_proc parse_proc {max 50} {maxnew 1000000}} {
 # SECTION: main control unit
 #======================================================================
 proc main {} {
-    # restart every 4 hours to avoid accumulating too much log or Tcl memory
-    after [expr 1000 * 3600 * 4] /  do_exit
+    # restart every 1 hour(s) to avoid accumulating too much log or Tcl memory
+    after [expr 1000 * 3600 * 1] /  do_exit
     discover
     vwait forever
 }
@@ -783,13 +780,24 @@ proc discover {} {
         }
     }
 
-    catch {
+    if {[set d [get_debug_opt DEBUG_ADAPTERS]] != ""} {
         # for debug only
-        set g(adapters) $env(ONLY_ADAPTERS)
+        set g(adapters) $d
     }
-    
-    foreach adapter $g(adapters) {
-        adapter_schedule_scan $adapter
+
+    if {[get_debug_opt DEBUG_ARTICLE] != ""} {
+        set url [get_debug_opt DEBUG_ARTICLE]
+        set data [wget $url]
+        set fd [open orig.html w+]
+        puts $fd $data
+        close $fd
+        [get_debug_opt DEBUG_ADAPTERS]::debug_article_parser $url $data
+        exit
+    } else {
+        # regular mode -- update every adapter
+        foreach adapter $g(adapters) {
+            adapter_schedule_scan $adapter
+        }
     }
 
     xafter $g(t:discover) discover
@@ -988,6 +996,17 @@ proc db_exists {adapter url} {
 proc save_article {adapter title url data {pubdate {}}} {
     global g
 
+    if {[get_debug_opt DEBUG_ARTICLE] != ""} {
+        puts ======================================================================
+        puts $url
+        puts ======================================================================
+        puts $title
+        puts ======================================================================
+        puts $data
+        exit
+    }
+
+    
     if {$pubdate == {}} {
         set pubdate [clock seconds]
     }
