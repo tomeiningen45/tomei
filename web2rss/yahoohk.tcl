@@ -7,6 +7,7 @@ namespace eval yahoohk {
         set h(desc)  YHK
         set h(url)   https://hk.news.yahoo.com/
         set h(out)   yhk
+        set h(max_downloads) [::get_debug_opt DEBUG_MAX_DOWNLOADS 15]
     }
 
     proc update_index {} {
@@ -16,6 +17,7 @@ namespace eval yahoohk {
     }
 
     proc parse_index {index_url data} {
+        variable h
         set list {}
 
         foreach line [makelist $data {<a href=\"}] {
@@ -45,7 +47,7 @@ namespace eval yahoohk {
             if {![db_exists yahoohk $article_url]} {
                 ::schedule_read yahoohk::parse_article $article_url
                 incr n
-                if {$n >= 15} {
+                if {$n >= $h(max_downloads)} {
                     # dont access the web site too heavily
                     break
                 }
@@ -53,40 +55,36 @@ namespace eval yahoohk {
         }
     }
 
-    proc consolidate_and_deduplicate_images {data} {
-        set images {}
+    # this function is called when ./test.sh has a non-empty DEBUG_ARTICLE
+    proc debug_article_parser {article_url} {
+        ::schedule_read yahoohk::parse_article $article_url
+    }
+    
+    proc deduplicate_images {data} {
         set pat {<img[^>]*src="([^>\"]+)"[^>]*>}
-        while {[regexp $pat $data dummy loc]} {
-            if {[regexp {[.]png} $loc]} {
-                regsub $pat $data "<IMG src=\"$loc\">" data
-            } else {
-                if {![info exists seen($loc)]} {
-                    append images "<img src=\"$loc\"><br><br>"
-                    set seen($loc) 1
-                }
-                regsub $pat $data "" data
-            }
-        }
 
-        if {"$images" != {}} {
-            set pats {
-                {</figure>}
-                {<div class="caas-img-container"[^>]*>}
-            }
-            set sub 0
-            set x 0
-            foreach pat $pats {
-                incr x
-                if {[regexp $pat $data]} {
-                    regsub $pat $data \ufff0 data
-                    set n [string first \ufff0 $data]
-                    set data [string replace $data $n $n $images]
-                    set sub 1
+        set loc {}
+        while 1 {
+            if {"$loc" == ""} {
+                if {![regexp $pat $data dummy loc]} {
                     break
                 }
+                regsub $pat $data "<IMG src=\"$loc\">" data
             }
-            if {!$sub} {
-                append data "<p>$images"
+            if {[regexp {[.]png} $loc]} {
+                set loc {}
+                continue
+            }            
+            if {[regexp $pat $data dummy loc2]} {
+                if {[string comp $loc $loc2] == 0} {
+                    regsub $pat $data "<br>" data
+                    set loc {}
+                } else {
+                    regsub $pat $data "<IMG src=\"$loc2\">" data
+                    set loc $loc2
+                }
+            } else {
+                break
             }
         }
         return $data
@@ -119,23 +117,23 @@ namespace eval yahoohk {
         regsub -all "<br>(<br>)+" $data "<br><br>" data
 
         set data [noscript $data]
-        if {[regexp {class="caas-img"} $data]} {
-            set data [consolidate_and_deduplicate_images $data]
-        }
+        set data [deduplicate_images $data]
 
         regsub -all {<figure[^>]*>} $data "" data
         regsub -all {style="[^\"]+"} $data "" data
 
-
         regsub -all {<ul class="caas-carousel-slides">} $data "" data
         regsub -all {<li class="caas-carousel-slide">} $data "" data
-
 
         regsub -all {<a[^>]*prev-button[^>]*>} $data "" data
         regsub -all {<a[^>]*next-button[^>]*>} $data "" data
         regsub -all {<svg[^>]*>} $data "" data
         regsub -all {<path[^>]*>} $data "" data
 
+        regsub -all {<figcaption[^>]*>} $data "<i><font size=-1>\u2605 " data
+        regsub -all "</figcaption" $data "</font></i" data
+        regsub {<div id="YDC-Bottom".*} $data "" data
+        regsub {&lt;!--AD--&gt;&lt;.*} $data "" data
         #puts $data
         #puts ""
         #puts $url

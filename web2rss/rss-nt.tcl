@@ -10,30 +10,33 @@ package require ncgi
 #======================================================================
 # SECTION: global configuration
 #======================================================================
-set g(rootdir) [file dirname [info script]]
+proc init_globals {} {
+    global g
+    set g(rootdir) [file dirname [info script]]
 
-if 0 {
-    # scan for adapters every 20 seconds
-    set g(t:discover) 20000
-} else {
-    # scan for adapters every 120 seconds
-    set g(t:discover) 120000
+    if 0 {
+        # scan for adapters every 20 seconds
+        set g(t:discover) 20000
+    } else {
+        # scan for adapters every 120 seconds
+        set g(t:discover) 120000
+    }
+
+    # Max number of concurrent downloads 
+    set g(maxwget) 60
+    set g(maxwget) 4
+    #set g(maxwget) 1
+
+    # Max number of concurrent downloads 
+    set g(maxwgetpersite) 10
+
+    set g(wgets) 0
+    set g(wget_later) {}
+
+    set g(has_unsaved_articles) 0
+
+    set g(max_articles) [get_debug_opt DEBUG_MAX_ARTICLES 140]
 }
-
-# Max number of concurrent downloads 
-set g(maxwget) 60
-set g(maxwget) 4
-#set g(maxwget) 1
-
-# Max number of concurrent downloads 
-set g(maxwgetpersite) 10
-
-set g(wgets) 0
-set g(wget_later) {}
-
-set g(has_unsaved_articles) 0
-
-set g(max_articles) 140
 
 #======================================================================
 # SECTION: global debug functions
@@ -63,12 +66,12 @@ proc xlog {level s} {
     puts $s
 }
 
-proc get_debug_opt {opt} {
+proc get_debug_opt {opt {default ""}} {
     global env
     if {[info exists env($opt)]} {
         return [string trim $env($opt)]
     } else {
-        return ""
+        return $default
     }
 }
 
@@ -736,6 +739,7 @@ proc generic_news_site {list_proc parse_proc {max 50} {maxnew 1000000}} {
 # SECTION: main control unit
 #======================================================================
 proc main {} {
+    init_globals
     # restart every 1 hour(s) to avoid accumulating too much log or Tcl memory
     after [expr 1000 * 3600 * 1] /  do_exit
     discover
@@ -787,12 +791,11 @@ proc discover {} {
 
     if {[get_debug_opt DEBUG_ARTICLE] != ""} {
         set url [get_debug_opt DEBUG_ARTICLE]
-        set data [wget $url]
-        set fd [open orig.html w+]
-        puts $fd $data
-        close $fd
-        [get_debug_opt DEBUG_ADAPTERS]::debug_article_parser $url $data
-        exit
+        #set data [wget $url]
+        #set fd [open orig.html w+]
+        #puts $fd $data
+        #close $fd
+        [get_debug_opt DEBUG_ADAPTERS]::debug_article_parser $url
     } else {
         # regular mode -- update every adapter
         foreach adapter $g(adapters) {
@@ -1003,6 +1006,12 @@ proc save_article {adapter title url data {pubdate {}}} {
         puts $title
         puts ======================================================================
         puts $data
+
+        set fd [open out.html w+]
+        puts $fd "<title>$title</title>\n"
+        puts $fd "<a href=$url>$url</a><p><p>\n"
+        puts $fd "$data"
+        close $fd
         exit
     }
 
