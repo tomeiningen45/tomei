@@ -23,18 +23,18 @@ namespace eval reuters {
     }
 
     # this function is called when ./test.sh has a non-empty DEBUG_ARTICLE
-    proc debug_article_parser {url data} {
-        parse_article [clock seconds] $url $data
+    proc debug_article_parser {url} {
+        ::schedule_read [list reuters::parse_article [clock seconds]] $url
     }
     
     proc parse_article {pubdate url data} {
         set title "??"
         regexp {<title>([^<|]+)} $data dummy title
         
-        regsub {.*<div class=.ArticleBody_body} $data "<div" data
-        regsub {.*ArticleHeader_content} $data "<div" data
+        regsub {.*(<div class=.ArticleBody_body)} $data "\\1" data
+        regsub {.*(<div class=.ArticleHeader_content)} $data "\\1" data
         regsub {<div class=.ArticleBody_trust.*} $data "" data
-        regsub {<div class="StandardArticleBody_trus.*} $data "" data
+        regsub {<div class=\"StandardArticleBody_trus.*} $data "" data
 
         regsub -all {<svg} $data "<!svg" data
 

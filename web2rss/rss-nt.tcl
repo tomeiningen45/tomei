@@ -938,6 +938,16 @@ proc do_read {fd} {
         unset buff($fd,doer)
         close $fd
 
+        if {[get_debug_opt DEBUG_ARTICLE] != ""} {
+            puts ======================================================================
+            puts "writing orig.html"
+            puts ======================================================================
+
+            set fd [open orig.html w+]
+            puts $fd "$data"
+            close $fd
+        }
+
         eval $doer [list $url] [list $data]
 
         puts [llength $g(wget_later)]=$g(wgets)
