@@ -18,8 +18,13 @@
 
 #export DEBUG_ARTICLE=
 #export DEBUG_ARTICLE="http://feeds.reuters.com/~r/reuters/topNews/~3/Svyx0NMhLP8/-idUSKBN1EA0OO"
- export DEBUG_ARTICLE=https://hk.news.yahoo.com/%E9%99%B3%E5%98%89%E8%8E%89%E6%8C%91%E6%88%B0sm%E6%88%B2%E5%8A%9B%E4%BF%9D%E4%B8%89%E9%BB%9E-214500217.html
+ export DEBUG_ARTICLE=https://hk.news.yahoo.com/%E7%97%A0%E7%97%9B%E8%97%A5%E5%B8%83-%E7%B6%A0%E6%B2%B9%E7%B2%BE-%E5%A4%9A%E6%AC%BE%E5%9C%8B%E6%B0%91%E8%97%A5%E5%93%81-%E8%A6%81%E6%BC%B2%E5%83%B9%E5%95%A6-023545169.html
 
 
+
+
+
+
+#----------------------------------------------------------------------
 env DEBUG=1 bash rss-nt.sh
 

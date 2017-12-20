@@ -140,7 +140,12 @@ namespace eval yahoohk {
         regsub -all {</div[^>]*>} $data </span> data
         regsub -all {<span[^>]*>} $data <span> data
         regsub -all {</span[^>]*>} $data </span> data
-
+        regsub -all {<p [^>]*>} $data <p> data
+        regsub -all {<ul [^>]*>} $data <ul> data
+        regsub {<p> *編輯推薦 *</p>.*} $data "" data
+        regsub {<span>看這些話題的相關文章：</span>.*} $data "" data
+        regsub {<p> *【延伸閱讀】<br /></p>.*} $data "" data
+        
         regsub -all "<span></span>" $data "" data
         regsub -all "</span><span>" $data "" data
         
