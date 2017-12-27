@@ -741,7 +741,7 @@ proc generic_news_site {list_proc parse_proc {max 50} {maxnew 1000000}} {
 proc main {} {
     init_globals
     # restart every 1 hour(s) to avoid accumulating too much log or Tcl memory
-    after [expr 1000 * 3600 * 1] /  do_exit
+    after [expr 1000 * 3600 * 1] do_exit
     discover
     vwait forever
 }
