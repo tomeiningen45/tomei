@@ -69,10 +69,11 @@ namespace eval yahoohk {
                 if {![regexp $pat $data dummy loc]} {
                     break
                 }
-                regsub $pat $data "<IMG src=\"$loc\">" data
+                regsub $pat $data "<IMG src=\"\\1\">" data
             }
             if {[regexp {[.]png} $loc]} {
                 set loc {}
+                puts 1
                 continue
             }            
             if {[regexp $pat $data dummy loc2]} {
@@ -80,7 +81,7 @@ namespace eval yahoohk {
                     regsub $pat $data "<br>" data
                     set loc {}
                 } else {
-                    regsub $pat $data "<IMG src=\"$loc2\">" data
+                    regsub $pat $data "<IMG src=\"\\1\">" data
                     set loc $loc2
                 }
             } else {
@@ -110,6 +111,7 @@ namespace eval yahoohk {
         
         regsub -all {<img[^>]* src="" } $data "<img " data
         regsub -all {<img[^>]* data-src=} $data "<img src=" data
+        regsub -all {<img[^>]* src=} $data "<img src=" data
 
         regsub -all {<noscript[^>]*>(<img [^<]+>)</noscript>} $data "\\1" data
 
