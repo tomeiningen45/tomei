@@ -78,7 +78,7 @@ proc get_debug_opt {opt {default ""}} {
 proc storage_root {} {
     
     foreach d {
-        /opt/local/apache2/htdocs/webrss
+        /opt/local/www/apache2/html/webrss
         /var/www/html/webrss
     } {
         if {[file exists $d] && [file isdir $d]} {
@@ -437,6 +437,10 @@ proc sub_block {data begin end rep} {
 
 proc noscript {data} {
     return [sub_block $data "<script" "</script>" ""]
+}
+
+proc nosvg {data} {
+    return [sub_block $data "<svg" "</svg>" ""]
 }
 
 proc lowcap {line} {
@@ -980,7 +984,7 @@ proc atom_parse_index {adapter index_url data} {
             }]} {
                 continue
             }
-                 
+
             lappend list [list [format 0x%016x $pubdate] [${adapter}::parse_link $link]]
         }
     }
@@ -1050,7 +1054,10 @@ proc adapter_xml_file {adapter} {
 
 proc db_load {adapter} {
     xcatch {
-        namespace eval $adapter source [list [adapter_db_file $adapter]]
+        set db [adapter_db_file $adapter]
+        if {[file exists $db]} {
+            namespace eval $adapter source [list $db]
+        }
     }
 }
 
