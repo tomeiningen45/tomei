@@ -25,6 +25,10 @@ namespace eval bleacher {
     }
     
     proc parse_article {pubdate url data} {
+        if {![regexp {http://bleacherreport.com/} $url]} {
+            # avoid duplicated articles from other domains
+            return
+        }
         set title "??"
         regexp {<title>([^<|]+)} $data dummy title
  
@@ -39,6 +43,8 @@ namespace eval bleacher {
         regsub {<h1 } $data {<h1 style='DISPLAY:none' } data
         regsub -all {w=80} $data {w=800} data
         regsub -all {h=53} $data {h=540} data
+        regsub {<span class="name".*</header>} $data "" data
+
         save_article bleacher $title $url $data $pubdate
     }
 }
