@@ -38,6 +38,7 @@ namespace eval 6park_forum {
         regsub {.*<!--bodybegin-->} $data "" data
         regsub {<!--bodyend-->.*} $data "" data
         regsub -all {<font color=E6E6DD> www.6park.com</font>} $data "\n\n" data
+        regsub -all {<font color=.E6E6DD>6parker.com</font>} $data "" data
         regsub -all {onclick=document.location=} $data "xx=" data
         regsub -all {onload[ ]*=} $data "xx=" data
         regsub {.*</script>} $data "" data 
@@ -49,7 +50,7 @@ namespace eval 6park_forum {
         regsub {<h1 class="[^\"]+">[^<]+</h1>} $data "" data
         regsub {<h1 id="[^\"]+">[^<]+</h1>} $data "" data
         regsub {<h1>((<font[^>]*>)|)[^<]+<span class="[^\"]+"></span>((</font>)|)</h1>} $data "" data
-            
+        
         # fix images
         # regsub -all "src=\['\"\](\[^> '\"\]+)\['\"\]" $data src=\\1 data
         
@@ -60,4 +61,9 @@ namespace eval 6park_forum {
 
         save_article $forum $title $url $data
     }
+
+    #not working -- forget it
+    #proc debug_article_parser {article_url} {
+    #    ::schedule_read 6park_forum::parse_article $article_url
+    #}
 }
