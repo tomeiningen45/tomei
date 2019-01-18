@@ -29,6 +29,10 @@ namespace eval bleacher {
             # avoid duplicated articles from other domains
             return
         }
+        if {[regexp {This article will be updated to provide more information} $data]} {
+            return
+        }
+        
         set title "??"
         regexp {<title>([^<|]+)} $data dummy title
  
