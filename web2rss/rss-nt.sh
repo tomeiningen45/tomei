@@ -6,7 +6,7 @@
 
 while true; do
     if [[ -f update.git ]]; then
-        git pull -u
+        git pull
     fi
     echo ----------------------------------------------------------------------
     echo Restarting ..... $(date)
