@@ -11,16 +11,17 @@ namespace eval yahoohk {
     }
 
     proc update_index {} {
-        ::schedule_read yahoohk::parse_index https://hk.news.yahoo.com
-        ::schedule_read yahoohk::parse_index https://hk.news.yahoo.com/supplement
-        ::schedule_read yahoohk::parse_index https://hk.news.yahoo.com/most-popular
+       #::schedule_read yahoohk::parse_index https://hk.news.yahoo.com
+       #::schedule_read yahoohk::parse_index https://hk.news.yahoo.com/supplement
+       #::schedule_read yahoohk::parse_index https://hk.news.yahoo.com/most-popular
+        ::schedule_read yahoohk::parse_index https://hk.news.yahoo.com/archive
     }
 
     proc parse_index {index_url data} {
         variable h
         set list {}
 
-        foreach line [makelist $data {<a href=\"}] {
+        foreach line [makelist $data { href=\"}] {
             if {[regexp {^([^>\"]+[-][0-9]+[.]html)\"} $line dummy article_url]} {
                 if {![info exists seen($article_url)]} {
                     set seen($article_url) 1
