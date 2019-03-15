@@ -10,6 +10,6 @@ namespace eval 6park_forum_kitchen {
     }
 
     proc update_index {} {
-        ::schedule_read {6park_forum::parse_index 6park_forum_kitchen} http://site.6park.com/life6/ gb2312
+        ::schedule_read {6park_forum::parse_index 6park_forum_kitchen} http://site.6park.com/life6/ utf-8
     }
 }

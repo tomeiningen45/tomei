@@ -10,6 +10,6 @@ namespace eval 6park_forum_life {
     }
 
     proc update_index {} {
-        ::schedule_read {6park_forum::parse_index 6park_forum_life} http://site.6park.com/life2/ gb2312
+        ::schedule_read {6park_forum::parse_index 6park_forum_life} http://site.6park.com/life2/ utf-8
     }
 }

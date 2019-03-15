@@ -10,6 +10,6 @@ namespace eval 6park_forum_mil {
     }
 
     proc update_index {} {
-        ::schedule_read {6park_forum::parse_index 6park_forum_mil} http://site.6park.com/military/ gb2312
+        ::schedule_read {6park_forum::parse_index 6park_forum_mil} http://site.6park.com/military/ utf-8
     }
 }

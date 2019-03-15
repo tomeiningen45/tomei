@@ -10,7 +10,7 @@ namespace eval 6park {
     }
 
     proc update_index {} {
-        ::schedule_read 6park::parse_index http://news.6park.com/newspark/index.php gb2312
+        ::schedule_read 6park::parse_index http://news.6park.com/newspark/index.php utf-8
     }
 
     proc parse_index {index_url data} {
@@ -47,7 +47,7 @@ namespace eval 6park {
             set title       [lindex $item 1]
             set id          [lindex $item 2]
             if {![db_exists 6park $article_url]} {
-                ::schedule_read [list 6park::parse_toutiaoabc $id $title] $article_url gb2312
+                ::schedule_read [list 6park::parse_toutiaoabc $id $title] $article_url utf-8
                 incr n
                 if {$n > 10} {
                     # dont access the web site too heavily

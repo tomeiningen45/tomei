@@ -10,6 +10,6 @@ namespace eval 6park_forum_laugh {
     }
 
     proc update_index {} {
-        ::schedule_read {6park_forum::parse_index 6park_forum_laugh} http://site.6park.com/enter1/ gb2312
+        ::schedule_read {6park_forum::parse_index 6park_forum_laugh} http://site.6park.com/enter1/ utf-8
     }
 }

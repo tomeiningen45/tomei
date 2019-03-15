@@ -5,6 +5,7 @@ namespace eval 6park_forum {
         regsub {<div id="d_list"} $data "" data
         regsub {<div id="d_list_foot"} $data "" data
 
+        set list {}
         foreach line [makelist $data {(<ul>.			<li>)|(<br></li><li><a)}] {
             if {[regexp {href="([^>]+)"} $line dummy link] &&
                 [regexp {>([^<]+)<} $line dummy title]} {
@@ -24,7 +25,7 @@ namespace eval 6park_forum {
             set article_url [lindex $item 0]
             set title       [lindex $item 1]
             if {![db_exists $forum $article_url]} {
-                ::schedule_read [list 6park_forum::parse_article $forum $title] $article_url gb2312
+                ::schedule_read [list 6park_forum::parse_article $forum $title] $article_url utf-8
                 incr n
                 if {$n > 10} {
                     # dont access the web site too heavily
