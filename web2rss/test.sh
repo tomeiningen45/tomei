@@ -5,7 +5,7 @@
  export DEBUG_ADAPTERS=
  export DEBUG_ARTICLE=
 #export DEBUG_MAX_ARTICLES=
- export DEBUG_MAX_ARTICLES=3
+ export DEBUG_MAX_ARTICLES=5
 #export DEBUG_MAX_DOWNLOADS=20
 
 # Set the following to exit after the first site has finished writing to db
@@ -14,10 +14,10 @@
 # Tests for specific sites
 #----------------------------------------------------------------------
 
-#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} reuters"
-#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} bleacher"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} reuters"  (no more RSS feed from reuters)
+ export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} bleacher"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park_forum_mil"
- export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoohk"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoohk"
 
 #----------------------------------------------------------------------
 # Tests for specific article -- if non-empty, must be exactly one URL,

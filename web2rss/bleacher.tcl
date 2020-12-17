@@ -39,8 +39,13 @@ namespace eval bleacher {
         regsub {.*(<article )} $data "\\1" data
         regsub {(</article>).*} $data "\\1" data
         regsub {<footer.*} $data "" data
-        regsub {<img[^>]+src="[^>]+team_logos/[^>]+"} $data "<noimg " data
-        
+        regsub -all {<img[^>]+src="[^>]+team_logos/[^>]+"} $data "<noimg " data
+        regsub -all {<img[^>]+src=[^>]+lazyImage/logo.png[^>]+>} $data "" data
+        regsub -all {<span itemProp="citation"[^>]*>[^<]+</span>} $data "" data
+        regsub -all {<span class="teamAvatar__name">[^<]+</span>} $data "" data
+
+
+
         set data [nosvg $data]
         regsub -all {<li (class=\"share)} $data {<li style='DISPLAY:none' \1} data
         regsub -all {<a (class="atom teamAvatar")} $data {<a style='DISPLAY:none'} data
@@ -50,7 +55,9 @@ namespace eval bleacher {
         regsub {<span class="name".*</header>} $data "" data
         regsub {<div class="organism video"} $data {<div style='DISPLAY:none'} data
 
-        set data "<a href=$url>\[orig\] $title</a><p><p>$data"
+        #set data "<a href=$url>\[orig\] $title</a><p><p>$data"
+
+        regsub {<h1>[^<]*</h1>} $data "" data
         
         save_article bleacher $title $url $data $pubdate
     }
