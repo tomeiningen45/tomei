@@ -54,6 +54,7 @@ namespace eval bleacher {
         regsub -all {h=53} $data {h=540} data
         regsub {<span class="name".*</header>} $data "" data
         regsub {<div class="organism video"} $data {<div style='DISPLAY:none'} data
+        regsub -all {<span class="text">Videos you might like </span>} $data "" data
 
         #set data "<a href=$url>\[orig\] $title</a><p><p>$data"
 
