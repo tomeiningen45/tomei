@@ -133,7 +133,7 @@ namespace eval yahoohk {
         regsub -all {<svg[^>]*>} $data "" data
         regsub -all {<path[^>]*>} $data "" data
 
-        regsub -all {<figcaption[^>]*>} $data "<i><font size=-1>\u2605 " data
+        regsub -all {<figcaption[^>]*>} $data "<i><br><font size=-1>\u2605 " data
         regsub -all "</figcaption" $data "</font></i" data
         regsub {<div id="YDC-Bottom".*} $data "" data
         regsub {&lt;!--AD--&gt;&lt;.*} $data "" data
@@ -151,7 +151,10 @@ namespace eval yahoohk {
         
         regsub -all "<span></span>" $data "" data
         regsub -all "</span><span>" $data "" data
-        
+
+        regsub -all {<h1 data-test-locator=.headline.>([^<]+)</h1>} $data "" data
+        regsub -all {<button class=[^>]*>閱讀整篇文章<i></i></button>} $data "" data
+
         #puts $data
         #puts ""
         #puts $url

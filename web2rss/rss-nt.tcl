@@ -1062,7 +1062,7 @@ proc db_load {adapter} {
 }
 
 proc db_sync_all_to_disk {} {
-    global g
+    global g env
 
     if {$g(has_unsaved_articles) == 0} {
         xlog 1 "no updates ... no need to sync to disk [clock format [clock seconds] -timezone :US/Pacific]"
@@ -1071,9 +1071,10 @@ proc db_sync_all_to_disk {} {
     set g(has_unsaved_articles) 0
     
     foreach adapter $g(adapters) {
-        xlog 2 "syncing $adapter"
-        file mkdir [file dirname [adapter_db_file $adapter]]
-        set fd [open [adapter_db_file $adapter] w+]
+        set db [adapter_db_file $adapter]
+        xlog 2 "syncing $adapter $db"
+        file mkdir [file dirname $db]
+        set fd [open $db w+]
         puts $fd "variable dbs"
         puts $fd "variable dbt"
         puts $fd "variable dbc"
@@ -1149,10 +1150,15 @@ proc db_sync_all_to_disk {} {
             if {$n >= $g(max_articles)} {
                 break
             }
+            xlog 2 "${adapter} $n $title"
         }
         puts $fd {</channel></rss>}
         close $fd
         xlog 2 "... written $n articles [clock format [clock seconds] -timezone :US/Pacific]"
+        if {[info exists env(DEBUG_NO_LOOPS)]} {
+            puts "env(DEBUG_NO_LOOPS) exists ... exiting"
+            exit
+        }
     }
 
 }
