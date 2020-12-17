@@ -31,7 +31,7 @@ namespace eval 6park {
 
             regsub ☆ $title "" title
             
-            if {![regexp {http[a-z]*://news.toutiaoabc.com} $article_url]} {
+            if {![regexp {http[a-z]*://www.6parknews.com} $article_url]} {
                 continue
             }
 
@@ -86,7 +86,10 @@ namespace eval 6park {
         regsub -all "\n\[ \t\r\]+<" $data "\n<" data
         regsub -all "<br>(\n<br>)+" $data "<br><br>\n" data
         regsub -all {>[ 　]+<} $data "><" data
-        
+
+        # don't show 6park images for now, since they are locked by referrer
+        regsub -all {<img[^>]*src=[\"\'][^\"]*[\"\'][^>]*>} $data {[img]} data
+
         save_article 6park $title $url $data
     }
 }

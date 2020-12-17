@@ -15,8 +15,9 @@
 #----------------------------------------------------------------------
 
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} reuters"  (no more RSS feed from reuters)
- export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} bleacher"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} bleacher"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park_forum_mil"
+ export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoohk"
 
 #----------------------------------------------------------------------
