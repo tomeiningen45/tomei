@@ -1036,13 +1036,18 @@ proc save_article {adapter title url data {pubdate {}}} {
     # dbs = db for subject
     # dbt = db for time posted
     # dbc = db for content
+    # dbf = db for filtered
     set ${adapter}::dbs($url) $title
     set ${adapter}::dbt($url) $pubdate
     set ${adapter}::dbc($url) $data
+    set ${adapter}::dbf($url) 0
 
     set g(has_unsaved_articles) 1
 }
 
+proc filter_article {adapter url} {
+    set ${adapter}::dbf($url) 1
+}
 
 proc adapter_db_file {adapter} {
     return [file join [storage_root] $adapter $adapter.db.tcl]
@@ -1082,6 +1087,7 @@ proc db_sync_all_to_disk {} {
         puts $fd "variable dbs"
         puts $fd "variable dbt"
         puts $fd "variable dbc"
+        puts $fd "variable dbf"
 
         # write the newest to oldest
         if {[set ${adapter}::h(article_sort_byurl)]} {
@@ -1108,6 +1114,10 @@ proc db_sync_all_to_disk {} {
             puts $fd "set ${adapter}::dbs($url) [list [set ${adapter}::dbs($url)]]"
             puts $fd "set ${adapter}::dbt($url) [list [set ${adapter}::dbt($url)]]"
             puts $fd "set ${adapter}::dbc($url) [list [set ${adapter}::dbc($url)]]"
+            catch {
+            puts $fd "set ${adapter}::dbf($url) [list [set ${adapter}::dbf($url)]]"
+            }
+
             incr n
             if {$n >= $g(max_articles)} {
                 break
@@ -1146,6 +1156,15 @@ proc db_sync_all_to_disk {} {
             set date [set ${adapter}::dbt($url)]
             set data [set ${adapter}::dbc($url)]
 
+            set filtered 0
+            catch {
+                set filtered [set ${adapter}::dbf($url)]
+            }
+            if {$filtered == 1} {
+                xlog 2 "${adapter} --- $title"
+                continue
+            }
+
             set data "<div lang=\"$lang\" xml:lang=\"$lang\">$data</div>"
             set newitem [makeitem $title $url $data $date]
 
@@ -1154,7 +1173,7 @@ proc db_sync_all_to_disk {} {
             if {$n >= $g(max_articles)} {
                 break
             }
-            xlog 2 "${adapter} $n $title"
+            xlog 2 "${adapter} [format %3d $n] $title"
         }
         puts $fd {</channel></rss>}
         close $fd

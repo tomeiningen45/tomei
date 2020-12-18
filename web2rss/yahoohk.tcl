@@ -160,5 +160,9 @@ namespace eval yahoohk {
         #puts $url
         #exit
         save_article yahoohk $title $url $data
+
+        if {[regexp 今日新聞 $data]} {
+            filter_article yahoohk $url
+        }
     }
 }
