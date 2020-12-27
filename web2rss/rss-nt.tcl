@@ -980,8 +980,11 @@ proc atom_parse_index {adapter index_url data} {
             [regexp {<pubDate>([^<]+)</pubDate>} $line dummy pubdate]} {
 
             if {[catch {
+                # Tcl cannot parse "Sun, 27 Dec 2020 23:02:21 +0900"
+                regsub {[+-][0-9]+$} $pubdate "" pubdate
                 set pubdate [clock scan $pubdate]
-            }]} {
+            } err]} {
+                puts $err
                 continue
             }
 

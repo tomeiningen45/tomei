@@ -18,7 +18,8 @@
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} bleacher"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park_forum_mil"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park"
- export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoohk"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoohk"
+ export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoojp_main"
 
 #----------------------------------------------------------------------
 # Tests for specific article -- if non-empty, must be exactly one URL,
