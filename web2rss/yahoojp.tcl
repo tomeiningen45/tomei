@@ -12,8 +12,8 @@ namespace eval yahoojp {
         regexp {<title>([^<|]+)} $data dummy title
         regsub { - Yahoo.*} $title "" title
 
-        puts $title
-        puts $url
+        #puts $title
+        #puts $url
 
         if {[regsub {.*<div class="article_body"[^>]*>} $data "" data]} {
             if {![regsub {【関連記事】.*} $data "<p>***" data]} {
