@@ -16,11 +16,12 @@ namespace eval yahoojp {
         puts $url
 
         if {[regsub {.*<div class="article_body"[^>]*>} $data "" data]} {
-            regsub {<style data-styled=.*} $data "" data
-            regsub {<div class=\"pagination.*} $data "\n <a href='$url'>続きを読む</a>" data
-            regsub {<style data-styled=.*} $data "" data
-            regsub {<script.*} $data "" data
+            if {![regsub {【関連記事】.*} $data "<p>***" data]} {
+                regsub {<style data-styled=.*} $data "" data
+            }
+            set data [noscript $data]
             regsub -all "\n" $data "<br>\n" data
+            regsub {<div class=\"pagination.*} $data "\n <a href='$url'>続きを読む</a>" data
             save_article $which $title $url $data $pubdate
         }
     }
