@@ -21,7 +21,8 @@
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoohk"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoojp_main"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoojp_sci"
- export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} nhk"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} nhk"
+ export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} gigazine"
 
 #----------------------------------------------------------------------
 # Tests for specific article -- if non-empty, must be exactly one URL,

@@ -988,6 +988,8 @@ proc atom_parse_index {adapter index_url data} {
                 continue
             }
 
+            regsub -all {&#45;} $link - link
+
             lappend list [list [format 0x%016x $pubdate] [${adapter}::parse_link $link]]
         }
     }
