@@ -43,10 +43,12 @@ namespace eval yahoojp {
                 set next_url https://news.yahoo.co.jp$next
                 ::schedule_read [list yahoojp::parse_article3 $which $pubdate $article_url $data] $next_url
             } else {
-                # $text is for easy printing.
-                set text $data
-                regsub -all <img $text "<xximg" text
-                append data "\n\n\n<p><br>=================== Print <p><br><p><br><p><br><p><br><p><br></h1></h2></h3></h4></h5></h6></b>\n\n\n$text"
+                if 0 {
+                    # $text is for easy printing.
+                    set text $data
+                    regsub -all <img $text "<xximg" text
+                    append data "\n\n\n<p><br>=================== Print <p><br><p><br><p><br><p><br><p><br></h1></h2></h3></h4></h5></h6></b>\n\n\n$text"
+                }
                 save_article $which $title $article_url $data $pubdate
             }
         }
