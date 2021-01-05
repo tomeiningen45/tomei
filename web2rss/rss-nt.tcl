@@ -439,6 +439,10 @@ proc noscript {data} {
     return [sub_block $data "<script" "</script>" ""]
 }
 
+proc nostyle {data} {
+    return [sub_block $data "<style" "</style>" ""]
+}
+
 proc nosvg {data} {
     return [sub_block $data "<svg" "</svg>" ""]
 }
