@@ -28,6 +28,9 @@ namespace eval yahoojp {
             if {![regsub {【関連記事】.*} $data "<p>***" data]} {
                 regsub {<style data-styled=.*} $data "" data
             }
+
+            regsub -all {<a href=[^>]*:related;[^>]*>[^<]*</a>} $data "" data
+
             set data [noscript $data]
             set data [nostyle $data]
             regsub -all "\n" $data "<br>\n" data
@@ -37,6 +40,8 @@ namespace eval yahoojp {
             regsub -all {<div class=[^>]*>} $data "<div>" data
             regsub -all { data-ylk=\"[^\"]+\"} $data " " data
             regsub -all { class=\"[^\"]+\"} $data " " data
+
+            while {[regsub -all "<br>\[\r\t\n \]*<br>\[\r\t\n \]*<br>" $data "<br>\n<br>" data]} {}
 
             set data "$previous_pages $data"
             if {"$next" != ""} {

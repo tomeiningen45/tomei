@@ -1187,8 +1187,8 @@ proc db_sync_all_to_disk {} {
         puts $fd {</channel></rss>}
         close $fd
         xlog 2 "... written $n articles [clock format [clock seconds] -timezone :US/Pacific]"
-        if {[info exists env(DEBUG_NO_LOOPS)]} {
-            puts "env(DEBUG_NO_LOOPS) exists ... exiting"
+        if {[info exists env(DEBUG_NO_LOOPS)] && ![info exists env(DEBUG_ARTICLE)]} {
+            puts "env(DEBUG_NO_LOOPS) exists ... exiting 2"
             exit
         }
     }
