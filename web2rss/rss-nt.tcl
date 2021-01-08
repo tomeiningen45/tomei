@@ -1033,6 +1033,7 @@ proc save_article {adapter title url data {pubdate {}}} {
         set fd [open out.html w+]
         puts $fd "<title>$title</title>\n"
         puts $fd "<a href=$url>$url</a><p><p>\n"
+        puts $fd "<h1>TITLE: $title</h1>" 
         puts $fd "$data"
         close $fd
         exit

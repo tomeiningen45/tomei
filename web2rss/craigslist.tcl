@@ -1,3 +1,94 @@
+# @rss-nt-adapter@
+
+namespace eval craigslist {
+    proc init {first} {
+        variable h
+        set h(filter_duplicates)  0
+        set h(article_sort_byurl) 0
+        set h(lang)  jp
+        set h(desc)  Craigslist
+        set h(url)   https://sfbay.craigslist.org/d/cars-trucks/search/cta
+        set h(out)   craigslist
+    }
+
+    proc update_index {} {
+        schedule_index https://sfbay.craigslist.org/search/cta?query=F250+%7C+F150+%7C+Superduty+%7C+Ram+%7C+Silverado
+    }
+
+    proc schedule_index {index_url} {
+        ::schedule_read [list craigslist::parse_index] $index_url
+    }
+
+    proc parse_index {index_url data} {
+        set n 25
+        foreach line [makelist $data {<h3 class="result-heading">}] {
+            if {$n <= 0} {
+                break
+            }
+            if {[regexp {<a href=.(https://sfbay.craigslist.org/[^>]*[.]html)} $line dummy article_url]} {
+                #puts $n=[db_exists craigslist $article_url]=$article_url
+                if {![db_exists craigslist $article_url] && ![info exists seen($article_url)]} {
+                    ::schedule_read [list craigslist::parse_article [clock seconds]] $article_url
+                    #return
+                    set seen($article_url) 1
+                    incr n -1
+                }
+            }
+        }
+    }
+
+    # this function is called when ./test.sh has a non-empty DEBUG_ARTICLE
+    proc debug_article_parser {url} {
+        ::schedule_read [list craigslist::parse_article [clock seconds]] $url
+    }
+    
+    proc parse_article {pubdate url data} {
+        set title ""
+
+        regsub {</span> - <span class="price">} $data " " data
+        regsub {</span><small> \(} $data " @@ (" data
+
+        if {![regexp {<span id="titletextonly">([^<]+)} $data dummy title] &&
+            ![regexp {<title>([^<]+)} $data dummy title]} {
+            return
+        }
+
+        set images "\n\n"
+
+        if {[regexp {<div id="thumbs">.*} $data thumbs]} {
+            regsub {</div>.*} $thumbs "" thumbs
+            foreach line [makelist $thumbs href=.] {
+                if {[regexp {^([^\"]+[.]jpg)} $line img]} {
+                    append images "\n<br><img src='$img'>"
+                }
+            }
+        }
+        set mileage ""
+        if {[regexp {odometer: <b>([^<]+)</b>} $data dummy mileage]} {
+            set mileage "@ ${mileage}mi"
+            if {![regsub @@ $title "${mileage} " title]} {
+                append title "$mileage"
+            }
+        }
+
+        set attrs ""
+        if {[regexp {<div class="mapAndAttrs">.*} $data attrs]} {
+            regsub {<section id="postingbody">.*} $attrs "" attrs
+            set attrs <blockquote>$attrs</blockquote>
+        }
+
+        if {[regsub {.*<section id="postingbody">} $data "" data]} {
+            regsub {<ul class="notices">.*} $data "" data
+            regsub {<p class="print-qrcode-label">QR Code Link to This Post</p>} $data "" data
+            append data $attrs
+            append data $images
+            save_article craigslist $title $url $data $pubdate
+        }
+    }
+}
+
+if 0 {
+
 #----------------------------------------------------------------------
 # Standard prolog
 #----------------------------------------------------------------------
@@ -362,3 +453,4 @@ proc update {} {
 
 
 update
+}
