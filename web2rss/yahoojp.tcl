@@ -5,7 +5,9 @@ namespace eval yahoojp {
     # in <data>. We need to get the article_url for the real content of the article
     proc parse_article {which pubdate pickup_url data} {
         if {[regexp {<a href="([^\"]+)"[^>]*>続きを読む</a>} $data dummy article_url]} {
-            ::schedule_read [list yahoojp::parse_article2 $which $pubdate] $article_url
+            if {![db_exists $which $article_url]} {
+                ::schedule_read [list yahoojp::parse_article2 $which $pubdate] $article_url
+            }
         }
     }
 
@@ -41,7 +43,14 @@ namespace eval yahoojp {
             regsub -all { data-ylk=\"[^\"]+\"} $data " " data
             regsub -all { class=\"[^\"]+\"} $data " " data
 
-            while {[regsub -all "<br>\[\r\t\n \]*<br>\[\r\t\n \]*<br>" $data "<br>\n<br>" data]} {}
+            while {[regsub -all "<br>\[\r\t\n \]*<br>\[\r\t\n \]*<br>" $data "<br><br>" data]} {}
+            regsub -all "<br>\n*<br>" $data "</p><p>" data
+            regsub -all {<h[1-9][^>]*>([^<]*)</h[1-9]>} $data "\n<p><b>●\\1</b></p>\n<p>" data
+
+            while {[regsub -all "<p *>\[\r\t\n \]*<p *>" $data <p> data]} {}
+
+            regsub -all {<div[^>]*>} $data "" data
+            regsub -all {</div[^>]*>} $data "" data
 
             set data "$previous_pages $data"
             if {"$next" != ""} {

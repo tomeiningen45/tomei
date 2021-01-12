@@ -13,7 +13,7 @@ namespace eval yahoojp_mag {
 
     proc update_index {} {
         schedule_index https://news.yahoo.co.jp/ranking/access/magazine/it-science
-        #schedule_index https://news.yahoo.co.jp/ranking/access/magazine/domestic
+        schedule_index https://news.yahoo.co.jp/ranking/access/magazine/domestic
         schedule_index https://news.yahoo.co.jp/ranking/access/magazine/world
         schedule_index https://news.yahoo.co.jp/ranking/access/magazine/business
         schedule_index https://news.yahoo.co.jp/ranking/access/magazine/life
