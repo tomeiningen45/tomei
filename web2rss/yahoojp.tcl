@@ -32,6 +32,7 @@ namespace eval yahoojp {
             }
 
             regsub -all {<a href=[^>]*:related;[^>]*>[^<]*</a>} $data "" data
+            regsub -all {<footer class.*} $data "" data
 
             set data [noscript $data]
             set data [nostyle $data]
@@ -48,6 +49,8 @@ namespace eval yahoojp {
             regsub -all {<h[1-9][^>]*>([^<]*)</h[1-9]>} $data "\n<p><b>●\\1</b></p>\n<p>" data
 
             while {[regsub -all "<p *>\[\r\t\n \]*<p *>" $data <p> data]} {}
+
+            regsub -all "<p>\n*\[　 \]*" $data "<p>\n　" data
 
             regsub -all {<div[^>]*>} $data "" data
             regsub -all {</div[^>]*>} $data "" data
