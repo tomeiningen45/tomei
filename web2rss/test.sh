@@ -20,18 +20,20 @@
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoohk"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoojp_main"
-export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoojp_mag"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoojp_mag"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoojp_sci"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} nhk"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} gigazine"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} craigslist"
+ export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} hatelabo"
 
 #----------------------------------------------------------------------
 # Tests for specific article -- if non-empty, must be exactly one URL,
 # and ${DEBUG_ADAPTERS} must be a single entry which can handle the URL
 #----------------------------------------------------------------------
 
-export DEBUG_ARTICLE=https://news.yahoo.co.jp/articles/058bc222b5539e9d4d7f2a6743ed2b4d974c87de
+export DEBUG_ARTICLE=https://anond.hatelabo.jp/20210111163141
+#export DEBUG_ARTICLE=https://news.yahoo.co.jp/articles/058bc222b5539e9d4d7f2a6743ed2b4d974c87de
 #export DEBUG_ARTICLE=https://sfbay.craigslist.org/sfc/ctd/d/2012-ford-e350-extended-15-passenger/7257286046.html
 #export DEBUG_ARTICLE=https://sfbay.craigslist.org/eby/cto/d/vallejo-2009-hyundai-sonata-gls-speed/7258436465.html
 #export DEBUG_ARTICLE=https://headlines.yahoo.co.jp/article?a=20210108-74127209-business-bus_all
