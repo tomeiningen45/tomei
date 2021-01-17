@@ -50,10 +50,14 @@ namespace eval yahoojp {
 
             while {[regsub -all "<p *>\[\r\t\n \]*<p *>" $data <p> data]} {}
 
-            regsub -all "<p>\n*\[　 \]*" $data "<p>\n　" data
+            regsub -all "<p>\n*\[　 \]*" $data "<p>　" data
+            regsub -all "<p>　<a" $data "<p><a" data
+            regsub -all "<p>　<b" $data "<p><b" data
 
             regsub -all {<div[^>]*>} $data "" data
             regsub -all {</div[^>]*>} $data "" data
+
+            regsub -all "</p>\[\n \]*<p>" $data "</p>\n\n<p>" data
 
             set data "$previous_pages $data"
             if {"$next" != ""} {
