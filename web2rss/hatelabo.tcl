@@ -51,7 +51,7 @@ namespace eval hatelabo {
 
             while {[regsub -all "<p *>\[\r\t\n \]*<p *>" $data <p> data]} {}
 
-            regsub -all <p> $data "<p>\n\n&nbsp;" data
+            regsub -all <p> $data "</p>\n\n<p>　" data
 
             regsub -all {</h[0-9][^>]*>} $data "" data
             regsub -all {<h[0-9][^>]*>} $data "\n\n<p>■" data

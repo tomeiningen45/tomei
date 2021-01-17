@@ -21,7 +21,7 @@ namespace eval gigazine {
 
     # this function is called when ./test.sh has a non-empty DEBUG_ARTICLE
     proc debug_article_parser {url} {
-        ::schedule_read [list gigazine::parse_article gigazine [clock seconds]] $url
+        ::schedule_read [list gigazine::parse_article [clock seconds]] $url
     }
     
     proc parse_article {pubdate url data} {
@@ -36,8 +36,24 @@ namespace eval gigazine {
             regsub {<div id="EndFooter">.*} $data "" data
             set data [noscript $data]
 
-            regsub -all {<p class="preface">
-<br />} $data <p> data
+            regsub -all {<p[^>]*>} $data <p> data
+
+            regsub -all {<br />} $data <p> data
+
+            regsub -all {<div[^>]*>} $data "" data
+            regsub -all {</div[^>]*>} $data "" data
+
+            regsub -all {<p></p>} $data "" data
+            regsub -all {</p>} $data "" data
+
+            while {[regsub -all "<p *>\[\r\t\n \]*<p *>" $data <p> data]} {}
+
+            regsub -all "<p>\[\n \]+" $data "</p>\n\n<p>" data
+            regsub -all "\[\n \]+</p>" $data "</p>" data
+
+            regsub -all "<p>\n*\[　 \]*" $data "<p>　" data
+            regsub -all "<p>　<a" $data "<p><a" data
+            regsub -all "<p>　<b" $data "<p><b" data
 
             save_article gigazine $title $url $data $pubdate
         }
