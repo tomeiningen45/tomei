@@ -7,6 +7,8 @@
 
 package require ncgi
 
+source [file dirname [info script]]/rss-lib.tcl
+
 #======================================================================
 # SECTION: global configuration
 #======================================================================
@@ -73,22 +75,6 @@ proc get_debug_opt {opt {default ""}} {
     } else {
         return $default
     }
-}
-
-proc storage_root {} {
-    
-    foreach d {
-        /opt/local/www/apache2/html/webrss
-        /var/www/html/webrss
-    } {
-        if {[file exists $d] && [file isdir $d]} {
-            return $d
-        }
-    }
-
-    set a /tmp/webrss
-    file mkdir $a
-    return $a
 }
 
 proc test_html_file {} {
@@ -651,9 +637,6 @@ proc quoted_exp {} {
     return "\[^\"\]"
 }
 
-proc clock_format {date} {
-    return [clock format $date -format {%a, %d %b %Y %T %Z}]
-}
 
 proc generic_news_site {list_proc parse_proc {max 50} {maxnew 1000000}} {
     global datadir env site
