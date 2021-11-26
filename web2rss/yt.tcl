@@ -9,6 +9,7 @@ set ytdl    [file dirname [info script]]/youtube-dl
 source $sources
 
 puts "storage_root = [storage_root]"
+
 # Get the first $limit ids in this playlist. The ids are
 # sorted in reversed order. E.g., if limit is 4 and the
 # list has videos {A B C} D, the returned list is {C B A}
@@ -42,7 +43,7 @@ proc get_ids {url limit} {
 
 
 proc main {} {
-    global ytsrc ytdl config thumbs
+    global ytsrc ytdl config thumbs env
     set root [storage_root]/yt
 
     if {![file exists $root]} {
@@ -52,6 +53,8 @@ proc main {} {
     if {![file exists $root/data]} {
         puts "creating directory $root/data"
         file mkdir $root/data
+    } else {
+        exec bash -c "find $root/data -name *.part -exec rm -v \{\} \\\;" >@ stdout 2>@ stdout
     }
 
     # Look for stuff to download (in reversed order in list)
@@ -197,8 +200,16 @@ proc main {} {
             }
         }
 
-        if {[file exists $metadata] && $update || 1} {
+        if {[file exists $metadata] && $update} {
             update_xml $site
+
+            if {[info exists env(DEBUG)]} {
+                puts env(DEBUG)=$env(DEBUG)
+                incr env(DEBUG) -1
+                if {$env(DEBUG) <= 0} {
+                    exit
+                }
+            }
         }
     }
 }
@@ -288,7 +299,7 @@ proc update_xml {site} {
                 puts $fd "<item><title>$title</title>"
                 puts $fd "<link>https://www.youtube.com/watch?v=$id</link>"
 		puts $fd "<dc:creator><!\[CDATA\[siran\]\]></dc:creator>"
-		puts $fd "<pubDate>[clock_format $pubdate]</pubDate>"
+		puts $fd "<pubDate>[clock_format [expr $pubdate / 1000]]</pubDate>"
                 puts $fd "<category><!\[CDATA\[ラジオ\]\]></category>"
                 puts $fd "<description><!\[CDATA\[$description\]\]></description>"
                 puts $fd "<enclosure url=\"$webroot/$filename\" length=\"$length\" type=\"audio/mpeg\" />"
@@ -309,8 +320,6 @@ proc update_xml {site} {
 
     puts $fd {</channel></rss>}
     close $fd
-
-    exit
 }
 
 
