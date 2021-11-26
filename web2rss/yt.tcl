@@ -257,7 +257,7 @@ proc update_xml {site} {
 	<lastBuildDate>DATE</lastBuildDate>
 	<language>LANG</language>
 	<sy:updatePeriod>hourly</sy:updatePeriod>
-	<sy:updateFrequency>1</sy:updateFrequency>
+	<sy:updateFrequency>12</sy:updateFrequency>
 
         <image>
 	<url>WEBROOT/podcast.jpg</url>
