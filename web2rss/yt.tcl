@@ -168,7 +168,11 @@ proc main {} {
                     puts $description                                             
                     set filename [exec $ytdl --get-filename --no-mtime -o $filenamespec -x $url]
                     puts "filename = $filename"
-                    if {![file exists $filename]} {
+                    set length [exec $ytdl --get-duration $url]
+                    puts "length = $length"
+                    if {[regexp {:.+:} $length]} {
+                        puts "Skipping videos that are over 1 hour long"
+                    } elseif {![file exists $filename]} {
                         exec $ytdl --no-mtime -o $filenamespec -x $url 2>@ stdout >@ stdout
                     }
                     set succeeded [file exists $filename]
@@ -326,4 +330,4 @@ proc update_xml {site} {
 main
 
 
-# ./youtube-dl --no-mtime -o '%(id)s.%(ext)s' -x https://www.youtube.com/watch?v=0v8VRhSZ7wc 
+# ./youtube-dl --get-duration --no-mtime -o '%(id)s.%(ext)s' -x https://www.youtube.com/watch?v=0v8VRhSZ7wc 
