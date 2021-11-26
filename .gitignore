@@ -18,3 +18,4 @@ web2rss/tclhttpd3.5.1/htdocs/podcasts/podcast/*.html
 web2rss/orig.html
 
 web2rss/out.html
+web2rss/ytsources.tcl

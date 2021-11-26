@@ -209,7 +209,9 @@ proc sort_by_newest_timestamp {a b} {
 }
 
 proc update_xml {site} {
-    global ts ytsrc thumbs
+    global ts ytsrc ytcfg thumbs
+    set webroot $ytcfg(webroot)
+
     catch {unset ts}
     set xml [storage_root]/$site.xml
     set sitedir [storage_root]/yt/$site
@@ -222,18 +224,29 @@ proc update_xml {site} {
 
 
     set fd [open $xml w+]
-    set out {<?xml version="1.0" encoding="utf-8"?>
+    set out {<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:podcast="https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md"
+	xmlns:rawvoice="http://www.rawvoice.com/rawvoiceRssModule/"
+	xmlns:googleplay="http://www.google.com/schemas/play-podcasts/1.0">
 
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:georss="http://www.georss.org/georss" version="2.0">
-  <channel>
-    <title>DESC</title>
-    <link>URL</link>
-    <description>DESC</description>
-    <dc:language>LANG</dc:language>
-    <pubDate>DATE</pubDate>
-    <sy:updatePeriod>hourly</sy:updatePeriod>
-    <sy:updateFrequency>12</sy:updateFrequency>
-    <sy:updateBase>2003-06-01T12:00+09:00</sy:updateBase>
+        <channel>
+	<title>DESC</title>
+	<link>URL</link>
+	<description>DESC</description>
+	<lastBuildDate>DATE</lastBuildDate>
+	<language>LANG</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+
+        <image>
+	<url>WEBROOT/podcast.jpg</url>
+        </image> 
     }
         
     set date [clock_format [clock seconds]]
@@ -241,6 +254,9 @@ proc update_xml {site} {
     regsub -all LANG        $out jp out
     regsub -all DESC        $out [lindex $ytsrc($site) 2] out
     regsub -all URL         $out [lindex $ytsrc($site) 3] out
+    regsub -all WEBROOT     $out $webroot out
+ 
+
     puts $fd $out
 
     set list [lsort -command sort_by_newest_timestamp [array names ts]]
@@ -265,7 +281,7 @@ proc update_xml {site} {
 
             catch {
                 set thumb $thumbs($id)
-                set description "$description <img src=\"$thumb\"> "
+                set description "$description <p> <img src=\"$thumb\"> "
             }
 
             if {0 + $succeeded >= 0} {
@@ -275,8 +291,9 @@ proc update_xml {site} {
 		puts $fd "<pubDate>[clock_format $pubdate]</pubDate>"
                 puts $fd "<category><!\[CDATA\[ラジオ\]\]></category>"
                 puts $fd "<description><!\[CDATA\[$description\]\]></description>"
-                puts $fd "<enclosure url=\"$filename\" length=\"$length\" type=\"audio/mpeg\" />"
+                puts $fd "<enclosure url=\"$webroot/$filename\" length=\"$length\" type=\"audio/mpeg\" />"
                 if {[info exists thumb]} {
+                    #puts $fd "<itunes:image href=\"$thumb\" />"
                     #puts $fd "<media:thumbnail url=\"$thumb\" />"
                     #puts $fd "<media:content url=\"$thumb\" type=\"image/jpeg\" />"
                 }
