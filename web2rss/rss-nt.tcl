@@ -71,7 +71,11 @@ proc xlog {level s} {
 proc get_debug_opt {opt {default ""}} {
     global env
     if {[info exists env($opt)]} {
-        return [string trim $env($opt)]
+	set data ""
+	catch {
+	    set data [string trim $env($opt)]
+	}
+        return $data
     } else {
         return $default
     }
@@ -320,6 +324,7 @@ proc save_links {datadir newlinks {limit 200}} {
     set links {}
     set n 0
     set fd [open $file w+]
+    fconfigure $fd -encoding utf-8
     foreach date [lsort -integer -decreasing [array names table]] {
         set link $table($date)
         puts $fd [list $date $link]
@@ -1119,6 +1124,7 @@ proc db_sync_all_to_disk {} {
         close $fd
 
         set fd [open [adapter_xml_file $adapter] w+]
+	fconfigure $fd -encoding utf-8	
         set out {<?xml version="1.0" encoding="utf-8"?>
 
 <rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:georss="http://www.georss.org/georss" version="2.0">
