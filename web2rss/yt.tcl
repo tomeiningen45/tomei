@@ -91,6 +91,10 @@ proc main {} {
         set site [lindex $item 0]
         set id   [lindex $item 1]
 
+        if {[info exists env(YTONLY)] && "$id" != "$env(YTONLY)"} {
+            continue
+        }
+
         set sitedir $root/$site
         if {![file exists $sitedir]} {
             puts "creating directory $sitedir"
@@ -163,10 +167,18 @@ proc main {} {
                     set pat {"description":\{"simpleText":\"([^\"]+)}
                     puts $pat
                     regexp $pat $data dummy description
-                    regexp {"title":\{"simpleText":\"([^\"]+)} $data dummy title
+                    set title ""
+                    regexp {<title>([^<]*)</title>} $data dummy title
+                    regsub { - YouTube$} $title "" title
+                    if {$title == ""} {
+                        regexp {"title":\{"simpleText":\"([^\"]+)} $data dummy title
+                    }
                     puts $title
                     puts $description                                             
-                    set filename [exec $ytdl --get-filename --no-mtime -o $filenamespec -x $url]
+                    set filename [exec $ytdl --get-filename --no-mtime -o $filenamespec --audio-format m4a -x $url]
+                    if {[regexp {[.]webm$} $filename]} {
+                        regsub {[.]webm$} $filename .m4a filename
+                    }
                     puts "filename = $filename"
                     set length [exec $ytdl --get-duration $url]
                     puts "length = $length"
@@ -175,7 +187,7 @@ proc main {} {
                     } elseif {[regexp {【LIVE】} $title]} {
                         puts "Skipping LIVE videos"
                     } elseif {![file exists $filename]} {
-                        exec $ytdl --no-mtime -o $filenamespec -x $url 2>@ stdout >@ stdout
+                        exec $ytdl --no-mtime -o $filenamespec --audio-format m4a -x $url 2>@ stdout >@ stdout
                     }
                     set succeeded [file exists $filename]
                     if {!$succeeded} {
@@ -200,7 +212,7 @@ proc main {} {
                     set update 1
                 }
             } else {
-                puts "No: retrycount ($retrycount) is over limit ($config(max-retry))"
+                puts "No: retrycount ($retrycount) is over limit ($config(max-retry)) for $url"
                 puts "To retry this file even more:"
                 puts "      rm $metadata"
             }
