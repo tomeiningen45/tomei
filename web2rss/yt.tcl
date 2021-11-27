@@ -222,7 +222,7 @@ proc main {} {
 
 proc sort_by_newest_timestamp {a b} {
     global ts
-    return [expr $ts($a) - $ts($b)]
+    return [expr - $ts($a) + $ts($b)]
 }
 
 proc update_xml {site} {
