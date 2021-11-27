@@ -172,6 +172,8 @@ proc main {} {
                     puts "length = $length"
                     if {[regexp {:.+:} $length]} {
                         puts "Skipping videos that are over 1 hour long"
+                    } elseif {[regexp {【LIVE】} $title]} {
+                        puts "Skipping LIVE videos"
                     } elseif {![file exists $filename]} {
                         exec $ytdl --no-mtime -o $filenamespec -x $url 2>@ stdout >@ stdout
                     }
