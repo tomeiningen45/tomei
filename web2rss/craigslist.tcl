@@ -54,11 +54,14 @@ namespace eval craigslist {
         }
 
         set images "\n\n"
-
+        set first_image ""
         if {[regexp {<div id="thumbs">.*} $data thumbs]} {
             regsub {</div>.*} $thumbs "" thumbs
             foreach line [makelist $thumbs href=.] {
                 if {[regexp {^([^\"]+[.]jpg)} $line img]} {
+                    if {"$first_image" == ""} {
+                        set first_image "<img src='/cgi-bin/im.cgi?a=$img&b=$url'>"
+                    }                        
                     append images "\n<br><img src='$img'>"
                 }
             }
@@ -80,8 +83,9 @@ namespace eval craigslist {
         if {[regsub {.*<section id="postingbody">} $data "" data]} {
             regsub {<ul class="notices">.*} $data "" data
             regsub {<p class="print-qrcode-label">QR Code Link to This Post</p>} $data "" data
-            append data $attrs
-            append data $images
+            set data "$first_image$data"
+            append data <!------>\n\n$attrs
+            append data <!------>\\n\n$images
             save_article craigslist $title $url $data $pubdate
         }
     }

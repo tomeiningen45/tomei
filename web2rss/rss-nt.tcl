@@ -37,7 +37,8 @@ proc init_globals {} {
 
     set g(has_unsaved_articles) 0
 
-    set g(max_articles) [get_debug_opt DEBUG_MAX_ARTICLES 140]
+    set g(max_articles)  [get_debug_opt DEBUG_MAX_ARTICLES  140]
+    set g(max_downloads) [get_debug_opt DEBUG_MAX_DOWNLOADS 140]
 }
 
 #======================================================================
@@ -887,8 +888,10 @@ proc schedule_read {doer url {encoding utf-8}} {
     #set data [wget http://news.6park.com/newspark/index.php gb2312]
 
     if {$g(wgets) < $g(maxwget)} {
-        incr g(wgets)
-        do_wget_now $doer $url $encoding
+        if {![info exists g(no_more_download)]} {
+            incr g(wgets)
+            do_wget_now $doer $url $encoding
+        }
     } else {
         do_wget_later $doer $url $encoding
     }
@@ -950,7 +953,12 @@ proc do_read {fd} {
         if {[llength $g(wget_later)] > 0} {
             set next [lindex $g(wget_later) 0]
             set g(wget_later) [lrange $g(wget_later) 1 end]
-            do_wget_now [lindex $next 0] [lindex $next 1] [lindex $next 2]
+
+            if {[info exists g(no_more_download)]} {
+                incr g(wgets) -1
+            } else {
+                do_wget_now [lindex $next 0] [lindex $next 1] [lindex $next 2]
+            }
         } else {
             incr g(wgets) -1
         }
@@ -1040,7 +1048,10 @@ proc save_article {adapter title url data {pubdate {}}} {
     set ${adapter}::dbc($url) $data
     set ${adapter}::dbf($url) 0
 
-    set g(has_unsaved_articles) 1
+    incr g(has_unsaved_articles) 1
+    if {$g(has_unsaved_articles) >= $g(max_downloads)} {
+        set g(no_more_download) 1
+    }
 }
 
 proc filter_article {adapter url} {
@@ -1120,6 +1131,7 @@ proc db_sync_all_to_disk {} {
             if {$n >= $g(max_articles)} {
                 break
             }
+            puts $n=$g(max_articles)
         }
         close $fd
 

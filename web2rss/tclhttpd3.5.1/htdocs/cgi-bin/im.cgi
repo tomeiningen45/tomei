@@ -1,18 +1,22 @@
 #!/bin/sh
 # \
+if [ -e /usr/local/opt/tcl-tk/bin/tclsh ]; then exec /usr/local/opt/tcl-tk/bin/tclsh "$0" ${1+"$@"} ; fi
+# \
 if [ -e /usr/bin/tclsh ]; then exec /usr/bin/tclsh "$0" ${1+"$@"} ; fi
-# \
-if [ -e /usr/local/bin/tclsh8.4 ]; then exec /usr/local/bin/tclsh8.4 "$0" ${1+"$@"} ; fi
-# \
-if [ -e /usr/local/bin/tclsh8.3 ]; then exec /usr/local/bin/tclsh8.3 "$0" ${1+"$@"} ; fi
-# \
-if [ -e /usr/bin/tclsh8.4 ]; then exec /usr/bin/tclsh8.4 "$0" ${1+"$@"} ; fi
 # \
 exec tclsh "$0" ${1+"$@"}
 
 # Test
 # http://localhost:9015/cgi-bin/im.cgi?a=http%3A%2F%2Fwww%2Epopo8%2Ecom%2Fpicts%2F201309%2F0901175733%5F85009%2Ejpg&b=http%3A%2F%2Fwww%2E6park%2Ecom%2Fnews%2Fmessages%2F43573%2Ehtml
 #
+
+open /tmp/im.cgi.log a
+
+proc log {msg} {
+    set fd [open /tmp/im.cgi.log a]
+    puts $fd $img
+    close $fd
+}
 
 if {[catch {
     package require ncgi
@@ -22,7 +26,7 @@ if {[catch {
     puts "Connection: Close"
     puts ""
 
-    set url http://www.popo8.com/picts/201309/0901175733_85009.jpg
+    set url https://web.popo8.com/20211130/20211130094955_29089type_jpeg_size_318_200_end.jpeg
     set ref http://www.6park.com/news/messages/43573.html
 
     #foreach x "$url $ref" {
@@ -40,7 +44,7 @@ if {[catch {
         }
     }
 
-    foreach wget {/usr/bin/wget /opt/local/bin/wget} {
+    foreach wget {/usr/bin/wget /usr/local/bin/wget /opt/local/bin/wget} {
         if {[file exists $wget]} {
             set fd [open "|$wget -O - --referer=$ref $url"]
             fconfigure $fd -translation binary -encoding binary
@@ -55,8 +59,7 @@ if {[catch {
             catch {close $fd}
             flush stdout
 
-            puts stderr "[clock format [clock seconds] -format %y%m%d-%H%M%S] [format %8d $n]: $ref => $url"
-            flush stderr
+            log "[clock format [clock seconds] -format %y%m%d-%H%M%S] [format %8d $n]: $ref => $url"
             
             exit
         }
