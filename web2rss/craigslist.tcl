@@ -43,6 +43,8 @@ namespace eval craigslist {
     }
     
     proc parse_article {pubdate url data} {
+        global g
+
         set title ""
 
         regsub {</span> - <span class="price">} $data " " data
@@ -60,7 +62,7 @@ namespace eval craigslist {
             foreach line [makelist $thumbs href=.] {
                 if {[regexp {^([^\"]+[.]jpg)} $line img]} {
                     if {"$first_image" == ""} {
-                        set first_image "<img src='/cgi-bin/im.cgi?a=$img&b=$url'>"
+                        set first_image "<img src='$g(webroot)/cgi-bin/im.cgi?a=[ncgi::encode $img]&b=[ncgi::encode $url]'>"
                     }                        
                     append images "\n<br><img src='$img'>"
                 }

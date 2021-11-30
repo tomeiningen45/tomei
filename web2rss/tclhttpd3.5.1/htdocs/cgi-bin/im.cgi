@@ -10,8 +10,6 @@ exec tclsh "$0" ${1+"$@"}
 # http://localhost:9015/cgi-bin/im.cgi?a=http%3A%2F%2Fwww%2Epopo8%2Ecom%2Fpicts%2F201309%2F0901175733%5F85009%2Ejpg&b=http%3A%2F%2Fwww%2E6park%2Ecom%2Fnews%2Fmessages%2F43573%2Ehtml
 #
 
-open /tmp/im.cgi.log a
-
 proc log {msg} {
     set fd [open /tmp/im.cgi.log a]
     puts $fd $img
@@ -59,7 +57,7 @@ if {[catch {
             catch {close $fd}
             flush stdout
 
-            log "[clock format [clock seconds] -format %y%m%d-%H%M%S] [format %8d $n]: $ref => $url"
+            #log "[clock format [clock seconds] -format %y%m%d-%H%M%S] [format %8d $n]: $ref => $url"
             
             exit
         }

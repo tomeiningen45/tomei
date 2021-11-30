@@ -19,3 +19,10 @@ proc storage_root {} {
     return $a
 }
 
+
+set g(webroot) ""
+
+catch {
+    source [file dirname [info script]]/config.tcl
+}
+
