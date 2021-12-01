@@ -9,10 +9,12 @@ namespace eval craigslist {
         set h(desc)  Craigslist
         set h(url)   https://sfbay.craigslist.org/d/cars-trucks/search/cta
         set h(out)   craigslist
+        # If more than one posts have the exact same subject, just show one of them
+        set h(unique_subject) 1
     }
 
     proc update_index {} {
-        schedule_index https://sfbay.craigslist.org/search/cta?query=F250+%7C+F150+%7C+Superduty+%7C+Ram+%7C+Silverado
+        schedule_index https://sfbay.craigslist.org/search/cta?query=F250+%7C+F150+%7C+Superduty+%7C+Ram+%7C+Silverado+%7C+Tacoma+%7C+Tundra+%7C+Bronco&purveyor-input=all
     }
 
     proc schedule_index {index_url} {
@@ -70,10 +72,22 @@ namespace eval craigslist {
         }
         set mileage ""
         if {[regexp {odometer: <b>([^<]+)</b>} $data dummy mileage]} {
+            catch {
+                if {$mileage < 999} {
+                    append mileage 000
+                }
+            }
             set mileage "@ ${mileage}mi"
             if {![regsub @@ $title "${mileage} " title]} {
                 append title "$mileage"
             }
+            #puts $title
+            regsub -all {[*]} $title "" title
+            regsub -all { +} $title " " title
+            set title [string trim $title]
+            regsub {[(][^\)\(]+[)]$} $title "" title
+            set title [string trim $title]
+            #puts $title
         }
 
         set attrs ""

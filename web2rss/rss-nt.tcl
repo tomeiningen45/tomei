@@ -1039,6 +1039,16 @@ proc save_article {adapter title url data {pubdate {}}} {
     if {$pubdate == {}} {
         set pubdate [clock seconds]
     }
+
+    set filtered 0
+    if {[info exists ${adapter}::h(unique_subject)] &&
+        [info exists ${adapter}::seen_subject($title)]} {
+        #puts "Filtered $url = $title"
+        set filtered 1
+    }
+
+    set ${adapter}::seen_subject($title) 1
+
     # dbs = db for subject
     # dbt = db for time posted
     # dbc = db for content
@@ -1046,7 +1056,7 @@ proc save_article {adapter title url data {pubdate {}}} {
     set ${adapter}::dbs($url) $title
     set ${adapter}::dbt($url) $pubdate
     set ${adapter}::dbc($url) $data
-    set ${adapter}::dbf($url) 0
+    set ${adapter}::dbf($url) $filtered
 
     incr g(has_unsaved_articles) 1
     if {$g(has_unsaved_articles) >= $g(max_downloads)} {
@@ -1071,6 +1081,12 @@ proc db_load {adapter} {
         set db [adapter_db_file $adapter]
         if {[file exists $db]} {
             namespace eval $adapter source [list $db]
+
+            foreach url [array names ${adapter}::dbs] {
+                set title [set ${adapter}::dbs($url)]
+                set ${adapter}::seen_subject($title) 1
+            }
+            #parray ${adapter}::seen_subject
         }
     }
 }

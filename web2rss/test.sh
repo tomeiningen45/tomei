@@ -8,11 +8,11 @@
 #Number of articles to store in the xml file
 #export DEBUG_MAX_ARTICLES=
 #export DEBUG_MAX_ARTICLES=60
- export DEBUG_MAX_ARTICLES=2
+ export DEBUG_MAX_ARTICLES=60
 
 #Number of articles to download from the web site
 #export DEBUG_MAX_DOWNLOADS=20
- export DEBUG_MAX_DOWNLOADS=4
+ export DEBUG_MAX_DOWNLOADS=60
 
 # Set the following to exit after the first site has finished writing to db
  export DEBUG_NO_LOOPS=1
