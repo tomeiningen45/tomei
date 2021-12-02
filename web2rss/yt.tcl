@@ -18,11 +18,20 @@ puts "storage_root = [storage_root]"
 # means A will have the newest modification date.
 #
 # The RSS list will be sorted with newsest on top. E.g.: A B C
-proc get_ids {url limit} {
-    global config thumbs
+proc get_ids {site url limit} {
+    global config thumbs yt
 
     set data [exec wget --no-check-certificate --timeout=10 --tries=1 -q -O - $url 2> /dev/null]
     set list {}
+
+    if {[is_watchlist $site]} {
+        set channels [get_channels_from_watchlist $data]
+        foreach channel $channels {
+            puts "Watchlist: get top video from $channel"
+            set list [concat $list [get_ids {} $channel 1]]
+        }
+        return $list
+    }
 
     regsub -all {\"videoId\":\"} $data \uffff data
     foreach line [split $data \uffff] {
@@ -41,6 +50,49 @@ proc get_ids {url limit} {
     return [lreverse [lrange $list 0 [expr $limit - 1]]]
 }
 
+
+
+proc is_watchlist {site} {
+    global ytsrc
+    if {![info exists ytsrc($site)]} {
+        return 0
+    }
+    set options [lindex $ytsrc($site) 4]
+    if {[regexp watchlist $options]} {
+        return 1
+    } else {
+        return 0
+    }
+}
+
+proc get_channels_from_watchlist {data} {
+    regsub -all {\"canonicalBaseUrl\":\"} $data \uffff data
+    foreach line [split $data \uffff] {
+        if {[regexp {^(/[^\"]+)\"} $line dummy channel]} {
+            if {![regexp {^/user/} $channel]} {
+                set found(https://www.youtube.com${channel}/videos) 1
+            }
+        }
+    }
+    set list {}
+    catch {
+        set list [array names found]
+    }
+    return $list
+}
+
+proc is_audio_needed {site} {
+    global ytsrc
+    if {![info exists ytsrc($site)]} {
+        return 0
+    }
+    set options [lindex $ytsrc($site) 4]
+    if {[regexp noaudio $options]} {
+        return 0
+    } else {
+        return 1
+    }
+}
 
 proc main {} {
     global ytsrc ytdl config thumbs env
@@ -67,7 +119,7 @@ proc main {} {
         set url            [lindex $ytsrc($site) 3]
 
         puts "Getting list $site-$url"
-        set ids($site) [get_ids $url $download_limit]
+        set ids($site) [get_ids $site $url $download_limit]
         set len [llength $ids($site)]
         if {$maxlen < $len} {
             set maxlen $len
@@ -150,64 +202,75 @@ proc main {} {
             }
         }
 
+        set getaudio [is_audio_needed $site]
+
         if {!$succeeded} {
             set filename unknown
-
             set succeeded 0
             set title ""
             set pubdate [clock milliseconds]
             set description ""
 
             if {$retrycount < $config(max-retry)} {
-                puts "Downloading audio data from $url"
                 if {[catch {
                     # Read the descriptions, etc
-                    set data [exec wget --no-check-certificate --timeout=10 --tries=1 -q -O - $url 2> /dev/null]
-                    puts [string len $data]
-                    set pat {"description":\{"simpleText":\"([^\"]+)}
-                    puts $pat
-                    regexp $pat $data dummy description
-                    set title ""
-                    regexp {<title>([^<]*)</title>} $data dummy title
-                    regsub { - YouTube$} $title "" title
-                    if {$title == ""} {
-                        regexp {"title":\{"simpleText":\"([^\"]+)} $data dummy title
+                    if {$getaudio || ![file exists $metadata]} {
+                        puts "Downloading meta data from $url"
+                        set data [exec wget --no-check-certificate --timeout=10 --tries=1 -q -O - $url 2> /dev/null]
+                        puts [string len $data]
+                        set pat {"description":\{"simpleText":\"([^\"]+)}
+                        puts $pat
+                        regexp $pat $data dummy description
+                        set title ""
+                        regexp {<title>([^<]*)</title>} $data dummy title
+                        regsub { - YouTube$} $title "" title
+                        if {$title == ""} {
+                            regexp {"title":\{"simpleText":\"([^\"]+)} $data dummy title
+                        }
+                        puts $title
+                        puts $description
+                        if {!$getaudio} {
+                            # No need to get the audio. Just update the RSS feed with title and description
+                            set update 1
+                        }
                     }
-                    puts $title
-                    puts $description                                             
-                    set filename [exec $ytdl --get-filename --no-mtime -o $filenamespec --audio-format m4a -x $url]
-                    if {[regexp {[.]webm$} $filename]} {
-                        regsub {[.]webm$} $filename .m4a filename
+                    if {$getaudio} {
+                        puts "Downloading audio data from $url"
+                        set filename [exec $ytdl --get-filename --no-mtime -o $filenamespec --audio-format m4a -x $url]
+                        if {[regexp {[.]webm$} $filename]} {
+                            regsub {[.]webm$} $filename .m4a filename
+                        }
+                        puts "filename = $filename"
+                        set length [exec $ytdl --get-duration $url]
+                        puts "length = $length"
+                        if {[regexp {:.+:} $length]} {
+                            puts "Skipping videos that are over 1 hour long"
+                        } elseif {[regexp {【LIVE】} $title]} {
+                            puts "Skipping LIVE videos"
+                        } elseif {![file exists $filename]} {
+                            exec $ytdl --no-mtime -o $filenamespec --audio-format m4a -x $url 2>@ stdout >@ stdout
+                        }
+                        set succeeded [file exists $filename]
+                        if {!$succeeded} {
+                            incr retrycount
+                        }
                     }
-                    puts "filename = $filename"
-                    set length [exec $ytdl --get-duration $url]
-                    puts "length = $length"
-                    if {[regexp {:.+:} $length]} {
-                        puts "Skipping videos that are over 1 hour long"
-                    } elseif {[regexp {【LIVE】} $title]} {
-                        puts "Skipping LIVE videos"
-                    } elseif {![file exists $filename]} {
-                        exec $ytdl --no-mtime -o $filenamespec --audio-format m4a -x $url 2>@ stdout >@ stdout
-                    }
-                    set succeeded [file exists $filename]
-                    if {!$succeeded} {
-                        incr retrycount
-                    }
-                    puts "Succeeded"
                 } errInfo]} {
                     puts "*** Failed to download audio data"
                     puts $errInfo
                 }
-                puts "Writing $metadata"
-                set fd [open $metadata w+]
-                puts $fd "set     metainfo($id) $retrycount"
-                puts $fd "lappend metainfo($id) $filename"
-                puts $fd "lappend metainfo($id) [list $title]"
-                puts $fd "lappend metainfo($id) [list $pubdate]"
-                puts $fd "lappend metainfo($id) [list $description]"
-                puts $fd "lappend metainfo($id) [list $succeeded]"
-                close $fd
-                puts "$filename (Succeeded = $succeeded)"
+                if {$getaudio || $update} {
+                    puts "Writing $metadata"
+                    set fd [open $metadata w+]
+                    puts $fd "set     metainfo($id) $retrycount"
+                    puts $fd "lappend metainfo($id) $filename"
+                    puts $fd "lappend metainfo($id) [list $title]"
+                    puts $fd "lappend metainfo($id) [list $pubdate]"
+                    puts $fd "lappend metainfo($id) [list $description]"
+                    puts $fd "lappend metainfo($id) [list $succeeded]"
+                    close $fd
+                    puts "$filename (Succeeded = $succeeded)"
+                }
                 if {$succeeded} {
                     set update 1
                 }
@@ -240,6 +303,7 @@ proc sort_by_newest_timestamp {a b} {
 proc update_xml {site} {
     global ts ytsrc ytcfg thumbs
     set webroot $ytcfg(webroot)
+    set need_audio [is_audio_needed $site]
 
     catch {unset ts}
     set xml [storage_root]/$site.xml
@@ -250,7 +314,6 @@ proc update_xml {site} {
     foreach file [glob $sitedir/*.tcl] {
         catch {source $file}
     }
-
 
     set fd [open $xml w+]
     set out {<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
@@ -285,7 +348,6 @@ proc update_xml {site} {
     regsub -all URL         $out [lindex $ytsrc($site) 3] out
     regsub -all WEBROOT     $out $webroot out
  
-
     puts $fd $out
 
     set list [lsort -command sort_by_newest_timestamp [array names ts]]
@@ -301,9 +363,13 @@ proc update_xml {site} {
             set pubdate     [lindex $info 3]
             set description [lindex $info 4]
             set succeeded   [lindex $info 5]
+            set hasaudio    0
 
-            set length [file size $filename]
-            regsub "^.*/webrss/" $filename "" filename
+            if {[file exists $filename]} {
+                set length [file size $filename]
+                regsub "^.*/webrss/" $filename "" filename
+                set hasaudio 1
+            }
             regsub -all "\\\\n" $description "<br>\n" description
 
             catch {unset thumb}
@@ -313,14 +379,16 @@ proc update_xml {site} {
                 set description "$description <p> <img src=\"$thumb\"> "
             }
 
-            if {0 + $succeeded >= 0} {
+            if {0 + $succeeded >= 0 || !$need_audio} {
                 puts $fd "<item><title>$title</title>"
                 puts $fd "<link>https://www.youtube.com/watch?v=$id</link>"
 		puts $fd "<dc:creator><!\[CDATA\[siran\]\]></dc:creator>"
 		puts $fd "<pubDate>[clock_format [expr $pubdate / 1000]]</pubDate>"
                 puts $fd "<category><!\[CDATA\[ラジオ\]\]></category>"
                 puts $fd "<description><!\[CDATA\[$description\]\]></description>"
-                puts $fd "<enclosure url=\"$webroot/$filename\" length=\"$length\" type=\"audio/mpeg\" />"
+                if {$hasaudio} {
+                    puts $fd "<enclosure url=\"$webroot/$filename\" length=\"$length\" type=\"audio/mpeg\" />"
+                }
                 if {[info exists thumb]} {
                     #puts $fd "<itunes:image href=\"$thumb\" />"
                     #puts $fd "<media:thumbnail url=\"$thumb\" />"
