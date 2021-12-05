@@ -430,12 +430,13 @@ proc cleanup_old_files {} {
 }
 
 proc cleanup_timestamps {site} {
-    global ts ytsrc keepfile
+    global ts ytsrc keepfile env
     set now [clock seconds]
     catch {unset ts}
-    puts "Cleaning $site"
     set download_limit [lindex $ytsrc($site) 0]
     set storage_limit  [lindex $ytsrc($site) 1]
+
+    puts "Cleaning $site (limit = $storage_limit)"
 
     set sitedir [storage_root]/yt/$site
     if {![file exists $sitedir]} {
@@ -457,15 +458,18 @@ proc cleanup_timestamps {site} {
         } else {
             set limit "     "
         }
-        if {$now - $ts($file) > 3600 * 24 * 1} {
-            set age age
+        set days [expr ($now - $ts($file)) / (3600 * 24)]
+        if {$days >= 3} {
+            set age "$days days"
         } else {
-            set age "  "
+            set age ""
         }
-        #puts "$file $limit $age"
-        if {$age == "age" && $limit == "limit"} {
+        if {$age != "" && $limit == "limit"} {
             puts "$file $limit $age  <--- delete"
         } else {
+            if {[info exists env(DELETEONLY)]} {
+                puts "$file $limit $age"
+            }
             incr keepfile([file root [file tail $file]]) 1
         }
     }
