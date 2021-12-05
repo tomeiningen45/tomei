@@ -109,6 +109,8 @@ proc main {} {
         exec bash -c "find $root/data -name *.part -exec rm -v \{\} \\\;" >@ stdout 2>@ stdout
     }
 
+    cleanup_old_files
+
     # Look for stuff to download (in reversed order in list)
     set worklist {}
     set maxlen 0
@@ -170,8 +172,8 @@ proc main {} {
                 puts $fd "set thumb($id) [list $thumbs($id)]"
             }
             close $fd
-            # Make sure all timestamps are separated by at least 1 millisecond
-            after 1
+            # Make sure all timestamps are separated by at least 1 second
+            after 1000
         }
 
         # Download the audio data
@@ -285,7 +287,7 @@ proc main {} {
             update_xml $site
 
             if {[info exists env(DEBUG)]} {
-                puts env(DEBUG)=$env(DEBUG)
+                puts "env(DEBUG)=$env(DEBUG)"
                 incr env(DEBUG) -1
                 if {$env(DEBUG) <= 0} {
                     exit
@@ -408,6 +410,66 @@ proc update_xml {site} {
     close $fd
 }
 
+proc cleanup_old_files {} {
+    global ytsrc keepfile env
+    foreach site [array names ytsrc] {
+        cleanup_timestamps $site
+    }
+
+    #parray keepfile
+
+    foreach file [glob [storage_root]/yt/data/*] {
+        set id [file root [file tail $file]]
+        if {![info exists keepfile($id)]} {
+            puts "$file <--- delete"
+        }
+    }
+    if {[info exists env(DELETEONLY)]} {
+        exit
+    }
+}
+
+proc cleanup_timestamps {site} {
+    global ts ytsrc keepfile
+    set now [clock seconds]
+    catch {unset ts}
+    puts "Cleaning $site"
+    set download_limit [lindex $ytsrc($site) 0]
+    set storage_limit  [lindex $ytsrc($site) 1]
+
+    set sitedir [storage_root]/yt/$site
+    if {![file exists $sitedir]} {
+        return
+    }
+    set timestamps [glob $sitedir/*.tcl]
+    foreach file $timestamps {
+        # Dont source this file in case it's corrupt
+        set ts($file) [file mtime $file]
+    }
+
+    # newest is on top
+    set timestamps [lsort -command sort_by_newest_timestamp $timestamps]
+    set n 0
+    foreach file $timestamps {
+        incr n
+        if {$n > $storage_limit} {
+            set limit limit
+        } else {
+            set limit "     "
+        }
+        if {$now - $ts($file) > 3600 * 24 * 1} {
+            set age age
+        } else {
+            set age "  "
+        }
+        #puts "$file $limit $age"
+        if {$age == "age" && $limit == "limit"} {
+            puts "$file $limit $age  <--- delete"
+        } else {
+            incr keepfile([file root [file tail $file]]) 1
+        }
+    }
+}
 
 main
 
