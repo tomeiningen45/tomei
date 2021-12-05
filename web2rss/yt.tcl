@@ -422,9 +422,12 @@ proc cleanup_old_files {} {
         set id [file root [file tail $file]]
         if {![info exists keepfile($id)]} {
             puts "$file <--- delete"
+            if {![info exists env(CHECKDELETE)]} {
+                file delete $file
+            }
         }
     }
-    if {[info exists env(DELETEONLY)]} {
+    if {[info exists env(CHECKDELETE)]} {
         exit
     }
 }
@@ -466,8 +469,11 @@ proc cleanup_timestamps {site} {
         }
         if {$age != "" && $limit == "limit"} {
             puts "$file $limit $age  <--- delete"
+            if {![info exists env(CHECKDELETE)]} {
+                file delete $file
+            }
         } else {
-            if {[info exists env(DELETEONLY)]} {
+            if {[info exists env(CHECKDELETE)]} {
                 puts "$file $limit $age"
             }
             incr keepfile([file root [file tail $file]]) 1
