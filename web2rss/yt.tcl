@@ -103,6 +103,20 @@ proc is_audio_needed {site} {
     }
 }
 
+proc skip_long_videos {site} {
+    global ytsrc
+    if {![info exists ytsrc($site)]} {
+        return 0
+    }
+    set options [lindex $ytsrc($site) 4]
+    if {[regexp skiplong $options]} {
+        return 1
+    } else {
+        return 0
+    }
+}
+
+
 proc main {} {
     global ytsrc ytdl config thumbs env
     set root [storage_root]/yt
@@ -254,7 +268,7 @@ proc main {} {
                         puts "filename = $filename"
                         set length [exec $ytdl --get-duration $url]
                         puts "length = $length"
-                        if {[regexp {:.+:} $length]} {
+                        if {[skip_long_videos $site] && [regexp {:.+:} $length]} {
                             puts "Skipping videos that are over 1 hour long"
                         } elseif {[regexp {【LIVE】} $title]} {
                             puts "Skipping LIVE videos"
