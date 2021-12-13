@@ -18,7 +18,7 @@ puts "storage_root = [storage_root]"
 # means A will have the newest modification date.
 #
 # The RSS list will be sorted with newsest on top. E.g.: A B C
-proc get_ids {site url limit} {
+proc get_ids {site url limit {showname 0}} {
     global config thumbs yt
 
     set data [exec wget --no-check-certificate --timeout=10 --tries=1 -q -O - $url 2> /dev/null]
@@ -26,11 +26,22 @@ proc get_ids {site url limit} {
 
     if {[is_watchlist $site]} {
         set channels [get_channels_from_watchlist $data]
+        set n 0
         foreach channel $channels {
-            puts "Watchlist: get top video from $channel"
-            set list [concat $list [get_ids {} $channel 1]]
+            incr n
+            puts "Watchlist [format %3d $n]: get top video from $channel"
+            set videos [get_ids {} $channel 1 1]
+            if {[llength $videos] == 0} {
+                puts "               No videos??"
+            } else {
+                set list [concat $list $videos]
+            }
         }
         return $list
+    }
+
+    if {$showname && [regexp {"channelMetadataRenderer":\{"title":"([^\"]+)"} $data dummy title]} {
+        puts "               $title"
     }
 
     regsub -all {\"videoId\":\"} $data \uffff data
@@ -69,9 +80,7 @@ proc get_channels_from_watchlist {data} {
     regsub -all {\"canonicalBaseUrl\":\"} $data \uffff data
     foreach line [split $data \uffff] {
         if {[regexp {^(/[^\"]+)\"} $line dummy channel]} {
-            if {![regexp {^/user/} $channel]} {
-                set found(https://www.youtube.com${channel}/videos) 1
-            }
+            set found(https://www.youtube.com${channel}/videos) 1
         }
     }
     set list {}
@@ -133,7 +142,7 @@ proc main {} {
         foreach site [array names ytsrc] {
             set id [lindex $ids($site) $i]
             if {"$id" != ""} {
-                puts "[format %3d $i] $site-$id"
+                puts "[format %3d [expr $i + 1]] $site-$id"
                 lappend worklist [list $site $id]
             }
         }
@@ -418,7 +427,7 @@ proc cleanup_old_files {} {
 
     #parray keepfile
 
-    foreach file [glob [storage_root]/yt/data/*] {
+    foreach file [glob -nocomplain [storage_root]/yt/data/*] {
         set id [file root [file tail $file]]
         if {![info exists keepfile($id)]} {
             puts "$file <--- delete"
