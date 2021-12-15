@@ -16,7 +16,7 @@ namespace eval craigslist {
     proc update_index {} {
         set url https://sfbay.craigslist.org/search/cta?query=F250+%7C+F150+%7C+Superduty+%7C+Ram+%7C+Silverado+%7C+Tacoma+%7C+Tundra+%7C+Bronco&purveyor-input=all
         set url https://sfbay.craigslist.org/search/cta
-        schedule_index 
+        schedule_index $url
     }
 
     proc schedule_index {index_url} {

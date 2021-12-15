@@ -8,6 +8,7 @@
 package require ncgi
 
 source [file dirname [info script]]/rss-lib.tcl
+set env(CLASSPATH) [file dirname [info script]]
 
 #======================================================================
 # SECTION: global configuration
@@ -161,7 +162,7 @@ proc wget_inner {url {encoding utf-8}} {
             set fd [open "$cmd | iconv -f gbk -t utf-8" r]
             set encoding utf-8
         } else {
-            set fd [open "$cmd" r]
+            set fd [open "$cmd | java FilterEmoji" r]
         }
         fconfigure $fd -encoding $encoding
         set data [read $fd]
@@ -902,7 +903,7 @@ proc do_wget_now {doer url encoding} {
 
     xlog 2 "wget $doer $url $encoding"
 
-    set cmd "| wget --no-check-certificate --timeout=10 --tries=1 -q -O - -o /dev/null $url"
+    set cmd "| wget --no-check-certificate --timeout=10 --tries=1 -q -O - -o /dev/null $url | java FilterEmoji"
     if {"$encoding" == "gb2312"} {
         append cmd " | iconv -f gbk -t utf-8"
         set encoding utf-8
