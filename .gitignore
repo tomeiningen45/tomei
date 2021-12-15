@@ -22,3 +22,6 @@ web2rss/ytsources.tcl
 web2rss/youtube-dl
 web2rss/www
 web2rss/config.tcl
+web2rss/FilterEmoji.class
+
+web2rss/FilterEmoji_0.java

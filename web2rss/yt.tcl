@@ -3,6 +3,7 @@ set config(max-storage)  20
 set config(max-retry)    3
 
 source [file dirname [info script]]/rss-lib.tcl
+set env(CLASSPATH) [file dirname [info script]]
 
 set sources [file dirname [info script]]/ytsources.tcl
 set ytdl    [file dirname [info script]]/youtube-dl
@@ -21,7 +22,7 @@ puts "storage_root = [storage_root]"
 proc get_ids {site url limit {showname 0}} {
     global config thumbs yt
 
-    set data [exec wget --no-check-certificate --timeout=10 --tries=1 -q -O - $url 2> /dev/null]
+    set data [exec wget --no-check-certificate --timeout=10 --tries=1 -q -O - $url 2> /dev/null | java FilterEmoji]
     set list {}
 
     if {[is_watchlist $site]} {
@@ -241,7 +242,7 @@ proc main {} {
                     # Read the descriptions, etc
                     if {$getaudio || ![file exists $metadata]} {
                         puts "Downloading meta data from $url"
-                        set data [exec wget --no-check-certificate --timeout=10 --tries=1 -q -O - $url 2> /dev/null]
+                        set data [exec wget --no-check-certificate --timeout=10 --tries=1 -q -O - $url 2> /dev/null | java FilterEmoji]
                         puts [string len $data]
                         set pat {"description":\{"simpleText":\"([^\"]+)}
                         puts $pat
