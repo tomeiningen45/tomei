@@ -1218,5 +1218,10 @@ proc do_exit {} {
     xcatch {db_sync_all_to_disk}
     exit
 }
+
+proc redirect_image {img referrer} {
+    global g
+    return $g(webroot)/cgi-bin/im.cgi?a=[ncgi::encode $img]&b=[ncgi::encode $referrer]
+}
     
 main

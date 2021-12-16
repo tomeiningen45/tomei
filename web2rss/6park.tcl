@@ -10,7 +10,7 @@ namespace eval 6park {
     }
 
     proc update_index {} {
-        ::schedule_read 6park::parse_index http://news.6park.com/newspark/index.php utf-8
+        ::schedule_read 6park::parse_index https://www.6parknews.com/newspark/index.php utf-8
     }
 
     proc parse_index {index_url data} {
@@ -88,8 +88,14 @@ namespace eval 6park {
         regsub -all {>[ 　]+<} $data "><" data
 
         # don't show 6park images for now, since they are locked by referrer
-        regsub -all {<img[^>]*src=[\"\'][^\"]*[\"\'][^>]*>} $data {[img]} data
-
+        set pat {<img[^>]*src=[\"\']([^\"\']*)[\"\'][^>]*>}
+        while {[regexp -nocase $pat $data dummy img]} {
+            set img [redirect_image $img $url]
+            regsub -all "\\\\" $img {\\\\} img
+            regsub -all {&} $img {\\\&} img
+            regsub -nocase $pat $data "<xxximg src='$img'>" data
+        }
+        regsub -all "<xxximg " $data "<img " data
         save_article 6park $title $url $data
     }
 }

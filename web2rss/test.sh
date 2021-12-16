@@ -8,11 +8,11 @@
 #Number of articles to store in the xml file
 #export DEBUG_MAX_ARTICLES=
 #export DEBUG_MAX_ARTICLES=60
- export DEBUG_MAX_ARTICLES=60
+ export DEBUG_MAX_ARTICLES=20
 
 #Number of articles to download from the web site
 #export DEBUG_MAX_DOWNLOADS=20
- export DEBUG_MAX_DOWNLOADS=60
+ export DEBUG_MAX_DOWNLOADS=20
 
 # Set the following to exit after the first site has finished writing to db
  export DEBUG_NO_LOOPS=1
@@ -23,14 +23,14 @@
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} reuters"  (no more RSS feed from reuters)
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} bleacher"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park_forum_mil"
-#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park"
+ export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoohk"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoojp_main"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoojp_mag"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoojp_sci"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} nhk"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} gigazine"
- export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} craigslist"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} craigslist"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} hatelabo"
 
 #----------------------------------------------------------------------
