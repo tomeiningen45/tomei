@@ -93,7 +93,7 @@ namespace eval 6park {
             set img [redirect_image $img $url]
             regsub -all "\\\\" $img {\\\\} img
             regsub -all {&} $img {\\\&} img
-            regsub -nocase $pat $data "<xxximg src='$img'>" data
+            regsub -nocase $pat $data "\n<xxximg src='$img'>\n" data
         }
         regsub -all "<xxximg " $data "<img " data
         save_article 6park $title $url $data
