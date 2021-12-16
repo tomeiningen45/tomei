@@ -9,8 +9,11 @@ public class FilterEmoji {
       while ((line = buffer.readLine()) != null) {
         for (int i = 0; i < line.length(); i++) {
           char c = line.charAt(i);
-          if (0xD800 <= c && c <= 0xDFFF) {
-            c = '?';
+          if (0x0000 <= c && c <= 0x0008) {
+            c = '?'; // ascii control chars
+          }
+          else if (0xD800 <= c && c <= 0xDFFF) {
+            c = '?';  // surrogates
           }
           out.write(c);
         }
