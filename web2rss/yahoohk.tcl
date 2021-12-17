@@ -109,7 +109,10 @@ namespace eval yahoohk {
         regsub {更多追蹤報導<.*} $data "" data
         regsub {>睇更多<.*} $data ">" data
         regsub {> *是日精選<.*} $data ">" data
-        
+        regsub {</p><p>原文標題.*} $data "" data
+        regsub {分鐘文章} $data "分鐘文章<p>" data
+        regsub {我們致力為用戶建立安全而有趣的平台.*我們暫時停用文章留言功能.*} $data "" data
+
         regsub -all {<img[^>]* src="" } $data "<img " data
         regsub -all {<img[^>]* data-src=} $data "<img src=" data
         regsub -all {<img[^>]* src=} $data "<img src=" data

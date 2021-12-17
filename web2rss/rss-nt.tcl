@@ -903,7 +903,7 @@ proc do_wget_now {doer url encoding} {
 
     xlog 2 "wget $doer $url $encoding"
 
-    set cmd "| wget --no-check-certificate --timeout=10 --tries=1 -q -O - -o /dev/null $url | java FilterEmoji"
+    set cmd "| wget --compression=auto --no-check-certificate --timeout=10 --tries=1 -q -O - -o /dev/null $url | java FilterEmoji"
     if {"$encoding" == "gb2312"} {
         append cmd " | iconv -f gbk -t utf-8"
         set encoding utf-8
