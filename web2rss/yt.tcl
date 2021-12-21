@@ -400,16 +400,22 @@ proc update_xml {site} {
 
             catch {unset thumb}
 
-            catch {
+            set link https://www.youtube.com/watch?v=$id
+            if {[catch {
                 set thumb $thumbs($id)
+                #puts $thumb
+                set thumb [redirect_image $thumb $link]
+                #puts $thumb
                 set description "$description <p> <img src=\"$thumb\"> "
+            } xx]} {
+                puts $xx
             }
 
             if {0 + $succeeded >= 0 || !$need_audio} {
                 puts $fd "<item><title>$title</title>"
-                puts $fd "<link>https://www.youtube.com/watch?v=$id</link>"
-		puts $fd "<dc:creator><!\[CDATA\[siran\]\]></dc:creator>"
-		puts $fd "<pubDate>[clock_format [expr $pubdate / 1000]]</pubDate>"
+                puts $fd "<link>$link</link>"
+                puts $fd "<dc:creator><!\[CDATA\[siran\]\]></dc:creator>"
+                puts $fd "<pubDate>[clock_format [expr $pubdate / 1000]]</pubDate>"
                 puts $fd "<category><!\[CDATA\[ラジオ\]\]></category>"
                 puts $fd "<description><!\[CDATA\[$description\]\]></description>"
                 if {$hasaudio} {

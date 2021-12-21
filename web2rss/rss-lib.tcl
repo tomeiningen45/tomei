@@ -1,3 +1,5 @@
+package require ncgi
+
 proc clock_format {date} {
     return [clock format $date -format {%a, %d %b %Y %T %Z}]
 }
@@ -21,6 +23,20 @@ proc storage_root {} {
 
 
 set g(webroot) ""
+
+proc redirect_image {img referrer} {
+    global g
+
+    set pat {[@^]}
+    if {[regexp $pat $img] || [regexp $pat $referrer]} {
+        return ""
+    }
+
+    set s [ncgi::encode $img^$referrer].jpg
+    regsub -all {%2F} $s "@" s
+
+    return $g(webroot)/hooks/im2/$s
+}
 
 catch {
     source [file dirname [info script]]/config.tcl

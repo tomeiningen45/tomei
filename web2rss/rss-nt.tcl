@@ -1219,18 +1219,4 @@ proc do_exit {} {
     exit
 }
 
-proc redirect_image {img referrer} {
-    global g
-
-    set pat {[@^]}
-    if {[regexp $pat $img] || [regexp $pat $referrer]} {
-        return ""
-    }
-
-    set s [ncgi::encode $img^$referrer].jpg
-    regsub -all {%2F} $s "@" s
-
-    return $g(webroot)/hooks/im2/$s
-}
-    
 main
