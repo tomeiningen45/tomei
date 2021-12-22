@@ -428,10 +428,12 @@ proc sub_block {data begin end rep} {
     return $data
 }
 
-proc sub_block_single {data begin end rep} {
+proc sub_block_single_cmd {data begin end cmd} {
     regsub $begin $data \uFFFE data
     regsub $end   $data \uFFFF data
-    regsub {\uFFFE[^\uFFFF]*\uFFFF} $data $rep data
+    set pat {\uFFFE([^\uFFFF]*)\uFFFF}
+    regexp $pat $data dummy found
+    regsub $pat $data [$cmd $found] data
     return $data
 }
 
