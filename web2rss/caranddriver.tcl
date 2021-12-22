@@ -14,11 +14,9 @@ namespace eval caranddriver {
     }
 
     proc parse_index {index_url data} {
-        set list {}
-
         foreach line [makelist $data {<div class=\"full-item}] {
-            if {[regexp {href="([^>]+)"} $line dummy article_url]} {
-                if {![db_exists caranddriver $article_url]} {
+            if {[regexp {<a href="([^>\"]+)"} $line dummy article_url]} {
+                if {[string length $article_url] > 5 && ![db_exists caranddriver $article_url]} {
                     ::schedule_read caranddriver::parse_article https://www.caranddriver.com/$article_url utf-8
                 }
             }
