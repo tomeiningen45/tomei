@@ -29,7 +29,7 @@ namespace eval bleacher {
             # avoid duplicated articles from other domains
             return
         }
-        if {[regexp {This article will be updated to provide more information} $data]} {
+        if {[regexp {This article will be updated to} $data]} {
             return
         }
         
@@ -45,7 +45,6 @@ namespace eval bleacher {
         regsub -all {<span class="teamAvatar__name">[^<]+</span>} $data "" data
 
 
-
         set data [nosvg $data]
         regsub -all {<li (class=\"share)} $data {<li style='DISPLAY:none' \1} data
         regsub -all {<a (class="atom teamAvatar")} $data {<a style='DISPLAY:none'} data
@@ -59,7 +58,23 @@ namespace eval bleacher {
         #set data "<a href=$url>\[orig\] $title</a><p><p>$data"
 
         regsub {<h1>[^<]*</h1>} $data "" data
-        
+        regsub {<h5 class="headline".*} $data "" data
+        regsub {<form class=.*} $data "" data
+
+        # replace twitter embed blocks
+        set twi_start {<blockquote class=.tweet-blockquote }
+        while {[regexp $twi_start $data] && [regexp {<a href=\"(https://twitter.com/[^\"]+)} $data dummy link]} {
+            set data [sub_block_single $data $twi_start {</blockquote>} "\n<p><BLOCKQUOTE><A href='$link'>Twitter</a></BLOCKQUOTE><p>\n"]
+        }
+
+        regsub -all {<div[^>]*>} $data "\n" data
+        regsub -all {</div[^>]*>} $data "" data
+        regsub -all {<a [^>]*>} $data "" data
+
+        regsub -all {<button class="atom button" type="button">} $data "" data
+
+        regsub -all {w_40,h_27,} $data {w_800,h_533,} data
+
         save_article bleacher $title $url $data $pubdate
     }
 }

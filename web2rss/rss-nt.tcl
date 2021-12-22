@@ -420,11 +420,18 @@ proc split_json {data arrname} {
     }
 }
 
-# subsritute block(s) between two regexps
+# substitute block(s) between two regexps
 proc sub_block {data begin end rep} {
     regsub -all $begin $data \uFFFE data
     regsub -all $end   $data \uFFFF data
     regsub -all {\uFFFE[^\uFFFF]*\uFFFF} $data $rep data
+    return $data
+}
+
+proc sub_block_single {data begin end rep} {
+    regsub $begin $data \uFFFE data
+    regsub $end   $data \uFFFF data
+    regsub {\uFFFE[^\uFFFF]*\uFFFF} $data $rep data
     return $data
 }
 
@@ -1206,7 +1213,8 @@ proc db_sync_all_to_disk {} {
         puts $fd {</channel></rss>}
         close $fd
         xlog 2 "... written $n articles [clock format [clock seconds] -timezone :US/Pacific]"
-        if {[info exists env(DEBUG_NO_LOOPS)] && ![info exists env(DEBUG_ARTICLE)]} {
+        if {[info exists env(DEBUG_NO_LOOPS)] && 
+            (![info exists env(DEBUG_ARTICLE)] || "$env(DEBUG_ARTICLE)" == "")} {
             puts "env(DEBUG_NO_LOOPS) exists ... exiting 2"
             exit
         }
