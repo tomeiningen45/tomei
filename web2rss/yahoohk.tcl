@@ -126,6 +126,7 @@ namespace eval yahoohk {
         set data [deduplicate_images $data]
 
         regsub -all {<figure[^>]*>} $data "" data
+        regsub -all {</figure[^>]*>} $data "\n" data
         regsub -all {style="[^\"]+"} $data "" data
 
         regsub -all {<ul class="caas-carousel-slides">} $data "" data
@@ -133,10 +134,10 @@ namespace eval yahoohk {
 
         regsub -all {<a[^>]*prev-button[^>]*>} $data "" data
         regsub -all {<a[^>]*next-button[^>]*>} $data "" data
-        regsub -all {<svg[^>]*>} $data "" data
+        set data [sub_block $data {<svg[^>]*>} {</svg>} ""]
         regsub -all {<path[^>]*>} $data "" data
 
-        regsub -all {<figcaption[^>]*>} $data "<i><br><font size=-1>\u2605 " data
+        regsub -all {<figcaption[^>]*>} $data "\n<i><br><font size=-1>\u2605 " data
         regsub -all "</figcaption" $data "</font></i" data
         regsub {<div id="YDC-Bottom".*} $data "" data
         regsub {&lt;!--AD--&gt;&lt;.*} $data "" data
@@ -158,14 +159,29 @@ namespace eval yahoohk {
         regsub -all {<h1 data-test-locator=.headline.>([^<]+)</h1>} $data "" data
         regsub -all {<button class=[^>]*>閱讀整篇文章<i></i></button>} $data "" data
 
-        #puts $data
-        #puts ""
-        #puts $url
-        #exit
-        save_article yahoohk $title $url $data
-
         if {[regexp 今日新聞 $data]} {
             filter_article yahoohk $url
+            return
         }
+
+        set provider ""
+        regexp {slk:([^;>]+);} $data dummy provider
+
+        regsub -all {<a [^>]*title=\"[^\"]*((電郵)|(分享))\"[^>]*>} $data "" data
+        regsub {.*<time class="caas-attr-meta-time" [^>]*>} $data "" data
+        regsub {<section id="spot-im-comments">.*} $data "" data
+
+
+        regsub -all {<span>} $data "" data
+        regsub -all {</span>} $data "" data
+        regsub {<h3>相關文章:.*} $data "" data
+
+        if {"$data" == ""} {
+            filter_article yahoohk $url
+            return;
+        }
+
+        set data "${provider}&nbsp;\n$data"
+        save_article yahoohk $title $url $data
     }
 }
