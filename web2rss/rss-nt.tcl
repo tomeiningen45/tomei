@@ -993,11 +993,11 @@ proc do_read {fd} {
     }
 }
 
-proc atom_update_index {adapter index_url} {
-    schedule_read [list atom_parse_index $adapter] $index_url
+proc atom_update_index {adapter index_url {encoding utf-8}} {
+    schedule_read [list atom_parse_index $adapter $encoding] $index_url
 }
 
-proc atom_parse_index {adapter index_url data} {
+proc atom_parse_index {adapter encoding index_url data} {
     set list {}
     foreach line [makelist $data <item>] {
         if {[regexp {<link>([^<]+)</link>} $line dummy link] &&
@@ -1025,7 +1025,7 @@ proc atom_parse_index {adapter index_url data} {
         set article_url [lindex $item 1]
 
         if {![db_exists $adapter $article_url]} {        
-            ::schedule_read [list ${adapter}::parse_article [expr $pubdate + 0]] $article_url
+            ::schedule_read [list ${adapter}::parse_article [expr $pubdate + 0]] $article_url $encoding
             incr n
             if {$n > 10} {
                 # dont access the web site too heavily
