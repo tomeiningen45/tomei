@@ -48,13 +48,17 @@ namespace eval dqn {
         regsub {<div class=posted>.*} $data "" data
 
         regsub {.*<div class="article-category-outer">} $data "" data
-        regsub {.*<div class="article-body-more">} $data "" data
-        regsub {.*<div class="article-inner">} $data "" data
-        regsub {<div id="ad2">.*} $data "" data
+       #regsub {.*<div class="article-body-more">} $data "" data
+        regsub {.*<h1 class="article-title entry-title">} $data "" data
+       #regsub {<div id="ad2">.*} $data "" data
+        regsub {<h3>「話題」カテゴリの最新記事</h3>.*} $data "" data
+        regsub {<b>ハム速公式twitter<br>.*} $data "" data
+
+        set data [sub_block $data "<script" "</script>" ""]
+        set data [sub_block $data "<iframe" "</iframe>" ""]
 
         regsub -all {<div class="t_h"[^>]*>} $data "\n<br>" data
         regsub -all {ID:<span class="id"><b>[^<]+</b></span>} $data "ID:xxx" data
-
 
         regsub -all {<div[^>]*>} $data "\n" data
         regsub -all {</div[^>]*>} $data "" data
@@ -69,6 +73,9 @@ namespace eval dqn {
 
        #regsub -all "<br>\[ \n\]*</strong><br>" $data "</strong><br>" data
         regsub -all "<br>(\[ \n\]*<br>)+" $data "<br>\n" data
+
+        regsub -all {<a href=.https://www.amazon.co[^<]+</a>} $data "" data
+        regsub -all {<a href=.https://www.amazon.co[^<]+<img[^<]+</a>} $data "" data
 
         set data "$moto$data"
         save_article dqn $title $url $data $pubdate
