@@ -11,6 +11,10 @@ namespace eval craigslist {
         set h(out)   craigslist
         # If more than one posts have the exact same subject, just show one of them
         set h(unique_subject) 1
+        # We have one subpage
+        set h(subpages) {
+            {manual { - Manual}}
+        }
     }
 
     proc update_index {} {
@@ -103,8 +107,12 @@ namespace eval craigslist {
             regsub {<p class="print-qrcode-label">QR Code Link to This Post</p>} $data "" data
             set data "$first_image$data"
             append data <!------>\n\n$attrs
-            append data <!------>\\n\n$images
-            save_article craigslist $title $url $data $pubdate
+            append data <!------>\n\n$images
+            set subpage {}
+            if {[regexp "transmission: <b>manual</b>" $data]} {
+                set subpage manual
+            }
+            save_article craigslist $title $url $data $pubdate $subpage
         }
     }
 }

@@ -1032,7 +1032,7 @@ proc db_exists {adapter url} {
     return [info exists ${adapter}::dbs($url)]
 }
 
-proc save_article {adapter title url data {pubdate {}}} {
+proc save_article {adapter title url data {pubdate {}} {subpage {}}} {
     global g
 
     if {[get_debug_opt DEBUG_ARTICLE] != ""} {
@@ -1075,6 +1075,9 @@ proc save_article {adapter title url data {pubdate {}}} {
     set ${adapter}::dbt($url) $pubdate
     set ${adapter}::dbc($url) $data
     set ${adapter}::dbf($url) $filtered
+    if {$subpage != {}} {
+        set ${adapter}::dbsp($url) $subpage
+    }
 
     incr g(has_unsaved_articles) 1
     if {$g(has_unsaved_articles) >= $g(max_downloads)} {
@@ -1090,8 +1093,12 @@ proc adapter_db_file {adapter} {
     return [file join [storage_root] $adapter $adapter.db.tcl]
 }
 
-proc adapter_xml_file {adapter} {
-    return [file join [storage_root] [set ${adapter}::h(out)].xml]
+proc adapter_xml_file {adapter subpage} {
+    set out [set ${adapter}::h(out)]
+    if {$subpage != {}} {
+        append out _${subpage}
+    }
+    return [file join [storage_root] $out.xml]
 }
 
 proc db_load {adapter} {
@@ -1131,6 +1138,7 @@ proc db_sync_all_to_disk {} {
         puts $fd "variable dbt"
         puts $fd "variable dbc"
         puts $fd "variable dbf"
+        puts $fd "variable dbsp"
 
         # write the newest to oldest
         if {[set ${adapter}::h(article_sort_byurl)]} {
@@ -1160,6 +1168,9 @@ proc db_sync_all_to_disk {} {
             catch {
             puts $fd "set ${adapter}::dbf($url) [list [set ${adapter}::dbf($url)]]"
             }
+            catch {
+            puts $fd "set ${adapter}::dbsp($url) [list [set ${adapter}::dbsp($url)]]"
+            }
 
             incr n
             if {$n >= $g(max_articles)} {
@@ -1169,10 +1180,32 @@ proc db_sync_all_to_disk {} {
         }
         close $fd
 
-        set fd [open [adapter_xml_file $adapter] w+]
-	fconfigure $fd -encoding utf-8	
-        set out {<?xml version="1.0" encoding="utf-8"?>
+        write_xml_file $adapter $list
+        if {[info exists ${adapter}::h(subpages)]} {
+            foreach subpageinfo [set ${adapter}::h(subpages)] {
+                write_xml_file $adapter $list $subpageinfo
+            }
+        }
 
+
+        xlog 2 "... written $n articles [clock format [clock seconds] -timezone :US/Pacific]"
+        if {[info exists env(DEBUG_NO_LOOPS)] && 
+            (![info exists env(DEBUG_ARTICLE)] || "$env(DEBUG_ARTICLE)" == "")} {
+            puts "env(DEBUG_NO_LOOPS) exists ... exiting 2"
+            exit
+        }
+    }
+}
+
+proc write_xml_file {adapter list {subpageinfo {}}} {
+    global g
+
+    set subpage       [lindex $subpageinfo 0]
+    set subpage_title [lindex $subpageinfo 1]
+
+    set fd [open [adapter_xml_file $adapter $subpage] w+]
+    fconfigure $fd -encoding utf-8	
+    set out {<?xml version="1.0" encoding="utf-8"?>
 <rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:georss="http://www.georss.org/georss" version="2.0">
   <channel>
     <title>DESC</title>
@@ -1185,51 +1218,52 @@ proc db_sync_all_to_disk {} {
     <sy:updateBase>2003-06-01T12:00+09:00</sy:updateBase>
     }
         
-        set date [clock_format [clock seconds]]
-        regsub -all DATE        $out $date out
-        regsub -all LANG        $out [set ${adapter}::h(lang)]  out
-        regsub -all DESC        $out [set ${adapter}::h(desc)] out
-        regsub -all URL         $out [set ${adapter}::h(url)]  out
+    set date [clock_format [clock seconds]]
+    set title "[set ${adapter}::h(desc)]$subpage_title"
+    xlog 2 "${adapter} -- writing $title"
+    regsub -all DATE        $out $date out
+    regsub -all LANG        $out [set ${adapter}::h(lang)]  out
+    regsub -all DESC        $out $title out
+    regsub -all URL         $out [set ${adapter}::h(url)]  out
 
-        puts $fd $out
+    puts $fd $out
 
-        set n 0
-        set lang [set ${adapter}::h(lang)]
-        foreach url $list {
-            #xlog 3 "... creating [set ${adapter}::dbs($url)] - $url"
-            set title [set ${adapter}::dbs($url)]
-            set date [set ${adapter}::dbt($url)]
-            set data [set ${adapter}::dbc($url)]
-
-            set filtered 0
-            catch {
-                set filtered [set ${adapter}::dbf($url)]
-            }
-            if {$filtered == 1} {
-                xlog 2 "${adapter} --- $title"
-                continue
-            }
-
-            set data "<div lang=\"$lang\" xml:lang=\"$lang\">$data</div>"
-            set newitem [makeitem $title $url $data $date]
-
-            puts $fd $newitem
-            incr n
-            if {$n >= $g(max_articles)} {
-                break
-            }
-            xlog 2 "${adapter} [format %3d $n] $title"
+    set n 0
+    set lang [set ${adapter}::h(lang)]
+    foreach url $list {
+        set mysubpage {}
+        if {[info exists ${adapter}::dbsp($url)]} {
+            set mysubpage [set ${adapter}::dbsp($url)]
         }
-        puts $fd {</channel></rss>}
-        close $fd
-        xlog 2 "... written $n articles [clock format [clock seconds] -timezone :US/Pacific]"
-        if {[info exists env(DEBUG_NO_LOOPS)] && 
-            (![info exists env(DEBUG_ARTICLE)] || "$env(DEBUG_ARTICLE)" == "")} {
-            puts "env(DEBUG_NO_LOOPS) exists ... exiting 2"
-            exit
+        if {$subpage != $mysubpage} {
+            continue
         }
+        #xlog 3 "... creating [set ${adapter}::dbs($url)] - $url"
+        set title [set ${adapter}::dbs($url)]
+        set date [set ${adapter}::dbt($url)]
+        set data [set ${adapter}::dbc($url)]
+
+        set filtered 0
+        catch {
+            set filtered [set ${adapter}::dbf($url)]
+        }
+        if {$filtered == 1} {
+            xlog 2 "${adapter} --- $title"
+            continue
+        }
+
+        set data "<div lang=\"$lang\" xml:lang=\"$lang\">$data</div>"
+        set newitem [makeitem $title $url $data $date]
+
+        puts $fd $newitem
+        incr n
+        if {$n >= $g(max_articles)} {
+            break
+        }
+        xlog 2 "${adapter} [format %3d $n] $title"
     }
-
+    puts $fd {</channel></rss>}
+    close $fd
 }
 
 proc do_exit {} {
