@@ -33,7 +33,7 @@ namespace eval dqn {
 
         set moto ""
         if {[regexp "元スレ.(http\[^< \n\]+)" $data dummy moto]} {
-            set moto "元スレ: <a href='$moto'>$moto></a><p>\n\n"
+            set moto "元スレ: <a href='$moto'>$moto</a><p>\n\n"
         }
 
         regsub {.*<div class="main entry-content">} $data "" data
