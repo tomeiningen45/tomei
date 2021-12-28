@@ -161,8 +161,11 @@ proc wget_inner {url {encoding utf-8}} {
         if {[info exists env(USEICONV)] && "$encoding" == "gb2312"} {
             set fd [open "$cmd | iconv -f gbk -t utf-8" r]
             set encoding utf-8
-        } else {
+        } elseif {"$encoding" == "utf-8"} {
+            # Tcl cannot handle some UTF8 characters :-(
             set fd [open "$cmd | java FilterEmoji" r]
+        } else {
+            set fd [open "$cmd" r]
         }
         fconfigure $fd -encoding $encoding
         set data [read $fd]
@@ -919,7 +922,11 @@ proc do_wget_now {doer url encoding} {
 
     xlog 2 "wget $doer $url $encoding"
 
-    set cmd "| wget --compression=auto --no-check-certificate --timeout=10 --tries=1 -q -O - -o /dev/null $url | java FilterEmoji"
+    set cmd "| wget --compression=auto --no-check-certificate --timeout=10 --tries=1 -q -O - -o /dev/null $url"
+    if {"$encoding" == "utf-8"} {
+        # Tcl cannot handle some UTF8 characters :-(
+        append cmd " | java FilterEmoji"
+    }
     if {"$encoding" == "gb2312"} {
         append cmd " | iconv -f gbk -t utf-8"
         set encoding utf-8
@@ -1019,6 +1026,49 @@ proc atom_parse_index {adapter index_url data} {
 
         if {![db_exists $adapter $article_url]} {        
             ::schedule_read [list ${adapter}::parse_article [expr $pubdate + 0]] $article_url
+            incr n
+            if {$n > 10} {
+                # dont access the web site too heavily
+                break
+            }
+        }
+    }
+}
+
+proc rdf_update_index {adapter index_url {encoding utf-8}} {
+    schedule_read [list rdf_parse_index $adapter $encoding] $index_url
+}
+
+proc rdf_parse_index {adapter encoding index_url data} {
+    set list {}
+    foreach line [makelist $data "<item rdf:about="] {
+        if {[regexp {^\"([^\"]+)\"} $line dummy link] &&
+            [regexp {<dc:date>([^<]+)</dc:date>} $line dummy pubdate]} {
+
+            if {[catch {
+                # Tcl cannot parse "Sun, 27 Dec 2020 23:02:21 +0900"
+                # or 2021-12-28T14:29:27+09:00
+                regsub {[+-][0-9:]+$} $pubdate "" pubdate
+                set pubdate [clock scan $pubdate]
+            } err]} {
+                puts $err
+                continue
+            }
+
+            regsub -all {&#45;} $link - link
+
+            lappend list [list [format 0x%016x $pubdate] [${adapter}::parse_link $link]]
+        }
+    }
+
+    # wget the oldest to newest
+    foreach item [lsort $list] {
+        # Get the oldest article first
+        set pubdate     [lindex $item 0]
+        set article_url [lindex $item 1]
+
+        if {![db_exists $adapter $article_url]} {        
+            ::schedule_read [list ${adapter}::parse_article [expr $pubdate + 0]] $article_url $encoding
             incr n
             if {$n > 10} {
                 # dont access the web site too heavily
