@@ -459,6 +459,12 @@ proc nosvg {data} {
     return [sub_block $data "<svg" "</svg>" ""]
 }
 
+proc notag_only {data tag {rep1 {}} {rep2 {}}} {
+    regsub -nocase -all  "<$tag\[^\>]*>" $data "$rep1" data
+    regsub -nocase -all "</$tag\[^\>]*>" $data "$rep2" data
+    return $data
+}
+
 proc lowcap {line} {
     set prefix ""
     set val ""
