@@ -77,6 +77,12 @@ namespace eval dqn {
         regsub -all {<a href=.https://www.amazon.co[^<]+</a>} $data "" data
         regsub -all {<a href=.https://www.amazon.co[^<]+<img[^<]+</a>} $data "" data
 
+        regsub -all {<dl class="article-category"><dt>カテゴリ</dt><dd class="article-category"><a[^<]+</a></dd></dl>} $data "" data
+
+        regsub -all {<![^>]*>} $data "" data
+        set spc "\[\n \t\]"
+        regsub -all "${spc}${spc}${spc}+" $data \n\n data
+
         set data "$moto$data"
         save_article dqn $title $url $data $pubdate
     }
