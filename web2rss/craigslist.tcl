@@ -70,7 +70,7 @@ namespace eval craigslist {
             foreach line [makelist $thumbs href=.] {
                 if {[regexp {^([^\"]+[.]jpg)} $line img]} {
                     if {"$first_image" == ""} {
-                        set first_image "<img src='$g(webroot)/cgi-bin/im.cgi?a=[ncgi::encode $img]&b=[ncgi::encode $url]'>"
+                        set first_image "<img src='$img'>"
                     }                        
                     append images "\n<br><img src='$img'>"
                 }
@@ -106,8 +106,8 @@ namespace eval craigslist {
             regsub {<ul class="notices">.*} $data "" data
             regsub {<p class="print-qrcode-label">QR Code Link to This Post</p>} $data "" data
             set data "$first_image$data"
-            append data <!------>\n\n$attrs
-            append data <!------>\n\n$images
+            append data \n\n$attrs
+            append data \n\n$images
             set subpage {}
             if {[regexp "transmission: <b>manual</b>" $data]} {
                 set subpage manual

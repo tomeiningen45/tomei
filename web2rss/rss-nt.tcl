@@ -5,7 +5,7 @@
 #     in all the tcl scripts in the current directory,
 # (2) schdules all the adapters to run at regular intervals (TBD configurable)
 
-package require ncgi
+#package require ncgi
 
 source [file dirname [info script]]/rss-lib.tcl
 set env(CLASSPATH) [file dirname [info script]]
@@ -25,12 +25,12 @@ proc init_globals {} {
         set g(t:discover) 120000
     }
 
-    # Max number of concurrent downloads 
+    # Max number of concurrent downloads
     set g(maxwget) 60
     set g(maxwget) 4
     #set g(maxwget) 1
 
-    # Max number of concurrent downloads 
+    # Max number of concurrent downloads
     set g(maxwgetpersite) 10
 
     set g(wgets) 0
@@ -97,7 +97,6 @@ proc save_test_html {data {encoding utf-8}} {
     regsub ENCODING $head $encoding head
 
     puts $fd $head
-    
     puts $fd $data
     close $fd
 }
@@ -439,12 +438,16 @@ proc sub_block_single {data begin end rep} {
 }
 
 proc sub_block_single_cmd {data begin end cmd} {
+    set olddata $data
     regsub $begin $data \uFFFE data
     regsub $end   $data \uFFFF data
     set pat {\uFFFE([^\uFFFF]*)\uFFFF}
-    regexp $pat $data dummy found
-    regsub $pat $data [$cmd $found] data
-    return $data
+    if {[regexp $pat $data dummy found]} {
+        regsub $pat $data [$cmd $found] data
+        return $data
+    } else {
+        return $olddata
+    }
 }
 
 proc noscript {data} {
@@ -887,7 +890,7 @@ proc adapter_init {adapter first} {
     }
     set ${adapter}::h(out) $adapter
     db_load $adapter
-    
+
     # Adapter-specific config initialization
     namespace eval $adapter "init $first"
 
@@ -937,12 +940,12 @@ proc do_wget_now {doer url encoding} {
         append cmd " | iconv -f gbk -t utf-8"
         set encoding utf-8
     }
-        
+
     set fd [open $cmd]
     set buff($fd,url)  $url
     set buff($fd,doer) $doer
     set buff($fd,data) ""
-    
+
     fconfigure $fd -encoding $encoding -blocking false
     fileevent $fd readable [list ::do_read $fd]
 }
@@ -1030,7 +1033,7 @@ proc atom_parse_index {adapter encoding index_url data} {
         set pubdate     [lindex $item 0]
         set article_url [lindex $item 1]
 
-        if {![db_exists $adapter $article_url]} {        
+        if {![db_exists $adapter $article_url]} {
             ::schedule_read [list ${adapter}::parse_article [expr $pubdate + 0]] $article_url $encoding
             incr n
             if {$n > 10} {
@@ -1073,7 +1076,7 @@ proc rdf_parse_index {adapter encoding index_url data} {
         set pubdate     [lindex $item 0]
         set article_url [lindex $item 1]
 
-        if {![db_exists $adapter $article_url]} {        
+        if {![db_exists $adapter $article_url]} {
             ::schedule_read [list ${adapter}::parse_article [expr $pubdate + 0]] $article_url $encoding
             incr n
             if {$n > 10} {
@@ -1102,14 +1105,13 @@ proc save_article {adapter title url data {pubdate {}} {subpage {}}} {
         set fd [open out.html w+]
         puts $fd "<title>$title</title>\n"
         puts $fd "<a href=$url>$url</a><p><p>\n"
-        puts $fd "<h1>TITLE: $title</h1>" 
+        puts $fd "<h1>TITLE: $title</h1>"
         puts $fd "item data follows<hr>"
         puts $fd "$data"
         close $fd
         exit
     }
 
-    
     if {$pubdate == {}} {
         set pubdate [clock seconds]
     }
@@ -1184,7 +1186,6 @@ proc db_sync_all_to_disk {} {
         return
     }
     set g(has_unsaved_articles) 0
-    
     foreach adapter $g(adapters) {
         set db [adapter_db_file $adapter]
         xlog 2 "syncing $adapter $db"
@@ -1214,7 +1215,6 @@ proc db_sync_all_to_disk {} {
         if {[set ${adapter}::h(filter_duplicates)]} {
             set list [${adapter}::filter_duplicates $list]
         }
-        
         set n 0
         foreach url $list {
             #xlog 3 "... saving [set ${adapter}::dbs($url)] - $url"
@@ -1245,7 +1245,7 @@ proc db_sync_all_to_disk {} {
 
 
         xlog 2 "... written $n articles [clock format [clock seconds] -timezone :US/Pacific]"
-        if {[info exists env(DEBUG_NO_LOOPS)] && 
+        if {[info exists env(DEBUG_NO_LOOPS)] &&
             (![info exists env(DEBUG_ARTICLE)] || "$env(DEBUG_ARTICLE)" == "")} {
             puts "env(DEBUG_NO_LOOPS) exists ... exiting 2"
             exit
@@ -1273,7 +1273,7 @@ proc write_xml_file {adapter list {subpageinfo {}}} {
     <sy:updateFrequency>12</sy:updateFrequency>
     <sy:updateBase>2003-06-01T12:00+09:00</sy:updateBase>
     }
-        
+
     set date [clock_format [clock seconds]]
     set title "[set ${adapter}::h(desc)]$subpage_title"
     xlog 2 "${adapter} -- writing $title"

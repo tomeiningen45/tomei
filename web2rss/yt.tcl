@@ -404,7 +404,7 @@ proc update_xml {site} {
             if {[catch {
                 set thumb $thumbs($id)
                 #puts $thumb
-                set thumb [redirect_image $thumb $link]
+                #set thumb [redirect_image $thumb $link]
                 #puts $thumb
                 set description "$description <p> <img src=\"$thumb\"> "
             } xx]} {

@@ -18,8 +18,11 @@ namespace eval caranddriver {
     proc parse_index {index_url data} {
         foreach line [makelist $data {<div class=\"full-item}] {
             if {[regexp {<a href="([^>\"]+)"} $line dummy article_url]} {
+                if {[string length $article_url] < 5} {
+                    continue
+                }
                 set article_url https://www.caranddriver.com/$article_url
-                if {[string length $article_url] > 5 && ![db_exists caranddriver $article_url]} {
+                if {![db_exists caranddriver $article_url]} {
                     ::schedule_read caranddriver::parse_article $article_url utf-8
                 }
             }
@@ -50,9 +53,15 @@ namespace eval caranddriver {
         regsub -all {<img [^>]*data-src="([^>\"]*)"[^>]*>} $data "<img width='100%' src='\\1'>" data
 
         # replace <picture> blocks
-        set pic_start {<picture class="">}
-        while {[regexp $pic_start $data]} {
-            set data [sub_block_single_cmd $data $pic_start {</picture>} caranddriver::picture]
+        set pic_start {<picture class="[^>]*">}
+        set pic_end   {</picture>}
+        while {[regexp ${pic_start}.*${pic_end} $data]} {
+            set d [sub_block_single_cmd $data $pic_start $pic_end caranddriver::picture]
+            if {"$d" == "$data"} {
+                break
+            } else {
+                set data $d
+            }
         }
 
         regsub -all {<div[^>]*>} $data "" data
