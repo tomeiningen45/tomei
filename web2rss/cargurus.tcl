@@ -17,8 +17,14 @@ namespace eval cargurus {
 	    &distance=50&maxPrice=20000&maxMileage=150000
 	    # 370z
 	    &distance=100&maxPrice=30000&maxMileage=150000&entitySelectingHelper.selectedEntity=d2018
+	    # 350z
+	    &distance=100&maxPrice=30000&maxMileage=150000&entitySelectingHelper.selectedEntity=d236
 	    # Mustang
 	    &distance=100&maxPrice=30000&maxMileage=150000&entitySelectingHelper.selectedEntity=d2
+	    # Cube
+	    &distance=50000&entitySelectingHelper.selectedEntity=d1764
+	    # xB
+	    &distance=500&entitySelectingHelper.selectedEntity=d435
 	}
 
 	regsub -all "#\[^\n\]*" $terms "" terms
@@ -73,6 +79,10 @@ namespace eval cargurus {
 		catch {
 		    set dist $map($prefix/distance)
 		}
+		set days 0
+		catch {
+		    set days $map($prefix/daysOnMarket)
+		}
 		set accd 0
 		catch {
 		    set accd $map($prefix/accidentCount)
@@ -96,13 +106,18 @@ namespace eval cargurus {
 		if {$dist > $maxdist} {
 		    continue
 		}
+		if {$days <= 0 && 0} {
+		    # Wait one day to make sure data/photo is available
+		    continue
+		}
 		append data "<table>\n"
 		append data [format_info $prefix mileage]
 		append data [format_info $prefix price]
 		append data [format_info $prefix expectedPrice {Expected Price}]
 		append data [format_info $prefix priceDifferential {Price Diff}]
 	        append data [format_info $prefix carYear Year]
-	        append data [format_info $prefix dealScore {Deal Score}]
+	        append data [format_info $prefix ownerCount Owners]
+	        append data [format_info $prefix dealRating {Deal Rating}]
 		append data [format_info $prefix sellerCity {Location}]
 		append data [format_info $prefix distance]
 		append data [format_info $prefix ownerCount {Number of Owners}]
@@ -113,6 +128,7 @@ namespace eval cargurus {
 		append data [format_info $prefix makeName {Make}]
 		append data [format_info $prefix modelName {Model}]
 		append data [format_info $prefix accidentCount {Accidents}]
+
 		append data </table>
 
 		save_article cargurus $title $article_url $data
