@@ -10,11 +10,6 @@ namespace eval cargurus {
     }
 
     proc update_index {} {
-	if 0 {
-	    json_to_map $data map
-	    parray map
-	}
-
 	global g
 
 	set terms {
@@ -27,7 +22,7 @@ namespace eval cargurus {
 	}
 
 	regsub -all "#\[^\n\]*" $terms "" terms
-	set base https://www.cargurus.com/Cars/searchResults.action?zip=94022
+	set base https://www.cargurus.com/Cars/searchResults.action?zip=$g(zipcode)
 	append base &inventorySearchWidgetType=AUTO&transmission=M
 	append base &nonShippableBaseline=0&sortDir=ASC&sourceContext=carGurusHomePage_false_0
 	append base &sortType=AGE_IN_DAYS&offset=0&maxResults=35&filtersModified=true
@@ -53,6 +48,9 @@ namespace eval cargurus {
     proc parse_index {index_url data} {
 	json_to_map $data map
 
+	set maxdist 50
+	regexp {[^a-zA-Z]distance=([0-9]+)} $index_url dummy maxdist
+
 	for {set i 0} {true} {incr i} {
 	    set prefix /$i
 	    if {![info exists map($prefix/id)]} {
@@ -71,6 +69,14 @@ namespace eval cargurus {
 		catch {
 		    set miles " @ $map($prefix/mileage) miles"
 		}
+		set dist 10000000
+		catch {
+		    set dist $map($prefix/distance)
+		}
+		set accd 0
+		catch {
+		    set accd $map($prefix/accidentCount)
+		}
 		set title "$map($prefix/listingTitle)$price$miles"
 		set data ""
 		set img ""
@@ -82,6 +88,12 @@ namespace eval cargurus {
 		}
 		if {$img == {} || $price == {}} {
 		    # not ready yet. Try again later.
+		    continue
+		}
+		if {$accd > 0} {
+		    continue
+		}
+		if {$dist > $maxdist} {
 		    continue
 		}
 		append data "<table>\n"
@@ -100,6 +112,7 @@ namespace eval cargurus {
 		append data [format_info $prefix structuredDataDealerName {Dealer}]
 		append data [format_info $prefix makeName {Make}]
 		append data [format_info $prefix modelName {Model}]
+		append data [format_info $prefix accidentCount {Accidents}]
 		append data </table>
 
 		save_article cargurus $title $article_url $data
