@@ -1232,7 +1232,7 @@ proc db_sync_all_to_disk {} {
             if {$n >= $g(max_articles)} {
                 break
             }
-            puts $n=$g(max_articles)
+            #puts $n=$g(max_articles)
         }
         close $fd
 

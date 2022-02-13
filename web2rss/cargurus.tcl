@@ -25,6 +25,20 @@ namespace eval cargurus {
 	    &distance=50000&entitySelectingHelper.selectedEntity=d1764
 	    # xB
 	    &distance=500&entitySelectingHelper.selectedEntity=d435
+	    # All Hondas
+	    &distance=100&maxPrice=30000&entitySelectingHelper.selectedEntity=m6
+	    # All Acuras
+	    &distance=100&maxPrice=30000&entitySelectingHelper.selectedEntity=m4
+	    # All Toyotas
+	    &distance=100&maxPrice=30000&entitySelectingHelper.selectedEntity=m7
+	    # All Scions
+	    &distance=100&maxPrice=30000&entitySelectingHelper.selectedEntity=m52
+	    # All Nissans
+	    &distance=50&maxPrice=30000&entitySelectingHelper.selectedEntity=m12
+	    # All Mazdas
+	    &distance=100&maxPrice=30000&entitySelectingHelper.selectedEntity=m42
+	    # All Fords
+	    &distance=50&maxPrice=30000&entitySelectingHelper.selectedEntity=m2
 	}
 
 	regsub -all "#\[^\n\]*" $terms "" terms
@@ -115,26 +129,31 @@ namespace eval cargurus {
 		append data [format_info $prefix price]
 		append data [format_info $prefix expectedPrice {Expected Price}]
 		append data [format_info $prefix priceDifferential {Price Diff}]
+		append data [format_info $prefix daysOnMarket {Days on Market}]
 	        append data [format_info $prefix carYear Year]
 	        append data [format_info $prefix ownerCount Owners]
 	        append data [format_info $prefix dealRating {Deal Rating}]
 		append data [format_info $prefix sellerCity {Location}]
 		append data [format_info $prefix distance]
-		append data [format_info $prefix ownerCount {Number of Owners}]
 		append data [format_info $prefix sellerType {Seller Type}]
 		append data [format_info $prefix sellerRegion {Seller State}]
 		append data [format_info $prefix sellerCity {Location}]
+		append data [format_info $prefix phoneNumber {Phone Number}]
+		append data [format_info $prefix sellerRating {Seller Rating}]
+		append data [format_info $prefix reviewCount {Number of Reviews}]
 		append data [format_info $prefix structuredDataDealerName {Dealer}]
 		append data [format_info $prefix makeName {Make}]
 		append data [format_info $prefix modelName {Model}]
+		append data [format_info $prefix localizedTransmission Transmission]
 		append data [format_info $prefix accidentCount {Accidents}]
+		append data [format_info $prefix options]
 
 		append data </table>
 
 		save_article cargurus $title $article_url $data
 		#puts $title
 	    } error]} {
-		puts "$error"
+		#puts "$error"
 	    }
 	}
     }
