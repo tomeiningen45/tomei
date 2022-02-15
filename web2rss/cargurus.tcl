@@ -39,6 +39,10 @@ namespace eval cargurus {
 	    &distance=100&maxPrice=30000&entitySelectingHelper.selectedEntity=m42
 	    # All Fords
 	    &distance=100&maxPrice=30000&entitySelectingHelper.selectedEntity=m2
+	    # All Infinities
+	    &distance=100&maxPrice=30000&entitySelectingHelper.selectedEntity=m84
+	    # All Lexuses
+	    &distance=100&maxPrice=30000&entitySelectingHelper.selectedEntity=m37
 	}
 
 	regsub -all "#\[^\n\]*" $terms "" terms
