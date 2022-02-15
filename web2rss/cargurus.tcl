@@ -7,6 +7,7 @@ namespace eval cargurus {
         set h(lang)  en
         set h(desc)  {Cargurus}
         set h(url)   http://www.cargurus.com
+	set h(max_articles) 400
     }
 
     proc update_index {} {
