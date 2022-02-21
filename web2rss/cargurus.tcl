@@ -15,7 +15,7 @@ namespace eval cargurus {
 
 	set terms {
 	    # General
-	    &distance=50&maxPrice=20000&maxMileage=150000
+	    &distance=25&maxPrice=32000&minPrice=10000&maxMileage=85000
 	    # 370z
 	    &distance=100&maxPrice=30000&maxMileage=150000&entitySelectingHelper.selectedEntity=d2018
 	    # 350z
