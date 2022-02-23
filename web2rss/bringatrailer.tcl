@@ -91,10 +91,24 @@ namespace eval bringatrailer {
 	    regsub { .Lot #.*} $title "" title
 	}
 
+        set mainimg ""
+        if {[regexp {<img [^>]*class="post-image wp-post-image"[^>]*>} $data mainimg]} {
+            append mainimg <p>
+        }
+
+        set essen ""
+
+        if {[regexp {<h2 class="title">BaT Essentials</h2>(.*<strong>Lot</strong>[^<]*</div></div>)} $data dummy essen]} {
+            append essen <hr>
+        }
+
 	regsub {<div id="bat_listing_page_video_gallery".*} $data "" data
 	regsub {.*<div class="post-excerpt">} $data "" data
 	regsub {<script type.*} $data "" data
 	set subpage {}
+
+        set data $mainimg$essen$data
+
 
 	if {$is_result} {
 	    set subpage results

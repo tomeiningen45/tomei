@@ -133,24 +133,32 @@ namespace eval cargurus {
 		    # Wait one day to make sure data/photo is available
 		    continue
 		}
+                catch {
+                    set x $prefix/distance
+                    regsub {[.].*} $map($x) " miles" map($x)
+                }
+                catch {
+                    set x $prefix/sellerRating
+                    regsub {([.].).*} $map($x) "\\1" map($x)
+                }
+
 		append data "<table>\n"
+		append data [format_info $prefix structuredDataDealerName {Dealer}]
+	        append data [format_info $prefix ownerCount Owners]
+		append data [format_info $prefix sellerCity {Location}]
+		append data [format_info $prefix distance]
 		append data [format_info $prefix mileage]
 		append data [format_info $prefix price]
 		append data [format_info $prefix expectedPrice {Expected Price}]
 		append data [format_info $prefix priceDifferential {Price Diff}]
 		append data [format_info $prefix daysOnMarket {Days on Market}]
 	        append data [format_info $prefix carYear Year]
-	        append data [format_info $prefix ownerCount Owners]
 	        append data [format_info $prefix dealRating {Deal Rating}]
-		append data [format_info $prefix sellerCity {Location}]
-		append data [format_info $prefix distance]
 		append data [format_info $prefix sellerType {Seller Type}]
 		append data [format_info $prefix sellerRegion {Seller State}]
-		append data [format_info $prefix sellerCity {Location}]
 		append data [format_info $prefix phoneNumber {Phone Number}]
 		append data [format_info $prefix sellerRating {Seller Rating}]
 		append data [format_info $prefix reviewCount {Number of Reviews}]
-		append data [format_info $prefix structuredDataDealerName {Dealer}]
 		append data [format_info $prefix makeName {Make}]
 		append data [format_info $prefix modelName {Model}]
 		append data [format_info $prefix localizedTransmission Transmission]
