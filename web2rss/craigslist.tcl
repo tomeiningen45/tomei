@@ -14,6 +14,7 @@ namespace eval craigslist {
         # We have one subpage
         set h(subpages) {
             {manual { - Manual}}
+            {othermanual { - Other Manual}}
         }
     }
 
@@ -111,6 +112,33 @@ namespace eval craigslist {
             set subpage {}
             if {[regexp "transmission: <b>manual</b>" $data]} {
                 set subpage manual
+
+                foreach n {
+                    mustang
+                    chevy
+                    mini
+                    dodge
+                    chevrolet
+                    hyundai
+                    jeep
+                    tacoma
+                    beetle
+                    corvette
+                    vanagon
+                    transit
+                    pathfinder
+                    silverado
+                    f-.50
+                    truck
+                    pontiac
+                    ram
+                    cruiser
+                } {
+                    if {[regexp -nocase $n $title]} {
+                        set subpage othermanual
+                        break
+                    }
+                }
             }
             save_article craigslist $title $url $data $pubdate $subpage
         }
