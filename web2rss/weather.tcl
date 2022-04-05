@@ -27,7 +27,7 @@ proc set_update_timestamp {image_root} {
     if {$tsdate != $today} {
         puts "Updating timestamp.js"
         set fd [open $image_root/timestamp.js w+]
-        
+        puts $fd "day = new Array(7);"
         for {set i 0} {$i < 7} {incr i} {
             set t [expr $now + $i * 86400]
             puts $fd "day\[$i\] = \"[clock format $t -format %a]\";"
@@ -56,6 +56,8 @@ proc all_images {} {
 proc fetch_if_needed {image_root ts level num} {
     set imgfile $image_root/${level}_${num}.jpg
     set tmpfile $image_root/${level}_${num}_tmp.jpg
+    set smlfile $image_root/${level}_${num}_tmp_small.jpg
+
     if {[file exists $imgfile] && [file mtime $imgfile] >= $ts} {
         return true;
     }
@@ -68,6 +70,8 @@ proc fetch_if_needed {image_root ts level num} {
         puts "Getting $url"
         set tmp $tmpfile.png
         exec wget -q -O $tmp $url
+
+        exec ffmpeg -hide_banner -loglevel error -i $tmp -vf "crop=590:550:195:75,scale=100:100" $smlfile
         exec ffmpeg -hide_banner -loglevel error -i $tmp -q:v 10 $tmpfile
         file delete -force $tmp
     } err]} {
@@ -82,8 +86,15 @@ proc rename_if_needed {image_root ts level num} {
     set imgfile $image_root/${level}_${num}.jpg
     set tmpfile $image_root/${level}_${num}_tmp.jpg
 
+    set imgfile_small $image_root/${level}_${num}_small.jpg
+    set tmpfile_small $image_root/${level}_${num}_tmp_small.jpg
+
     if {[file exists $tmpfile]} {
         file rename -force $tmpfile $imgfile
+    }
+
+    if {[file exists $tmpfile_small]} {
+        file rename -force $tmpfile_small $imgfile_small
     }
 }
 

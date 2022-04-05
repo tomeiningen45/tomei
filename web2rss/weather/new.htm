@@ -30,15 +30,73 @@
 </center>
 
 <img id="santacruz" width=100% src=weather/3_000.jpg>
-<br>
 
-<center>
-<input type="button" style="width:15%" onclick="changeImage(-24)" value="-Day" />
-<input type="button" style="width:15%" onclick="changeImage(-3)" value="-3hr" />
-<input type="button" style="width:15%" onclick="changeImage(-144)" value="NOW" />
-<input type="button" style="width:15%" onclick="changeImage(+3)" value="+3hr" />
-<input type="button" style="width:15%" onclick="changeImage(+24)" value="+Day" />
-</center>
+
+<div id="navigate">
+
+<script src="weather/timestamp.js"></script>
+
+<script>
+
+function write_table (which, scale) {
+    var r1 = "<table><tr>";
+    var r2 = "</tr><tr>";
+
+    for (i = 0; i < 7; i++) {
+        num = i * 24;
+        if (num < 10) {
+            num = "00" + num;
+        } else if (num < 100) {
+            num = "0" + num;
+        } 
+
+        r1 += "<td id='" + which + i + "' style='padding-left:10px;padding-right:10px;'>"
+              + "<a href=javascript:setdate(" + i + ")>"
+              + "<img src=weather/"
+              + scale + "_" + num + "_small.jpg></a></td>"
+        r2 += "<td align=center><font size=40>" + day[i] + "</font></td>"
+    }
+    r2 += "</tr></table>"
+
+    document.getElementById(which).innerHTML = r1 + r2;
+}
+
+function setdate (i) {
+    num = i * 24;
+    hour=num
+    set_big_image_to(hour);
+}
+
+
+function hilight (i) {
+    for (n = 0; n < 7; n++) {
+        var cell = document.getElementById("navigate" + n);
+        if (n == i) {
+            cell.style.backgroundColor = "#a02020";
+        } else {
+            cell.style.backgroundColor = "white";
+        }
+    }
+
+
+    for (n = 0; n <= 144; n++) {
+        var cell = document.getElementById("allhr" + n);
+        if (cell == null) {
+            continue;
+        }
+        if (n == hour) {
+            cell.style.backgroundColor = "#a02020";
+        } else {
+            cell.style.backgroundColor = "white";
+        }
+    }
+}
+
+write_table("navigate", 3)
+
+</script>
+
+<br>
 
 <img id="bayarea" width=100% src=weather/1_000.jpg>
 
@@ -46,35 +104,92 @@
 var hour=0
 function changeImage(by) {
     hour += by;
+    updateImage();
+}
+
+function sethour(hr) {
+    hour = hr;
+    updateImage();
+}
+
+function updateImage() {
     if (hour < 0) {
         hour = 0;
     }
     if (hour > 144) {
         hour = 144;
     }
+
+    set_big_image_to(hour);
+}
+
+function set_big_image_to(hr) {
     var tag;
-    if (hour < 10) {
-        tag = "00" + hour;
-    } else if (hour < 100) {
-        tag = "0" + hour;
+    if (hr < 10) {
+        tag = "00" + hr;
+    } else if (hr < 100) {
+        tag = "0" + hr;
     } else {
-        tag = "" + hour;
+        tag = "" + hr;
     }
 
     var img = document.getElementById('santacruz');
     img.src = "weather/3_" + tag + ".jpg";
+
+    var img = document.getElementById('santacruz1');
+    img.src = "weather/3_" + tag + ".jpg";
+
     var img = document.getElementById('bayarea');
     img.src = "weather/1_" + tag + ".jpg";
+
+    hilight(Math.trunc((hr + 6)/24));
 }
 </script>
 
-<center>
-<input type="button" style="width:15%" onclick="changeImage(-24)" value="-Day" />
-<input type="button" style="width:15%" onclick="changeImage(-3)" value="-3hr" />
-<input type="button" style="width:15%" onclick="changeImage(-144)" value="NOW" />
-<input type="button" style="width:15%" onclick="changeImage(+3)" value="+3hr" />
-<input type="button" style="width:15%" onclick="changeImage(+24)" value="+Day" />
-</center>
+<br>
+
+<div id="all_hours">
+
+<script>
+
+var s = "<table style='border:0' cellpadding=0><tr>"
+s += "<td align=center><font size=6>&nbsp;</font></td>"
+s += "<td align=center><font size=6>00:00</font></td>"
+s += "<td align=center><font size=6>03:00</font></td>"
+s += "<td align=center bgcolor=#c0c0ff><font size=6 color=#c02020>06:00</font></td>"
+s += "<td align=center><font size=6>09:00</font></td>"
+s += "<td align=center><font size=6>12:00</font></td>"
+s += "<td align=center><font size=6>15:00</font></td>"
+s += "<td align=center><font size=6>18:00</font></td>"
+s += "<td align=center><font size=6>21:00</font></td>"
+s += "</td>"
+for (i=0; i<7; i++) {
+    s += "<tr><td><font size=36>" + day[i] + "</font></td>"
+
+    for (h=0; h<24; h+=3) {
+        var num = i * 24 + h - 6;
+        var hr = num;
+        var elm = "&nbsp";
+        if (num >= 0 && num <= 144) {
+            if (num < 10) {
+                num = "00" + num;
+            } else if (num < 100) {
+                num = "0" + num;
+            }
+            elm = "<a href=javascript:sethour(" + hr + ")><img src=weather/3_" + num + "_small.jpg></a>";
+        }
+        s += "<td id='allhr" + hr + "' style='padding-left:2px;padding-right:2px;'>" + elm +"</td>"
+    }
+    s+="</tr>"
+}
+s += "<table>"
+
+document.getElementById("all_hours").innerHTML = s;
+
+hilight(0);
+</script>
+
+<img id="santacruz1" width=100% src=weather/3_000.jpg>
 
 <br>
 <img width=100% src='https://www.weather.gov/images/mtr/marine/vectorPlot_allCW_46042.png'>
@@ -82,6 +197,17 @@ function changeImage(by) {
 <br>
 <img width=100% src='https://polar.ncep.noaa.gov/nwps/images/rtimages/mtr/nwps/CG0/Hansonplot_46042.png'>
 
-<br>
 
-<a href=https://www.wrh.noaa.gov/mtr/marine/>Data Source</a>
+<hr>
+<p>&nbsp;
+<p>&nbsp;
+<p>&nbsp;
+<p>&nbsp;
+<p>&nbsp;
+<font size=40><a href=https://www.wrh.noaa.gov/mtr/marine/>Click Here for original data source</a></font>
+
+<p>&nbsp;
+<p>&nbsp;
+<p>&nbsp;
+<p>&nbsp;
+<p>&nbsp;
