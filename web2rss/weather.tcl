@@ -1,8 +1,8 @@
 source [file dirname [info script]]/rss-lib.tcl
 
 proc should_update {} {
-    # Update the images every 3am
-    set ref_hr 3
+    # Update the images every 9am -- this seems to be the time where hour 000 is 6am of the same day.
+    set ref_hr 9
 
     set cur_hr [clock format [clock seconds] -format %H]
     regsub ^0+ $cur_hr "" cur_hr
