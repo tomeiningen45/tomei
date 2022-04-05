@@ -1,0 +1,87 @@
+<title>Weather for Monterey Bay</title>
+<center><h1>Weather for Monterey Bay</h1><center>
+
+
+<head>
+<style>
+.button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 40px;
+  margin: 0px 0px;
+  cursor: pointer;
+  width: 15%;
+}
+
+</style>
+</head>
+
+<center>
+<input type="button" class="button" onclick="changeImage(-24)" value="-Day" />
+<input type="button" class="button" onclick="changeImage(-3)" value="-3hr" />
+<input type="button" class="button" onclick="changeImage(-144)" value="NOW" />
+<input type="button" class="button" onclick="changeImage(+3)" value="+3hr" />
+<input type="button" class="button" onclick="changeImage(+24)" value="+Day" />
+</center>
+
+<img id="santacruz" width=100% src=https://polar.ncep.noaa.gov/nwps/images/rtimages/mtr/nwps/CG3/swan_sigwaveheight_hr000.png>
+<br>
+
+<center>
+<input type="button" style="width:15%" onclick="changeImage(-24)" value="-Day" />
+<input type="button" style="width:15%" onclick="changeImage(-3)" value="-3hr" />
+<input type="button" style="width:15%" onclick="changeImage(-144)" value="NOW" />
+<input type="button" style="width:15%" onclick="changeImage(+3)" value="+3hr" />
+<input type="button" style="width:15%" onclick="changeImage(+24)" value="+Day" />
+</center>
+
+<img id="bayarea" width=100% src=https://polar.ncep.noaa.gov/nwps/images/rtimages/mtr/nwps/CG2/swan_sigwaveheight_hr000.png>
+
+<script>
+var hour=0
+function changeImage(by) {
+    hour += by;
+    if (hour < 0) {
+        hour = 0;
+    }
+    if (hour > 144) {
+        hour = 144;
+    }
+    var tag;
+    if (hour < 10) {
+        tag = "00" + hour;
+    } else if (hour < 100) {
+        tag = "0" + hour;
+    } else {
+        tag = "" + hour;
+    }
+
+    var img = document.getElementById('santacruz');
+    img.src = "https://polar.ncep.noaa.gov/nwps/images/rtimages/mtr/nwps/CG3/swan_sigwaveheight_hr" + tag + ".png";
+    var img = document.getElementById('bayarea');
+    img.src = "https://polar.ncep.noaa.gov/nwps/images/rtimages/mtr/nwps/CG2/swan_sigwaveheight_hr" + tag + ".png";
+}
+</script>
+
+<center>
+<input type="button" style="width:15%" onclick="changeImage(-24)" value="-Day" />
+<input type="button" style="width:15%" onclick="changeImage(-3)" value="-3hr" />
+<input type="button" style="width:15%" onclick="changeImage(-144)" value="NOW" />
+<input type="button" style="width:15%" onclick="changeImage(+3)" value="+3hr" />
+<input type="button" style="width:15%" onclick="changeImage(+24)" value="+Day" />
+</center>
+
+<br>
+<img width=100% src='https://www.weather.gov/images/mtr/marine/vectorPlot_allCW_46042.png'>
+
+<br>
+<img width=100% src='https://polar.ncep.noaa.gov/nwps/images/rtimages/mtr/nwps/CG0/Hansonplot_46042.png'>
+
+<br>
+
+<a href=https://www.wrh.noaa.gov/mtr/marine/>Data Source</a>
