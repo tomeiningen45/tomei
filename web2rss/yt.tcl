@@ -307,6 +307,11 @@ proc main {} {
             }
         }
 
+        if {![file exists [storage_root]/$site.xml]} {
+            set update 1
+        }
+
+
         if {[file exists $metadata] && $update} {
             update_xml $site
 
@@ -323,7 +328,14 @@ proc main {} {
 
 proc sort_by_newest_timestamp {a b} {
     global ts
-    return [expr - $ts($a) + $ts($b)]
+    set n [expr - $ts($a) + $ts($b)]
+    if {$n < 0} {
+        return -1
+    } elseif {$n > 0} {
+        return 1
+    } else {
+        return 0
+    }
 }
 
 proc update_xml {site} {
