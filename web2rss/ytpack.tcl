@@ -10,15 +10,19 @@ if {![file exists $root/data]} {
 }
 
 set pwd [pwd]
-cd $root/data
-set files [glob *]
+cd $root
+set files [glob */*]
 cd $pwd
-file delete -force tmp
-file mkdir tmp
+file delete -force tmp/yt
+file mkdir tmp/yt
 
-foreach file $files {
-    set src $root/data/$file
-    set dst tmp/$file
+foreach file [lsort $files] {
+    set dir [file dirname $file]
+    if {![file exists tmp/yt/$dir]} {
+        file mkdir tmp/yt/$dir
+    }
+    set src $root/$file
+    set dst tmp/yt/$file
     set t [file mtime $src]
 
     if {[regexp {tcl$} $file]} {
@@ -27,5 +31,10 @@ foreach file $files {
         set fd [open $dst w+]
         close $fd
     }
+    puts $dst
     file mtime $dst $t
 }
+
+cd tmp
+exec tar cvf ../yt.tar yt 2>@ stdout >@ stdout
+
