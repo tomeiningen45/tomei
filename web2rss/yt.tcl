@@ -243,6 +243,9 @@ proc main {} {
                     if {$getaudio || ![file exists $metadata]} {
                         puts "Downloading meta data from $url"
                         set data [exec wget --no-check-certificate --timeout=10 --tries=1 -q -O - $url 2> /dev/null | java FilterEmoji]
+                        regsub -all {\\\"} $data "'" data
+                        regsub -all {\\r\\n} $data "\\n" data
+ 
                         puts [string len $data]
                         set pat {"description":\{"simpleText":\"([^\"]+)}
                         puts $pat
