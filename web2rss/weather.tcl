@@ -68,6 +68,7 @@ proc fetch_if_needed {image_root ts level num} {
     set url https://polar.ncep.noaa.gov/nwps/images/rtimages/mtr/nwps/CG${level}/swan_sigwaveheight_hr${num}.png
     if {[catch {
         puts -nonewline "Getting $url ..."
+        flush stdout
         set tmp $tmpfile.png
         exec wget --timeout=10 -q -O $tmp --referer https://www.wrh.noaa.gov/mtr/marine/ $url
         puts -nonewline " processing ..."
