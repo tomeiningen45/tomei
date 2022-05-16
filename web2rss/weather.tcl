@@ -67,13 +67,16 @@ proc fetch_if_needed {image_root ts level num} {
 
     set url https://polar.ncep.noaa.gov/nwps/images/rtimages/mtr/nwps/CG${level}/swan_sigwaveheight_hr${num}.png
     if {[catch {
-        puts "Getting $url"
+        puts -nonewline "Getting $url ..."
         set tmp $tmpfile.png
-        exec wget -q -O $tmp $url
-
-        exec ffmpeg -hide_banner -loglevel error -i $tmp -vf "crop=590:550:195:75,scale=100:100" $smlfile
-        exec ffmpeg -hide_banner -loglevel error -i $tmp -q:v 10 $tmpfile
+        exec wget --timeout=10 -q -O $tmp --referer https://www.wrh.noaa.gov/mtr/marine/ $url
+        puts -nonewline " processing ..."
+        file delete -force $smlfile
+        exec ffmpeg -hide_banner -loglevel error -i $tmp -vf "crop=590:550:195:75,scale=100:100" $smlfile >@ stdout 2>@ stderr
+        file delete -force $tmpfile
+        exec ffmpeg -hide_banner -loglevel error -i $tmp -q:v 10 $tmpfile >@ stdout 2>@ stderr
         file delete -force $tmp
+        puts " done"
     } err]} {
         puts $err
         return false
@@ -113,6 +116,8 @@ proc refetch_images {} {
     foreach level {1 3} {
         foreach img [all_images] {
             if {![fetch_if_needed $image_root $ts $level $img]} {
+                # Some sort of network error. Quit the program and the script will
+                # restart us later.
                 return
             }
         }
