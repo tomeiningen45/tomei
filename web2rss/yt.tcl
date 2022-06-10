@@ -274,7 +274,7 @@ proc main {} {
                         puts "length = $length"
                         if {[skip_long_videos $site] && [regexp {:.+:} $length]} {
                             puts "Skipping videos that are over 1 hour long"
-                        } elseif {[regexp {【LIVE】} $title]} {
+                        } elseif {[regexp {LIVE} $title]} {
                             puts "Skipping LIVE videos"
                         } elseif {![file exists $filename]} {
                             exec $ytdl --no-mtime -o $filenamespec --audio-format m4a -x $url 2>@ stdout >@ stdout
