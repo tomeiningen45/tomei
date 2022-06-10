@@ -246,9 +246,9 @@ proc main {} {
                         regsub -all {\\\"} $data "'" data
                         regsub -all {\\r\\n} $data "\\n" data
  
-                        puts [string len $data]
+                        #puts [string len $data]
                         set pat {"description":\{"simpleText":\"([^\"]+)}
-                        puts $pat
+                        #puts $pat
                         regexp $pat $data dummy description
                         set title ""
                         regexp {<title>([^<]*)</title>} $data dummy title
@@ -423,7 +423,7 @@ proc update_xml {site} {
                 #puts $thumb
                 set description "$description <p> <img src=\"$thumb\"> "
             } xx]} {
-                puts $xx
+                #puts $xx
             }
 
             if {0 + $succeeded >= 0 || !$need_audio} {
