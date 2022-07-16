@@ -11,8 +11,10 @@ while true; do
     echo ----------------------------------------------------------------------
     echo Restarting ..... $(date)
     echo ----------------------------------------------------------------------
-    tclsh $(dirname $0)/weather.tcl
-    
+    if [[ -z "$DEBUG" ]]; then
+        tclsh $(dirname $0)/weather.tcl
+    fi
+
     log=/tmp/rss-nt.log
 
     for i in 5 4 3 2 1; do
