@@ -310,13 +310,15 @@ proc main {} {
             }
         }
 
-        if {![file exists [storage_root]/$site.xml]} {
+        if {![file exists [storage_root]/$site.xml] ||
+            ![file exists [storage_root]/$site.html]} {
             set update 1
         }
 
 
         if {[file exists $metadata] && $update} {
             update_xml $site
+            update_html $site
 
             if {[info exists env(DEBUG)]} {
                 puts "env(DEBUG)=$env(DEBUG)"
@@ -358,27 +360,27 @@ proc update_xml {site} {
 
     set fd [open $xml w+]
     set out {<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
-	xmlns:content="http://purl.org/rss/1.0/modules/content/"
-	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
-	xmlns:dc="http://purl.org/dc/elements/1.1/"
-	xmlns:atom="http://www.w3.org/2005/Atom"
-	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
-	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
-	xmlns:podcast="https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md"
-	xmlns:rawvoice="http://www.rawvoice.com/rawvoiceRssModule/"
-	xmlns:googleplay="http://www.google.com/schemas/play-podcasts/1.0">
+        xmlns:content="http://purl.org/rss/1.0/modules/content/"
+        xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+        xmlns:dc="http://purl.org/dc/elements/1.1/"
+        xmlns:atom="http://www.w3.org/2005/Atom"
+        xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+        xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+        xmlns:podcast="https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md"
+        xmlns:rawvoice="http://www.rawvoice.com/rawvoiceRssModule/"
+        xmlns:googleplay="http://www.google.com/schemas/play-podcasts/1.0">
 
         <channel>
-	<title>DESC</title>
-	<link>URL</link>
-	<description>DESC</description>
-	<lastBuildDate>DATE</lastBuildDate>
-	<language>LANG</language>
-	<sy:updatePeriod>hourly</sy:updatePeriod>
-	<sy:updateFrequency>12</sy:updateFrequency>
+        <title>DESC</title>
+        <link>URL</link>
+        <description>DESC</description>
+        <lastBuildDate>DATE</lastBuildDate>
+        <language>LANG</language>
+        <sy:updatePeriod>hourly</sy:updatePeriod>
+        <sy:updateFrequency>12</sy:updateFrequency>
 
         <image>
-	<url>WEBROOT/podcast.jpg</url>
+        <url>WEBROOT/podcast.jpg</url>
         </image> 
     }
         
@@ -454,6 +456,113 @@ proc update_xml {site} {
     puts $fd {</channel></rss>}
     close $fd
 }
+
+proc update_html {site} {
+    global ts ytsrc ytcfg thumbs
+    set webroot $ytcfg(webroot)
+    set need_audio [is_audio_needed $site]
+
+    catch {unset ts}
+    set html [storage_root]/$site.html
+    set sitedir [storage_root]/yt/$site
+    if {![file exists $sitedir]} {
+        return
+    }
+    foreach file [glob $sitedir/*.tcl] {
+        catch {source $file}
+    }
+
+    set fd [open $html w+]
+    set iframe {<iframe width="420" height="315" src="https://www.youtube.com/embed/ID?autoplay=0&mute=1"></iframe>}
+    
+    set list [lsort -command sort_by_newest_timestamp [array names ts]]
+    set n 0
+    set max [llength $list]
+    puts $fd "<script> var iframes = new Array($max) </script>"
+    foreach id $list {
+        #puts $ts($id)
+        set metadata [storage_root]/yt/data/$id.tcl
+        if {[file exists $metadata] && [catch {
+            catch {unset metainfo($id)}
+            source $metadata
+            set info $metainfo($id)
+           #set filename    [lindex $info 1]
+            set title       [lindex $info 2]
+           #set pubdate     [lindex $info 3]
+            set body        [lindex $info 4]
+           #set succeeded   [lindex $info 5]
+           #set hasaudio    0
+
+            set link https://www.youtube.com/watch?v=$id
+            regsub -all {\\n} $body <p> body
+            regsub -all {\u3000} $body "" body
+            
+            puts $fd "<div id='item$n'>"
+            puts $fd "<table width=100%>"
+            puts $fd "<tr><td width=420 valign=top>"
+            puts $fd "<div style='height:130;overflow:scroll;overflow-x:hidden;overflow-y:auto'>"
+            puts $fd "<h2><a href=$link>$title</a></h2></div>"
+            puts $fd "<div id='video$n'></div>"
+
+            puts $fd "<p align=center><font size = +3>"
+            if {$n > 0} {
+                puts $fd "<a href='javascript:doit([expr $n - 1])'>&nbsp;&lt;&nbsp;</a>"
+            } else {
+                puts $fd "&nbsp;&lt;&nbsp;"
+            }
+            puts $fd [expr $n + 1]
+
+            if {$n < $max - 1} {
+                puts $fd "<a href='javascript:doit([expr $n + 1])'>&nbsp;&gt;&nbsp;</a>"
+            } else {
+                puts $fd "&nbsp;&gt;&nbsp;"
+            }
+
+            puts $fd "</font></p></td><td>&nbsp;</td><td width=99% valign=top>"
+            puts $fd "<div style='height:550;overflow:scroll;overflow-x:hidden'>"
+
+            puts $fd "<font size=+2>$body</font></div>"
+            puts $fd "</td></tr>"
+            puts $fd "</table>"
+            puts $fd "</div>"
+
+            regsub ID $iframe $id if
+            puts $fd "<script> iframes\[$n\]='$if' </script>"
+            incr n
+        } errInfo]} {
+            puts $errInfo
+        }
+        if {$n > 5} {
+            break;
+        }
+    }
+
+    puts $fd "<script> var num_pages=$n"
+    puts $fd {
+        function doit(n) {
+              for (i=0; i<num_pages; i++) {
+                var node = document.getElementById('video' + i);
+                if (i == n) {
+                    node.innerHTML = iframes[i]
+                } else {
+                    node.innerHTML = ""
+                }
+                                         
+                var node = document.getElementById('item' + i);
+                if (i == n) {
+                    node.style.display = "inline"
+                } else {
+                    node.style.display = "none"
+                }
+            }
+        }
+        doit(0)
+    }    
+    puts $fd "</script>"
+    
+    close $fd
+}
+
 
 proc cleanup_old_files {} {
     global ytsrc keepfile env
