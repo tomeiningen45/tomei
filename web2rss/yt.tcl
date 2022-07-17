@@ -499,7 +499,8 @@ proc update_html {site} {
             set link https://www.youtube.com/watch?v=$id
             regsub -all {\\n} $body <p> body
             regsub -all {\u3000} $body "" body
-            
+            regsub -all {<p>[- ]+<p>} $body "<p>" body
+	    
             puts $fd "<div id='item$n'>"
             puts $fd "<table width=100%>"
             puts $fd "<tr><td width=420 valign=top>"
