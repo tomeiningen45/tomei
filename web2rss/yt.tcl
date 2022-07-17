@@ -473,11 +473,8 @@ proc update_html {site} {
     }
 
     set fd [open $html w+]
-    puts $fd {<!DOCTYPE html>
-	<html lang="ja">
-	<head>
+    puts $fd {<html lang="ja">
 	<meta charset="utf-8">
-	</head>
     }
     set iframe {<iframe width="420" height="315" src="https://www.youtube.com/embed/ID?autoplay=0&mute=1"></iframe>}
     
