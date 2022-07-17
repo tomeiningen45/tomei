@@ -473,6 +473,12 @@ proc update_html {site} {
     }
 
     set fd [open $html w+]
+    puts $fd {<!DOCTYPE html>
+	<html lang="ja">
+	<head>
+	<meta charset="utf-8">
+	</head>
+    }
     set iframe {<iframe width="420" height="315" src="https://www.youtube.com/embed/ID?autoplay=0&mute=1"></iframe>}
     
     set list [lsort -command sort_by_newest_timestamp [array names ts]]
