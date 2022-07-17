@@ -3,8 +3,8 @@ import java.io.*;
 public class FilterEmoji {
   public static void main(String args[]) {
     try {
-      BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
-      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
+      BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in, "UTF-8"));
+      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out, "UTF-8"));
       String line;
       while ((line = buffer.readLine()) != null) {
         for (int i = 0; i < line.length(); i++) {
