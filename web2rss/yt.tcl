@@ -430,7 +430,7 @@ proc update_xml {site} {
 
             if {0 + $succeeded >= 0 || !$need_audio} {
                 puts $fd "<item><title>$title</title>"
-                puts $fd "<link>$link</link>"
+                puts $fd "<link>https://youtu.bee/$id</link>"
                 puts $fd "<dc:creator><!\[CDATA\[siran\]\]></dc:creator>"
                 puts $fd "<pubDate>[clock_format [expr $pubdate / 1000]]</pubDate>"
                 puts $fd "<category><!\[CDATA\[ラジオ\]\]></category>"
