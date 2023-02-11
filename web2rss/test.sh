@@ -8,11 +8,11 @@
 #Number of articles to store in the xml file
 #export DEBUG_MAX_ARTICLES=
 #export DEBUG_MAX_ARTICLES=60
- export DEBUG_MAX_ARTICLES=1
+ export DEBUG_MAX_ARTICLES=20
 
 #Number of articles to download from the web site
 #export DEBUG_MAX_DOWNLOADS=20
- export DEBUG_MAX_DOWNLOADS=1
+ export DEBUG_MAX_DOWNLOADS=20
 
 # Set the following to exit after the first site has finished writing to db
  export DEBUG_NO_LOOPS=1
@@ -21,9 +21,9 @@
 #----------------------------------------------------------------------
 
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} reuters"  (no more RSS feed from reuters)
-#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} bleacher"
+ export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} bleacher"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park_forum_mil"
- export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoohk"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoojp_main"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoojp_mag"
@@ -53,7 +53,11 @@
 
 #export DEBUG_ARTICLE=https://bleacherreport.com/articles/2816345-lebron-james-calls-out-nba-refs-after-late-lonzo-ball-foul-on-russell-westbrook
 
-#export DEBUG_ARTICLE=http://bleacherreport.com/articles/2752444-jordan-bell-discusses-scuffles-with-salah-mejri-devin-harris-vs-mavericks
+#export DEBUG_ARTICLE=https://bleacherreport.com/articles/10065118-kevin-durant-steph-curry-zion-injury-replacements-revealed-for-nba-all-star-game
 #----------------------------------------------------------------------
+if test ! -f FilterEmoji.class; then
+    javac FilterEmoji.java || exit 1
+fi
+
 env DEBUG=1 bash rss-nt.sh
 

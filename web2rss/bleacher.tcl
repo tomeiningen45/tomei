@@ -75,6 +75,10 @@ namespace eval bleacher {
 
         regsub -all {w_40,h_27,} $data {w_800,h_533,} data
 
+	regsub "<ul><li style='DISPLAY:none'\[^\n\]*<span class=\"atom authorInfo\">" $data "" data
+	regsub {<span class="text">[^<]+Watch more top videos, highlights, and B/R original content<!-- --> </span>} \
+	    $data "" data
+
         save_article bleacher $title $url $data $pubdate
     }
 }
