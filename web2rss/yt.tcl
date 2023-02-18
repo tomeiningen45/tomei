@@ -6,7 +6,22 @@ source [file dirname [info script]]/rss-lib.tcl
 set env(CLASSPATH) [file dirname [info script]]
 
 set sources [file dirname [info script]]/ytsources.tcl
-set ytdl    [file dirname [info script]]/youtube-dl
+
+set ytdl [file dirname [info script]]/youtube-dl
+
+## Use yt-dlp for now since it seems to be more actively maintained (but less stable??)
+##
+## As of Fri Feb 17 23:02:46 PST 2023, the following is fixed in youtube-dl
+## but not yet released.
+##
+## https://github.com/ytdl-org/youtube-dl/commit/2dd6c6edd8e0fc5e45865b8e6d865e35147de772
+##
+if {[regexp CYGWIN $tcl_platform(os)]} {
+    set ytdl [file dirname [info script]]/yt-dlp_x86.exe
+} else {
+    set ytdl [file dirname [info script]]/yt-dlp
+}
+
 source $sources
 
 puts "storage_root = [storage_root]"
@@ -265,6 +280,9 @@ proc main {} {
                     }
                     if {$getaudio} {
                         puts "Downloading audio data from $url"
+			##puts ""
+			##puts "$ytdl --get-filename --no-mtime -o $filenamespec --audio-format m4a -x $url"
+			##puts ""
                         set filename [exec $ytdl --get-filename --no-mtime -o $filenamespec --audio-format m4a -x $url]
                         if {[regexp {[.]webm$} $filename]} {
                             regsub {[.]webm$} $filename .m4a filename
