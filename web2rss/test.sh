@@ -8,7 +8,7 @@
 #Number of articles to store in the xml file
 #export DEBUG_MAX_ARTICLES=
 #export DEBUG_MAX_ARTICLES=60
- export DEBUG_MAX_ARTICLES=20
+ export DEBUG_MAX_ARTICLES=1
 
 #Number of articles to download from the web site
 #export DEBUG_MAX_DOWNLOADS=20

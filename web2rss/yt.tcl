@@ -424,6 +424,7 @@ proc update_xml {site} {
                 set thumb [redirect_image $thumb $link]
                 #puts $thumb
                 set description "$description <p> <img src=\"$thumb\"> "
+                set description "<a href=$link>ORIG</a> &nbsp;&nbsp; $description"
             } xx]} {
                 #puts $xx
             }
