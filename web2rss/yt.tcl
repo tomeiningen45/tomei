@@ -372,7 +372,7 @@ proc update_xml {site} {
     if {![file exists $sitedir]} {
         return
     }
-    foreach file [glob $sitedir/*.tcl] {
+    foreach file [glob -nocomplain $sitedir/*.tcl] {
         catch {source $file}
     }
 
@@ -487,7 +487,7 @@ proc update_html {site} {
     if {![file exists $sitedir]} {
         return
     }
-    foreach file [glob $sitedir/*.tcl] {
+    foreach file [glob -nocomplain $sitedir/*.tcl] {
         catch {source $file}
     }
 
@@ -622,7 +622,7 @@ proc cleanup_timestamps {site} {
     if {![file exists $sitedir]} {
         return
     }
-    set timestamps [glob $sitedir/*.tcl]
+    set timestamps [glob -nocomplain $sitedir/*.tcl]
     foreach file $timestamps {
         # Dont source this file in case it's corrupt
         set ts($file) [file mtime $file]
