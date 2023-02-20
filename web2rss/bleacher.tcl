@@ -29,7 +29,8 @@ namespace eval bleacher {
             # avoid duplicated articles from other domains
             return
         }
-        if {[regexp {This article will be updated to} $data]} {
+        if {[regexp {his article will be updated} $data]} {
+	    # This article is not ready. Don't download it.
             return
         }
         
