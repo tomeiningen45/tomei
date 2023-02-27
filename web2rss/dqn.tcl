@@ -26,6 +26,14 @@ namespace eval dqn {
     }
 
     proc parse_article {pubdate url data} {
+	if {[regexp hamusoku.com $url]} {
+	    if {![regexp {<span class="comment-body">} $data]} {
+		# comments no yet available?
+		return
+	    }
+
+	}
+
         set title "??"
         regexp {<title>([^<|]+)} $data dummy title
  
@@ -43,6 +51,10 @@ namespace eval dqn {
         if {[regexp "元スレ.(http\[^< \n\]+)" $data dummy moto]} {
             set moto "元スレ: <a href='$moto'>$moto</a><p>\n\n"
         }
+
+	if {[regexp hamusoku.com $url]} {
+	    regsub -all ":</span><span \[^\n\]*<span class=\"comment-body\">" $data ":</span><span>" data
+	}
 
         regsub {.*<div class="main entry-content">} $data "" data
         regsub {<div class=posted>.*} $data "" data
