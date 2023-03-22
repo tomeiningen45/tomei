@@ -1,3 +1,46 @@
+# @rss-nt-adapter@
+
+namespace eval register {
+    proc init {first} {
+        variable h
+        set h(filter_duplicates)  0
+        set h(article_sort_byurl) 0
+        set h(lang)  en
+        set h(desc)  TheRegister
+        set h(url)   http://www.theregister.co.uk/
+        set h(out)   register
+    }
+
+    proc update_index {} {
+        atom_update_index register http://www.theregister.co.uk/headlines.atom
+    }
+
+    proc parse_link {link} {
+	puts stderr $link
+        return $link
+    }
+
+    # this function is called when ./test.sh has a non-empty DEBUG_ARTICLE
+    proc debug_article_parser {url} {
+        ::schedule_read [list register::parse_article [clock seconds]] $url
+    }
+    
+    proc parse_article {pubdate url data} {
+	set title "??"
+	regsub {...The Register</title>} $data {</title>} data
+        regexp {<title>([^<|]+)} $data dummy title
+
+        regsub {.*<div id="article">} $data "" data
+        regsub {.*<div id="body">} $data "" data
+        regsub {<div class="wptl btm">.*} $data "" data
+
+        save_article register $title $url $data $pubdate
+    }
+}
+
+
+if 0 {
+
 #----------------------------------------------------------------------
 # Standard prolog
 #----------------------------------------------------------------------
@@ -98,3 +141,5 @@ proc update {} {
 }
 
 update
+
+}

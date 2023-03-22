@@ -1027,6 +1027,30 @@ proc atom_parse_index {adapter encoding index_url data} {
         }
     }
 
+    if {[llength $list] == 0 && [regexp {<feed xmlns="http://www.w3.org/2005/Atom"} $data]} {
+        foreach part [makelist $data <entry] {
+            if {![regexp {<link [^>]*href="([^>]+)"[^>]*/>} $part dummy link]} {
+                continue
+            }
+            if {![regexp {<updated>([^<]+)</updated>} $part dummy pubdate]} {
+                continue
+            }
+
+            if {[catch {
+                # Tcl cannot parse "Sun, 27 Dec 2020 23:02:21 +0900"
+                regsub {[+-][0-9]+$} $pubdate "" pubdate
+                set pubdate [clock scan $pubdate]
+            } err]} {
+                set pubdate [clock seconds]
+            }
+
+            regsub -all {&#45;} $link - link
+
+            lappend list [list [format 0x%016x $pubdate] [${adapter}::parse_link $link]]
+        }
+    }
+
+
     # wget the oldest to newest
     foreach item [lsort $list] {
         # Get the oldest article first
