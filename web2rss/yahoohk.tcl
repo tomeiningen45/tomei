@@ -100,6 +100,7 @@ namespace eval yahoohk {
         regsub {<header><h1>([^<]+)</h1></header>} $data "" data
         regsub {.*<article} $data "<span " data
         regsub {<div class=.canvas-share-buttons.*} $data "" data
+        regsub {</article>.*} $data "" data
         regsub {>相關內容<.*} $data ">" data
         regsub {>港聞<.*} $data ">" data
         regsub {>其他內容<.*} $data ">" data
@@ -138,7 +139,7 @@ namespace eval yahoohk {
         regsub -all {<path[^>]*>} $data "" data
 
         regsub -all {<figcaption[^>]*>} $data "\n<i><br><font size=-1>\u2605 " data
-        regsub -all "</figcaption" $data "</font></i" data
+        regsub -all "</figcaption" $data "</font></i><br" data
         regsub {<div id="YDC-Bottom".*} $data "" data
         regsub {&lt;!--AD--&gt;&lt;.*} $data "" data
 
@@ -175,7 +176,10 @@ namespace eval yahoohk {
         regsub -all {<span>} $data "" data
         regsub -all {</span>} $data "" data
         regsub {<h3>相關文章:.*} $data "" data
+        regsub {熱門新聞</h2>.*} $data "" data
+        regsub {<strong>更多資料</strong>.*} $data "" data
 
+        regsub {</time>} $data "</time><p>" data
         if {"$data" == ""} {
             filter_article yahoohk $url
             return;
