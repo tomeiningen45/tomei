@@ -7,6 +7,7 @@ namespace eval yahoohk {
         set h(desc)  YHK
         set h(url)   https://hk.news.yahoo.com/
         set h(out)   yhk
+	set h(max_articles)  [::get_debug_opt DEBUG_MAX_ARTICLES  20]
         set h(max_downloads) [::get_debug_opt DEBUG_MAX_DOWNLOADS 15]
     }
 
