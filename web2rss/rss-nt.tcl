@@ -1346,6 +1346,19 @@ proc write_xml_file {adapter list {subpageinfo {}}} {
     close $fd
 }
 
+proc redirect_images {url data} {
+    set pat {<img[^>]*src=[\"\']([^\"\']*)[\"\'][^>]*>}
+    while {[regexp -nocase $pat $data dummy img]} {
+	set img [redirect_image $img $url]
+	regsub -all "\\\\" $img {\\\\} img
+	regsub -all {&} $img {\\\&} img
+	regsub -nocase $pat $data "\n<xxximg src='$img'>\n" data
+    }
+    regsub -all "<xxximg " $data "<img " data
+
+    return $data
+}
+
 proc do_exit {} {
     xcatch {db_sync_all_to_disk}
     exit

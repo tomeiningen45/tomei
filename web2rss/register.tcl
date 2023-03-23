@@ -24,7 +24,7 @@ namespace eval register {
     proc debug_article_parser {url} {
         ::schedule_read [list register::parse_article [clock seconds]] $url
     }
-    
+
     proc parse_article {pubdate url data} {
 	set title "??"
 	regsub {...The Register</title>} $data {</title>} data
