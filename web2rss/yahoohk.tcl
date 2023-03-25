@@ -186,7 +186,7 @@ namespace eval yahoohk {
             return;
         }
 
-	set data [redirect_images https://hk.news.yahoo.com/ $data]
+	set data [redirect_images https://hk.finance.yahoo.com/news/test.html $data]
         set data "${provider}&nbsp;\n$data"
         save_article yahoohk $title $url $data
     }
