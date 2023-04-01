@@ -99,6 +99,7 @@ namespace eval yahoohk {
         regsub {[ -]*\u96C5\u864E\u9999\u6E2F\u65B0\u805E} $title "" title
 
         regsub {<header><h1>([^<]+)</h1></header>} $data "" data
+	regsub {.*<div class="caas-body">} $data "<div>" data
         regsub {.*<article} $data "<span " data
         regsub {<div class=.canvas-share-buttons.*} $data "" data
         regsub {</article>.*} $data "" data
@@ -179,6 +180,10 @@ namespace eval yahoohk {
         regsub {<h3>相關文章:.*} $data "" data
         regsub {熱門新聞</h2>.*} $data "" data
         regsub {<strong>更多資料</strong>.*} $data "" data
+        regsub {<strong>更多相關文章：</strong>.*} $data "" data
+        regsub {<<p>更多相關文章</p>.*} $data "" data
+        regsub {<p>一齊睇.今日重點新聞：</p>.*} $data "" data
+        regsub {<<em>相關文章：</em>.*} $data "" data
 
         regsub {</time>} $data "</time><p>" data
         if {"$data" == ""} {
