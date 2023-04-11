@@ -134,7 +134,7 @@ proc skip_long_videos {site} {
 
 
 proc main {} {
-    global ytsrc ytdl config thumbs env
+    global ytsrc ytdl config thumbs env keepfile
     set root [storage_root]/yt
 
     if {![file exists $root]} {
@@ -148,7 +148,9 @@ proc main {} {
         exec bash -c "find $root/data -name *.part -exec rm -v \{\} \\\;" >@ stdout 2>@ stdout
     }
 
-    cleanup_old_files
+    if {[info exists env(CHECKDELETE)]} {
+	cleanup_old_files
+    }
 
     # Look for stuff to download (in reversed order in list)
     set worklist {}
@@ -161,6 +163,13 @@ proc main {} {
 
         puts "Getting list $site-$url"
         set ids($site) [get_ids $site $url $download_limit]
+	foreach id $ids($site) {
+	    # If a channel on a watchlist hasn't been updated for
+	    # a long time, do not delete the its latest video, or else
+	    # this video will end up being downloaded the next time yt.tcl
+	    # is run.
+	    set keepfile($id) 1
+	}
         set len [llength $ids($site)]
         if {$maxlen < $len} {
             set maxlen $len
@@ -346,6 +355,10 @@ proc main {} {
                 }
             }
         }
+    }
+
+    if {![info exists env(CHECKDELETE)]} {
+	cleanup_old_files
     }
 }
 
