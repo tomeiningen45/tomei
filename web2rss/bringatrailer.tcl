@@ -84,11 +84,29 @@ namespace eval bringatrailer {
     proc parse_article {is_result pubdate url data} {
         global g
 
-        set title ""
+	set bidto ""
+	if {[regexp {Bid to <strong>([^<]+)</strong>} $data dummy bidto]} {
+	    #set bidto " Bid to $bidto"
+	}
+	
+	set miles ""
+	if {[regexp {<li>Chassis: <a[^>]*>[^<]*</a></li><li>([^<]+)</li>} $data dummy miles]} {
+	    regsub { Shown, TMU} $miles "" miles
+	    regsub { Shown} $miles "" miles
+	    regsub { Indicated} $miles "" miles
+	    set miles " $miles"
+	}
+	
+	set title ""
 	if {[regexp {<title>([^<]+)</title>} $data dummy title]} {
 	    regsub {No Reserve: } $title "" title
-	    regsub { for sale on BaT Auctions} $title "" title
+	    regsub {[0-9]+-Mile } $title "" title
+	    regsub {[0-9]+k-Mile } $title "" title
+	    regsub { for sale on BaT Auctions} $title $miles title
 	    regsub { .Lot #.*} $title "" title
+	    if {![regexp {[$]} $title]} {
+		regsub {[-] closed on} $title "- closed, bid to $bidto on" title
+	    }
 	}
 
         set mainimg ""
