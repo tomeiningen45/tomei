@@ -7,6 +7,7 @@ namespace eval yahoofn {
         set h(lang)  en
         set h(desc)  {YF}
         set h(url)   https://finance.yahoo.com
+        set h(out)   yahoofn
     }
 
     proc update_index {} {
