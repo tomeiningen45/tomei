@@ -16,7 +16,7 @@ namespace eval register {
     }
 
     proc parse_link {link} {
-	puts stderr $link
+	#puts stderr $link
         return $link
     }
 
