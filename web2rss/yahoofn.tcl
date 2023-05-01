@@ -37,15 +37,17 @@ namespace eval yahoofn {
         set data [sub_block $data {<script } {</script>} ""]
         set data [sub_block $data {<noscript} {</noscript>} "\n"]
 
-
-	regsub -all {<div class=[^>]*blocked[^>]*>} $data {<div style="display:none">} data
+	regsub -all {<div class=[^>]*blocked[^>]*>} $data {<DIV style="display:none">} data
 	regsub -all {<svg[^>]*>} $data "" data
 	regsub -all <u> $data "" data
 	regsub -all </u> $data "" data
 	regsub -all {<a href=[^>]*><strong>[^<a-z]*</strong>} $data "\n" data
 
 	regsub {<button[^>]*>Story continues</button>} $data "" data
-	
+	regsub -all "<div" $data "\n<nodiv" data
+	regsub -all "</p>" $data "" data
+	regsub -all "<p>(\n</a><p>)+" $data "<p>" data
+
         save_article yahoofn $title $url $data
     }
 }
