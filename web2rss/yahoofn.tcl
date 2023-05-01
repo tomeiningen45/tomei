@@ -44,9 +44,11 @@ namespace eval yahoofn {
 	regsub -all {<a href=[^>]*><strong>[^<a-z]*</strong>} $data "\n" data
 
 	regsub {<button[^>]*>Story continues</button>} $data "" data
-	regsub -all "<div" $data "\n<nodiv" data
-	regsub -all "</p>" $data "" data
-	regsub -all "<p>(\n</a><p>)+" $data "<p>" data
+
+	regsub -all {<div[^>]*>} $data "\n<div>" data
+	#regsub -all "<div" $data "\n<nodiv" data
+	#regsub -all "</p>" $data "" data
+	#regsub -all "<p>(\n</a><p>)+" $data "<p>" data
 
         save_article yahoofn $title $url $data
     }
