@@ -261,6 +261,8 @@ proc now {} {
 
 # Return a list of {title link description pubdate ...} from an RSS feed
 # Works for cnbeta: http://cnbeta.com/backend.php
+#
+# Hmmm, seems like atom_update_index is better. Why do we have two variants?
 proc extract_feed {url} {
     set data [wget $url]
     set list ""
@@ -1023,7 +1025,7 @@ proc atom_parse_index {adapter encoding index_url data} {
 
             regsub -all {&#45;} $link - link
 
-            lappend list [list [format 0x%016x $pubdate] [${adapter}::parse_link $link]]
+            maybe_append_link list $adapter $pubdate $link
         }
     }
 
@@ -1070,6 +1072,14 @@ proc atom_parse_index {adapter encoding index_url data} {
 
 proc rdf_update_index {adapter index_url {encoding utf-8}} {
     schedule_read [list rdf_parse_index $adapter $encoding] $index_url
+}
+
+proc maybe_append_link {list_var adapter pubdate link} {
+    upvar $list_var list
+    set item [${adapter}::parse_link $link]
+    if {"$item" != ""} {
+	lappend list [list [format 0x%016x $pubdate] $item]
+    }
 }
 
 proc rdf_parse_index {adapter encoding index_url data} {
