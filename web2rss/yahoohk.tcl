@@ -162,6 +162,11 @@ namespace eval yahoohk {
         regsub -all {<h1 data-test-locator=.headline.>([^<]+)</h1>} $data "" data
         regsub -all {<button class=[^>]*>閱讀整篇文章<i></i></button>} $data "" data
 
+	regsub -all {.html" data-ylk="[^>]*>} $data "\">" data
+	regsub -all {" rel="[^>]*target=[^>]*>} $data "\">" data
+	regsub -all {<a [^>]*" href=} $data "<a href=" data
+	regsub -all {<blockquote [^>]*>} $data "<blockquote>" data
+
         if {[regexp 今日新聞 $data]} {
             filter_article yahoohk $url
             return
