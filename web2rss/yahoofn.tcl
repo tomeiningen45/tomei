@@ -51,7 +51,7 @@ namespace eval yahoofn {
 	#regsub -all "</p>" $data "" data
 	#regsub -all "<p>(\n</a><p>)+" $data "<p>" data
 
-	set data "<i>Published [date_string $pubdate]</i><br>$data"
+	set data "<i>Published [date_string $pubdate]; Downloaded [date_string]</i><br>$data"
         save_article yahoofn $title $url $data $pubdate
     }
 }
