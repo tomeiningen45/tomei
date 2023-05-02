@@ -1254,12 +1254,14 @@ proc db_sync_all_to_disk {} {
         file mkdir [file dirname $db]
         set fd  [open $db w+]
         set fd2 [open [file root $db].html w+]
+	fconfigure $fd2 -encoding utf-8	
         puts $fd "variable dbs"
         puts $fd "variable dbt"
         puts $fd "variable dbc"
         puts $fd "variable dbf"
         puts $fd "variable dbsp"
 
+	puts $fd2 {<html><head><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8"></head>}
 	puts $fd2 "Updated [date_string]<p>Sources:<ul>"
 	foreach i [set ${adapter}::h(indices)] {
 	    puts $fd2 "<li><a href='$i'>$i</a>"
