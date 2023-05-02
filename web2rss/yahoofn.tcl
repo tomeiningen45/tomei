@@ -3,7 +3,7 @@
 namespace eval yahoofn {
     proc init {first} {
         variable h
-        set h(article_sort_byurl) 1
+        set h(article_sort_byurl) 0
         set h(lang)  en
         set h(desc)  {YF}
         set h(url)   https://finance.yahoo.com
@@ -51,6 +51,7 @@ namespace eval yahoofn {
 	#regsub -all "</p>" $data "" data
 	#regsub -all "<p>(\n</a><p>)+" $data "<p>" data
 
-        save_article yahoofn $title $url $data
+	set data "<i>Published [date_string $pubdate]</i><br>$data"
+        save_article yahoofn $title $url $data $pubdate
     }
 }

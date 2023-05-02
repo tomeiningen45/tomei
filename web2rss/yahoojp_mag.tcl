@@ -1,4 +1,4 @@
-# @rss-nt-adapter@
+# @(disabled)rss-nt-adapter@
 
 namespace eval yahoojp_mag {
     proc init {first} {

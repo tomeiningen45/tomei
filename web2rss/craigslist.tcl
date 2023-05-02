@@ -1,4 +1,4 @@
-# @rss-nt-adapter@
+# @(disabled)rss-nt-adapter@
 
 namespace eval craigslist {
     proc init {first} {

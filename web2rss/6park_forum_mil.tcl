@@ -1,4 +1,4 @@
-# @rss-nt-adapter@
+# @(disabled)rss-nt-adapter@
 
 namespace eval 6park_forum_mil {
     proc init {first} {

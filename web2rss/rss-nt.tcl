@@ -38,8 +38,8 @@ proc init_globals {} {
 
     set g(has_unsaved_articles) 0
 
-    set g(max_articles)  [get_debug_opt DEBUG_MAX_ARTICLES  140]
-    set g(max_downloads) [get_debug_opt DEBUG_MAX_DOWNLOADS 140]
+    set g(max_articles)  [get_debug_opt DEBUG_MAX_ARTICLES  280]
+    set g(max_downloads) [get_debug_opt DEBUG_MAX_DOWNLOADS 280]
 }
 
 #======================================================================
@@ -826,7 +826,7 @@ proc discover {} {
         [get_debug_opt DEBUG_ADAPTERS]::debug_article_parser $url
     } else {
         # regular mode -- update every adapter
-        foreach adapter $g(adapters) {
+        foreach adapter [random_sort $g(adapters)] {
             adapter_schedule_scan $adapter
         }
     }
@@ -834,6 +834,19 @@ proc discover {} {
     xafter $g(t:discover) discover
 
     #schedule_idle_handler
+}
+
+
+proc random_sort {list} {
+    set n {}
+    foreach i $list {
+	lappend n [list [format %9x [expr int(rand() * 0xf0000000)]] $i]
+    }
+    set o {}
+    foreach pair [lsort $n] {
+	lappend o [lindex $pair 1]
+    }
+    return $o
 }
 
 proc schedule_idle_handler {} {
@@ -905,6 +918,7 @@ proc adapter_schedule_scan {adapter} {
         set now [::now]
         if {$now - $h(last_indexed_time) >= $h(freq:index)} {
             # Need to scan again
+	    set h(indices) {}
             update_index
         }
     }
@@ -986,6 +1000,7 @@ proc do_read {fd} {
 
         puts [llength $g(wget_later)]=$g(wgets)
         if {[llength $g(wget_later)] > 0} {
+	    set g(wget_later) [random_sort $g(wget_later)]
             set next [lindex $g(wget_later) 0]
             set g(wget_later) [lrange $g(wget_later) 1 end]
 
@@ -1009,6 +1024,8 @@ proc atom_update_index {adapter index_url {encoding utf-8}} {
 }
 
 proc atom_parse_index {adapter encoding index_url data} {
+    lappend ${adapter}::h(indices) $index_url 
+    
     set list {}
     foreach line [makelist $data <item>] {
         if {[regexp {<link>([^<]+)</link>} $line dummy link] &&
@@ -1048,10 +1065,12 @@ proc atom_parse_index {adapter encoding index_url data} {
 
             regsub -all {&#45;} $link - link
 
+	    # FIXME -- use maybe_append_link
             lappend list [list [format 0x%016x $pubdate] [${adapter}::parse_link $link]]
         }
     }
 
+    xlog 1 "$adapter found [llength $list] from source $index_url"
 
     # wget the oldest to newest
     foreach item [lsort $list] {
@@ -1083,6 +1102,8 @@ proc maybe_append_link {list_var adapter pubdate link} {
 }
 
 proc rdf_parse_index {adapter encoding index_url data} {
+    lappend ${adapter}::h(indices) $index_url 
+    
     set list {}
     foreach line [makelist $data "<item rdf:about="] {
         if {[regexp {^\"([^\"]+)\"} $line dummy link] &&
@@ -1208,6 +1229,13 @@ proc db_load {adapter} {
     }
 }
 
+proc date_string {{seconds 0}} {
+    if {$seconds == 0} {
+	set seconds [clock seconds]
+    }
+    return [clock format $seconds -format {%Y%m%d %H:%M:%S}]
+}
+
 proc db_sync_all_to_disk {} {
     global g env
 
@@ -1224,13 +1252,19 @@ proc db_sync_all_to_disk {} {
         set db [adapter_db_file $adapter]
         xlog 2 "syncing $adapter $db"
         file mkdir [file dirname $db]
-        set fd [open $db w+]
+        set fd  [open $db w+]
+        set fd2 [open [file root $db].html w+]
         puts $fd "variable dbs"
         puts $fd "variable dbt"
         puts $fd "variable dbc"
         puts $fd "variable dbf"
         puts $fd "variable dbsp"
 
+	puts $fd2 "Updated [date_string]<p>Sources:<ul>"
+	foreach i [set ${adapter}::h(indices)] {
+	    puts $fd2 "<li><a href='$i'>$i</a>"
+	}
+	puts $fd2 "</ul><p>Articles:<ul>"
         # write the newest to oldest
         if {[set ${adapter}::h(article_sort_byurl)]} {
             set list [lsort -decreasing [array names ${adapter}::dbs]]
@@ -1262,6 +1296,12 @@ proc db_sync_all_to_disk {} {
             puts $fd "set ${adapter}::dbsp($url) [list [set ${adapter}::dbsp($url)]]"
             }
 
+	    set time [set ${adapter}::dbt($url)]
+	    set time [date_string $time]
+	    set time "<code>$time</code>&nbsp;&nbsp;"
+
+	    puts $fd2 "<li>$time<a href='$url'>[set ${adapter}::dbs($url)]</a>"
+	    
             incr n
             if {$n >= $g(max_articles)} {
                 break
@@ -1269,6 +1309,8 @@ proc db_sync_all_to_disk {} {
             #puts $n=$g(max_articles)
         }
         close $fd
+	puts $fd2 </ul>
+        close $fd2
 
         write_xml_file $adapter $list
         if {[info exists ${adapter}::h(subpages)]} {
@@ -1350,7 +1392,7 @@ proc write_xml_file {adapter list {subpageinfo {}}} {
         if {$n >= $g(max_articles)} {
             break
         }
-        xlog 2 "${adapter} [format %3d $n] $title"
+        xlog 2 "${adapter} [format %3d $n] [date_string $date] $title"
     }
     puts $fd {</channel></rss>}
     close $fd

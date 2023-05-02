@@ -5,6 +5,7 @@ namespace eval dqn {
         variable h
         set h(filter_duplicates)  0
         set h(article_sort_byurl) 0
+        set h(delay:article) [expr 60 * 60 * 1000]
         set h(lang)  jp
         set h(desc)  痛いニュース(ﾉ∀`)
         set h(url)   http://blog.livedoor.jp/dqnplus/
