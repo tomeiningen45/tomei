@@ -98,6 +98,16 @@ namespace eval yahoohk {
         regexp {<title>([^<]+)</title>} $data dummy title
         regsub {[ -]*\u96C5\u864E\u9999\u6E2F\u65B0\u805E} $title "" title
 
+	set pubdate [clock seconds]
+	if {[regexp -nocase {<time [^>]* datetime="([^>]+)">} $data dummy t]} {
+	    catch {
+		set pubdate [scan_iso_8601_date $t]
+	    }
+	    if {[clock seconds] - $pubdate > 2 * 86400} {
+		# Don't retrieve old articles
+		return
+	    }
+	}
         regsub {<header><h1>([^<]+)</h1></header>} $data "" data
 	regsub {.*<div class="caas-body">} $data "<div>" data
         regsub {.*<article} $data "<span " data
@@ -195,9 +205,10 @@ namespace eval yahoohk {
             filter_article yahoohk $url
             return;
         }
-
+	regsub "^<p>" $data "" data
 	set data [redirect_images https://hk.finance.yahoo.com/news/test.html $data]
         set data "${provider}&nbsp;\n$data"
-        save_article yahoohk $title $url $data
+	set data "<i>發表 [date_string $pubdate]; 下載 [date_string]</i><br><br>$data"
+        save_article yahoohk $title $url $data $pubdate
     }
 }

@@ -1236,6 +1236,13 @@ proc date_string {{seconds 0}} {
     return [clock format $seconds -format {%Y%m%d %H:%M:%S}]
 }
 
+# https://stackoverflow.com/questions/28949911/what-does-this-format-mean-t000000-000z
+#     <time class="" datetime="2023-05-01T02:14:44.000Z">2023年4月30日週日 下午7:14</time>
+# ==> Sun Apr 30 19:14:44 PDT 2023
+proc scan_iso_8601_date {string} {
+    return [clock scan $string -gmt 1 -format {%Y-%m-%dT%H:%M:%S.000Z}]
+}
+
 proc db_sync_all_to_disk {} {
     global g env
 
@@ -1266,7 +1273,7 @@ proc db_sync_all_to_disk {} {
 	foreach i [set ${adapter}::h(indices)] {
 	    puts $fd2 "<li><a href='$i'>$i</a>"
 	}
-	puts $fd2 "</ul><p>Articles:<ul>"
+	puts $fd2 "</ul><p>Articles:<ol>"
         # write the newest to oldest
         if {[set ${adapter}::h(article_sort_byurl)]} {
             set list [lsort -decreasing [array names ${adapter}::dbs]]
@@ -1311,7 +1318,7 @@ proc db_sync_all_to_disk {} {
             #puts $n=$g(max_articles)
         }
         close $fd
-	puts $fd2 </ul>
+	puts $fd2 </ol>
         close $fd2
 
         write_xml_file $adapter $list
