@@ -1236,6 +1236,18 @@ proc date_string {{seconds 0}} {
     return [clock format $seconds -format {%Y%m%d %H:%M:%S}]
 }
 
+proc download_timestamp {pubdate} {
+    set now [clock seconds]
+    set n [clock format $now -format {%y/%m/%d %H:%M}]
+    if {$now >= $pubdate && $now - $pubdate < 80000} {
+	# Skip day
+	set d [clock format $pubdate -format {%H:%M}]
+    } else {
+	set d [clock format $pubdate -format {%m/%d %H:%M}]
+    }
+    return "<i>($n ⤑ $d)</i><br>"
+}
+
 # https://stackoverflow.com/questions/28949911/what-does-this-format-mean-t000000-000z
 #     <time class="" datetime="2023-05-01T02:14:44.000Z">2023年4月30日週日 下午7:14</time>
 # ==> Sun Apr 30 19:14:44 PDT 2023

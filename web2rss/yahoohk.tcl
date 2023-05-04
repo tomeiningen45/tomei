@@ -208,7 +208,7 @@ namespace eval yahoohk {
 	regsub "^<p>" $data "" data
 	set data [redirect_images https://hk.finance.yahoo.com/news/test.html $data]
         set data "${provider}&nbsp;\n$data"
-	set data "<i>發表 [date_string $pubdate]; 下載 [date_string]</i><br><br>$data"
+	set data "[download_timestamp $pubdate]$data"
         save_article yahoohk $title $url $data $pubdate
     }
 }
