@@ -29,13 +29,13 @@ namespace eval yahoofn {
 	set title "$url"
 	regexp {<title>([^<]+)</title>} $data dummy title
 
-
 	set title_img ""
 	if {[regexp {<div class="caas-img-container"[^>]*><img class="caas-img"[^>]*src="([^>]+)"[^>]*>.*<div class="caas-body">} \
 		 $data dummy title_img] || \
+            [regexp {<figure class="caas-carousel-figure[^>]*><img [^>]*src="([^>]+)"} $data dummy title_img] || \
 	    [regexp {<div class="player[^>]*background-image:url.([^>]+).;">} \
 		 $data dummy title_img]} {
-	    puts $title_img
+	    #puts $title_img
 	    set title_img "<img src=\"$title_img\"><p>"
 	}
 

@@ -1317,10 +1317,15 @@ proc db_sync_all_to_disk {} {
             puts $fd "set ${adapter}::dbsp($url) [list [set ${adapter}::dbsp($url)]]"
             }
 
+	    set has_img "&nbsp;&nbsp;&nbsp;&nbsp;"
+	    if {[regexp "<img " [set ${adapter}::dbc($url)]]} {
+		set has_img "&nbsp;im&nbsp;"
+	    }
+	    
 	    set time [set ${adapter}::dbt($url)]
 	    set time [date_string $time]
-	    set time "<code>$time</code>&nbsp;&nbsp;"
-
+	    set time "<code>$time$has_img</code>&nbsp;&nbsp;"
+	    
 	    puts $fd2 "<li>$time<a href='$url'>[set ${adapter}::dbs($url)]</a>"
 	    
             incr n
