@@ -1,11 +1,11 @@
-# @(disabled)rss-nt-adapter@
+# @rss-nt-adapter@
 
 namespace eval caranddriver {
     proc init {first} {
         variable h
         set h(article_sort_byurl) 1
         set h(lang)  en
-        set h(desc)  {Car and Driver}
+        set h(desc)  {CnD}
         set h(url)   http://www.caranddriver.com
     }
 
@@ -18,6 +18,13 @@ namespace eval caranddriver {
 	    return ""
 	}
 	if {[regexp gallery $link]} {
+	    return ""
+	}
+	if {[regexp features $link]} {
+	    return ""
+	}
+
+    	if {![regexp {/((news)|(photos)|(reviews))/} $link]} {
 	    return ""
 	}
 	return $link
@@ -53,6 +60,7 @@ namespace eval caranddriver {
         set data [sub_block $data {<iframe } {</iframe>} ""]
 	set data [sub_block $data {<style } {</style>} "\n"]
         set data [sub_block $data {<script } {</script>} ""]
+        set data [sub_block $data {<svg } {</svg>} ""]
 
         regsub {<div class="deferred-recirculation-module".*} $data "" data
 	regsub {<a href=./author/.*} $data "" data
@@ -88,10 +96,27 @@ namespace eval caranddriver {
 
         regsub {<button class="mobile-adhesion-unit-close-button"></button>.*} $data "" data
 
-        regsub {<img [^>]*hips.hearstapps.com/rover/profile_photos/[^>]*>} $data "" data
+        regsub -all {<img [^>]*hips.hearstapps.com/rover/profile_photos/[^>]*>} $data "" data
+	regsub -all {<img [^>]*(src="[^"]+")[^>]*>} $data {<img \1>} data
+
+	regsub -all {<a [^>]*>(<img [^>]*>)[^<]*View Photos</a>} $data {\1} data
+	
 	regsub -all {<p [^>]*>} $data "<p>\n" data
 
-        save_article caranddriver $title $url $data
+	regsub -all " ((style)|(loading)|(class)|(target)|(rel)|(data-\[-_a-z0-9\]*))=\"\[^\"\]+\"" $data " " data
+	regsub -all {" +>} $data {">} data
+
+
+	if {[regexp /photos/ $url]} {
+	    regsub ".*View Gallery" $data "" data
+	    regsub {<a href="/photos/">Photos</a>.*} $data "" data
+	    regsub -all "\[0-9\n \]+<a >" $data \n data
+	    regsub -all {<figcaption >[^<]*</figcaption>} $data "" data
+	}
+	
+	regsub -all {Advertisement - Continue Reading Below} $data "" data
+	
+	save_article caranddriver $title $url [download_timestamp $pubdate]$data $pubdate
     }
 
     proc picture {orig} {
