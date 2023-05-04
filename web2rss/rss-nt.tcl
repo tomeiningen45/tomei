@@ -1238,14 +1238,14 @@ proc date_string {{seconds 0}} {
 
 proc download_timestamp {pubdate} {
     set now [clock seconds]
-    set n [clock format $now -format {%y/%m/%d %H:%M}]
+    set d [clock format $pubdate -format {%y/%m/%d %H:%M}]
     if {$now >= $pubdate && $now - $pubdate < 80000} {
 	# Skip day
-	set d [clock format $pubdate -format {%H:%M}]
+	set n [clock format $now -format {%H:%M}]
     } else {
-	set d [clock format $pubdate -format {%m/%d %H:%M}]
+	set n [clock format $now -format {%m/%d %H:%M}]
     }
-    return "<i>($n ⤑ $d)</i><br>"
+    return "<i>($d ⤑ $n)</i><br>"
 }
 
 # https://stackoverflow.com/questions/28949911/what-does-this-format-mean-t000000-000z

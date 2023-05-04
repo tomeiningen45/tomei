@@ -3,7 +3,7 @@
 namespace eval caranddriver {
     proc init {first} {
         variable h
-        set h(article_sort_byurl) 1
+        set h(article_sort_byurl) 0
         set h(lang)  en
         set h(desc)  {CnD}
         set h(url)   http://www.caranddriver.com
