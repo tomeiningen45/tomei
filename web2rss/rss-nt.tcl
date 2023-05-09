@@ -1205,6 +1205,9 @@ proc filter_article {adapter url} {
 proc adapter_db_file {adapter} {
     return [file join [storage_root] $adapter $adapter.db.tcl]
 }
+proc all_index_file {} {
+    return [file join [storage_root] 00-all.html]
+}
 
 proc adapter_xml_file {adapter subpage} {
     set out [set ${adapter}::h(out)]
@@ -1212,6 +1215,14 @@ proc adapter_xml_file {adapter subpage} {
         append out _${subpage}
     }
     return [file join [storage_root] $out.xml]
+}
+
+proc adapter_html_file {adapter subpage} {
+    set out [set ${adapter}::h(out)]
+    if {$subpage != {}} {
+        append out _${subpage}
+    }
+    return [file join [storage_root] $adapter $out.html]
 }
 
 proc db_load {adapter} {
@@ -1267,6 +1278,8 @@ proc db_sync_all_to_disk {} {
         return
     }
     set g(has_unsaved_articles) 0
+    set fd0 [open [all_index_file] w+]
+    puts $fd0 "<ol>"
     foreach adapter $g(adapters) {
         set db [adapter_db_file $adapter]
         xlog 2 "syncing $adapter $db"
@@ -1334,14 +1347,17 @@ proc db_sync_all_to_disk {} {
             }
             #puts $n=$g(max_articles)
         }
+
         close $fd
 	puts $fd2 </ol>
         close $fd2
 
         write_xml_file $adapter $list
+	write_html_file $fd0 $adapter $list
         if {[info exists ${adapter}::h(subpages)]} {
             foreach subpageinfo [set ${adapter}::h(subpages)] {
                 write_xml_file $adapter $list $subpageinfo
+		write_html_file $fd0 $adapter $list $subpageinfo
             }
         }
 
@@ -1353,6 +1369,96 @@ proc db_sync_all_to_disk {} {
             exit
         }
     }
+    puts $fd0 "</ol>"
+    close $fd0
+}
+
+proc write_html_file {fd0 adapter list {subpageinfo {}}} {
+    global g
+
+    set subpage       [lindex $subpageinfo 0]
+    set subpage_title [lindex $subpageinfo 1]
+
+    set fd [open [adapter_html_file $adapter $subpage] w+]
+    fconfigure $fd -encoding utf-8
+
+    set tail [file tail [adapter_html_file $adapter $subpage]]
+    puts $fd0 "<li><a href=$adapter/$tail>[file root $tail]</a>"
+
+    set lang [set ${adapter}::h(lang)]
+    if {"$lang" == "jp"} {
+	set lang ja
+    }
+    puts $fd "<html lang=\"$lang\">"
+    puts $fd "<meta charset=\"utf-8\">"
+    
+    #puts $fd "Updated [date_string]<p><ol>"
+    set len [llength $list]
+    puts $fd "<table width=100%>"
+    puts $fd "<tr><td width=30% valign=top>"
+    puts $fd "<div style='height:550;overflow:scroll;overflow-x:hidden;overflow-y:auto'>"
+    puts $fd "<table cellpadding=2>"
+
+    set oldlist $list
+    set list {}
+    
+    foreach url $oldlist {
+	set mysubpage {}
+	if {[info exists ${adapter}::dbsp($url)]} {
+	    set mysubpage [set ${adapter}::dbsp($url)]
+	}
+        if {$subpage != $mysubpage} {
+            continue
+        }
+	lappend list $url
+    }
+    
+    set n 0
+    foreach url $list {
+        puts $fd "<tr><td valign=top>$n</td><td id='index$n'><a href='javascript:doit($n)'>"
+	puts $fd "<font size=+0>[set ${adapter}::dbs($url)]</a></font></td></tr>"
+	incr n
+    }
+    puts $fd "</table></div></td><td>&nbsp;</td><td width=99% valign=top>"
+    puts $fd "<div id='textview' style='height:550;overflow:scroll;overflow-x:hidden'>"
+    set n 0
+    foreach url $list {
+	puts $fd "<div id='item$n'>"
+	puts $fd "<h2>[set ${adapter}::dbs($url)]</h2>"
+	set text [set ${adapter}::dbc($url)]
+	regsub -all "<div" $text "<notag" text
+	regsub -all "</div" $text "</notag" text
+	puts $fd "<font size=+2>$text</font></div>"
+	incr n
+    }
+    
+    puts $fd "</div></td></tr>"
+    
+    puts $fd "<script> var num_pages=$n"
+    puts $fd {
+        function doit(n) {
+              for (i=0; i<num_pages; i++) {
+                var node = document.getElementById('item' + i);
+                if (i == n) {
+                    node.style.display = "inline"
+                } else {
+                    node.style.display = "none"
+                }
+                var node = document.getElementById('index' + i);
+                if (i == n) {
+                    node.style.backgroundColor = "#f0a0a0"
+                } else {
+                    node.style.backgroundColor = ""
+                }
+		document.getElementById('textview').scrollTop = 0;
+            }
+        }
+        doit(0)
+    }    
+    puts $fd "</script>"
+    
+    
+    close $fd
 }
 
 proc write_xml_file {adapter list {subpageinfo {}}} {
@@ -1362,7 +1468,7 @@ proc write_xml_file {adapter list {subpageinfo {}}} {
     set subpage_title [lindex $subpageinfo 1]
 
     set fd [open [adapter_xml_file $adapter $subpage] w+]
-    fconfigure $fd -encoding utf-8	
+    fconfigure $fd -encoding utf-8
     set out {<?xml version="1.0" encoding="utf-8"?>
 <rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:georss="http://www.georss.org/georss" version="2.0">
   <channel>

@@ -19,7 +19,7 @@ namespace eval bringatrailer {
     }
 
     proc update_index {} {
-	schedule_index https://bringatrailer.com/auctions/
+       #schedule_index https://bringatrailer.com/auctions/
         schedule_index https://bringatrailer.com/auctions/results/
     }
 
@@ -33,10 +33,19 @@ namespace eval bringatrailer {
 	if {[regexp /results/ $index_url]} {
 	    set is_result 1
 
-	    regsub {.*<div class="auction-results">} $data "" data
-	    foreach line [makelist $data {https:././bringatrailer.com./listing}] {
-		if {[regexp {^./([^/]+)./} $line dummy id]} {
-		    set article_url https://bringatrailer.com/listing/$id/
+	    if {[regsub {.*var auctionsCompletedInitialData} $data "" data] &&
+		[regsub {listings-completed-toolbar-tmpl.*} $data "" data]} {
+		foreach line [makelist $data {"active":false}] {
+		    if {![regexp {"url":"([^"]+)} $line dummy article_url]} {
+			continue
+		    }
+		    regsub -all \\\\ $article_url "" article_url
+		    if {[regexp {"timestamp_end":([0-9]+)} $line dummy pubdate]} {
+			set date($article_url) $pubdate
+			puts $pubdate
+		    } else {
+			set date($article_url) [clock seconds]
+		    }
 		    if {![db_exists bringatrailer $article_url] && ![info exists seen($article_url)]} {
 			set seen($article_url) 1
 			set list [concat $article_url $list]
@@ -66,12 +75,11 @@ namespace eval bringatrailer {
 	foreach article_url $list {
 	    puts $article_url
 	}
-	#exit
 
 	set pubdate [expr [clock seconds] - [llength $list]]
 	foreach article_url $list {
 	    # oldest first
-	    ::schedule_read [list bringatrailer::parse_article $is_result $pubdate] $article_url
+	    ::schedule_read [list bringatrailer::parse_article $is_result $date($article_url)] $article_url
 	    incr pubdate
 	}
     }
@@ -100,8 +108,8 @@ namespace eval bringatrailer {
 	set title ""
 	if {[regexp {<title>([^<]+)</title>} $data dummy title]} {
 	    regsub {No Reserve: } $title "" title
-	    regsub {[0-9]+-Mile } $title "" title
-	    regsub {[0-9]+k-Mile } $title "" title
+	    regsub {[0-9,]+-Mile } $title "" title
+	    regsub {[0-9,]+k-Mile } $title "" title
 	    regsub { for sale on BaT Auctions} $title $miles title
 	    regsub { .Lot #.*} $title "" title
 	    if {![regexp {[$]} $title]} {
@@ -131,6 +139,7 @@ namespace eval bringatrailer {
 	if {$is_result} {
 	    set subpage results
 	}
+	set data "[download_timestamp $pubdate]$data"
 	save_article bringatrailer $title $url $data $pubdate $subpage
     }
 }
