@@ -1396,6 +1396,15 @@ proc set_html_lang {lang fd} {
     if {"$lang" == "ja"} {
 	puts $fd "<meta property=\"og:locale\" content=\"ja_JP\" />"
     }
+
+    puts $fd {
+	<style>
+	img {
+	    max-width:600px;
+	}
+	</style>
+    }
+    
     puts $fd "</head><span lang=\"$lang\">"
 }
 
