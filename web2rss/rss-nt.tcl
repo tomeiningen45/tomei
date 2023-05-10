@@ -1401,6 +1401,8 @@ proc set_html_lang {lang fd} {
 	<style>
 	img {
 	    max-width:600px;
+	    width: auto;
+	    height: auto;
 	}
 	body {
 	    word-wrap: break-word;
