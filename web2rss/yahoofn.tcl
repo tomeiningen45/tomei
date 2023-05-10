@@ -18,6 +18,9 @@ namespace eval yahoofn {
 	if {![regexp finance.yahoo.com $link]} {
 	    return ""
 	}
+	if {[regexp {[?]} $link]} {
+	    return ""
+	}
 	return $link
     }
 

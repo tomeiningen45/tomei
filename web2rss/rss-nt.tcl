@@ -1374,8 +1374,12 @@ proc db_sync_all_to_disk {} {
         xlog 2 "... written $n articles [clock format [clock seconds] -timezone :US/Pacific]"
         if {[info exists env(DEBUG_NO_LOOPS)] &&
             (![info exists env(DEBUG_ARTICLE)] || "$env(DEBUG_ARTICLE)" == "")} {
-            puts "env(DEBUG_NO_LOOPS) exists ... exiting 2"
-            exit
+	    global done_count
+	    incr done_count 1
+	    if {$done_count >= [llength $env(DEBUG_ADAPTERS)]} {
+		puts "env(DEBUG_NO_LOOPS) exists ... exiting 2"
+		exit
+	    }
         }
     }
     puts $fd0 "</ol>"
