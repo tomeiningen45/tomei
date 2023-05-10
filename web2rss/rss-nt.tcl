@@ -6,6 +6,7 @@
 # (2) schdules all the adapters to run at regular intervals (TBD configurable)
 
 #package require ncgi
+package require md5
 
 source [file dirname [info script]]/rss-lib.tcl
 set env(CLASSPATH) [file dirname [info script]]
@@ -1225,6 +1226,14 @@ proc adapter_html_file {adapter subpage} {
     return [file join [storage_root] $adapter $out.html]
 }
 
+proc adapter_html_index_file {adapter subpage} {
+    set out "[set ${adapter}::h(out)]_idx"
+    if {$subpage != {}} {
+        append out _${subpage}
+    }
+    return [file join [storage_root] $adapter $out.html]
+}
+
 proc db_load {adapter} {
     xcatch {
         set db [adapter_db_file $adapter]
@@ -1373,31 +1382,45 @@ proc db_sync_all_to_disk {} {
     close $fd0
 }
 
+proc html_cache_file {url pubdate} {
+    return [::md5::md5 -hex $url=$pubdate]
+}
+
+proc set_html_lang {lang fd} {
+    if {"$lang" == "jp"} {
+	set lang ja
+    }
+    puts $fd "<html lang=\"$lang\"><head>"
+    puts $fd "<meta charset=\"utf-8\">"
+    puts $fd "<meta name=\"content-language\" content=\"$lang\" />"
+    if {"$lang" == "ja"} {
+	puts $fd "<meta property=\"og:locale\" content=\"ja_JP\" />"
+    }
+    puts $fd "</head><span lang=\"$lang\">"
+}
+
 proc write_html_file {fd0 adapter list {subpageinfo {}}} {
     global g
 
     set subpage       [lindex $subpageinfo 0]
     set subpage_title [lindex $subpageinfo 1]
 
+    set index_file [adapter_html_index_file $adapter $subpage]
+    set cache_dir [file join [storage_root] $adapter cache]
+    file mkdir $cache_dir
     set fd [open [adapter_html_file $adapter $subpage] w+]
-    fconfigure $fd -encoding utf-8
+    set fdi [open $index_file w+]
+    fconfigure $fd  -encoding utf-8
+    fconfigure $fdi -encoding utf-8
 
     set tail [file tail [adapter_html_file $adapter $subpage]]
-    puts $fd0 "<li><a href=$adapter/$tail>[file root $tail]</a>"
+    set root [file root $tail]
+    puts $fd0 "<li><a href=$adapter/$tail>$root</a>"
 
     set lang [set ${adapter}::h(lang)]
-    if {"$lang" == "jp"} {
-	set lang ja
-    }
-    puts $fd "<html lang=\"$lang\">"
-    puts $fd "<meta charset=\"utf-8\">"
-    
-    #puts $fd "Updated [date_string]<p><ol>"
-    set len [llength $list]
-    puts $fd "<table width=100%>"
-    puts $fd "<tr><td width=30% valign=top>"
-    puts $fd "<div style='height:550;overflow:scroll;overflow-x:hidden;overflow-y:auto'>"
-    puts $fd "<table cellpadding=2>"
+
+    set_html_lang $lang $fd
+    set_html_lang $lang $fdi
 
     set oldlist $list
     set list {}
@@ -1411,54 +1434,61 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
             continue
         }
 	lappend list $url
+	set pubdate [set ${adapter}::dbt($url)]
+	set c [html_cache_file $url $pubdate].html
+	set cache($url) $c
+	set needs_cache([file tail $c]) 1
     }
-    
+
+    puts $fd "<iframe src='[file tail $index_file]' frameborder='0' scrolling='yes'"
+    puts $fd "style='height: 100%; width: 25%; float: left'"
+    puts $fd "align='left'>"
+    puts $fd "</iframe>"
+
+    set len [llength $list]
+	
+    puts $fdi "<table width=100% cellpadding=2>"
+    puts $fdi "<tr>"
+
     set n 0
+    set firsturl ""
     foreach url $list {
-        puts $fd "<tr><td valign=top>$n</td><td id='index$n'><a href='javascript:doit($n)'>"
-	puts $fd "<font size=+0>[set ${adapter}::dbs($url)]</a></font></td></tr>"
+	set article "cache/$cache($url)"
+        puts $fdi "<tr><td valign=top>$n</td><td id='index$n'><a href='$article' target='article'>"
+	puts $fdi "<font size=+0>[set ${adapter}::dbs($url)]</a></font></td></tr>"
 	incr n
+
+	set cache_file $cache_dir/$cache($url)
+	if {![file exists $cache_file]} {
+	    set fdc [open $cache_file w+]
+	    fconfigure $fdc -encoding utf-8
+	    set_html_lang $lang $fdc
+	    puts $fdc "<h2><a href='$url' target='_blank'>[set ${adapter}::dbs($url)]</a></h2>"
+	    set text [set ${adapter}::dbc($url)]
+	    puts $fdc "<font size=+2>$text</font></div>"
+	    close $fdc
+	}
+	if {"$firsturl" == ""} {
+	    set firsturl cache/$cache($url)
+	}
     }
-    puts $fd "</table></div></td><td>&nbsp;</td><td width=99% valign=top>"
-    puts $fd "<div id='textview' style='height:550;overflow:scroll;overflow-x:hidden'>"
-    set n 0
-    foreach url $list {
-	puts $fd "<div id='item$n'>"
-	puts $fd "<h2>[set ${adapter}::dbs($url)]</h2>"
-	set text [set ${adapter}::dbc($url)]
-	regsub -all "<div" $text "<notag" text
-	regsub -all "</div" $text "</notag" text
-	puts $fd "<font size=+2>$text</font></div>"
-	incr n
-    }
-    
-    puts $fd "</div></td></tr>"
-    
-    puts $fd "<script> var num_pages=$n"
-    puts $fd {
-        function doit(n) {
-              for (i=0; i<num_pages; i++) {
-                var node = document.getElementById('item' + i);
-                if (i == n) {
-                    node.style.display = "inline"
-                } else {
-                    node.style.display = "none"
-                }
-                var node = document.getElementById('index' + i);
-                if (i == n) {
-                    node.style.backgroundColor = "#f0a0a0"
-                } else {
-                    node.style.backgroundColor = ""
-                }
-		document.getElementById('textview').scrollTop = 0;
-            }
-        }
-        doit(0)
-    }    
-    puts $fd "</script>"
-    
-    
+
+    puts $fd "<iframe src='$firsturl' name='article' frameborder='0' scrolling='yes'"
+    puts $fd "style='height: 100%; width: 75%; float: left'"
+    puts $fd "</iframe>"
+
+    puts $fdi "</table>"
+    close $fdi
     close $fd
+
+    # Remove old cache files
+    foreach f [glob -nocomplain $cache_dir/*] {
+	set c [file tail $f]
+	if {![info exists needs_cache($c)]} {
+	    xlog 2 "${adapter} -- delete cache $f"
+	    file delete $f
+	}
+    }
 }
 
 proc write_xml_file {adapter list {subpageinfo {}}} {
