@@ -1402,10 +1402,13 @@ proc set_html_lang {lang fd} {
 	img {
 	    max-width:600px;
 	}
+	body {
+	    word-wrap: break-word;
+	}
 	</style>
     }
     
-    puts $fd "</head><span lang=\"$lang\">"
+    puts $fd "</head><body lang=\"$lang\"><span lang=\"$lang\">"
 }
 
 proc write_html_file {fd0 adapter list {subpageinfo {}}} {
