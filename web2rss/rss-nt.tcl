@@ -1509,6 +1509,10 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 	    set_html_lang $lang $fdc
 	    puts $fdc "<h2><a href='$url' target='_blank'>[set ${adapter}::dbs($url)]</a></h2>"
 	    set text [set ${adapter}::dbc($url)]
+	    if {![regexp ⤑ $text]} {
+		set pubdate [set ${adapter}::dbt($url)]
+		set text "([date_string $pubdate])<br>$text"
+	    }
 	    puts $fdc "<font size=+2>$text</font></div>"
 	    close $fdc
 	}
