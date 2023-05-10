@@ -1458,13 +1458,39 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 	set needs_cache([file tail $c]) 1
     }
 
-    puts $fd "<iframe src='[file tail $index_file]' frameborder='0' scrolling='yes'"
-    puts $fd "style='height: 100%; width: 25%; float: left'"
-    puts $fd "align='left'>"
-    puts $fd "</iframe>"
+    #puts $fd "<iframe src='[file tail $index_file]' frameborder='0' scrolling='yes'"
+    #puts $fd "style='height: 100%; width: 25%; float: left'"
+    #puts $fd "align='left'>"
+    #puts $fd "</iframe>"
 
     set len [llength $list]
-	
+
+    puts $fd "<script>"
+    puts -nonewline $fd \
+	"document.write(\"<iframe src='[file tail $index_file]?ref=\" + document.referrer"
+    puts -nonewline $fd \
+	" + \"' frameborder='0' scrolling='yes'"
+    puts -nonewline $fd \
+	" style='height: 100%; width: 25%; float: left'"
+    puts -nonewline $fd \
+	" align='left'>"
+    puts -nonewline $fd \
+	"</iframe>\");"
+    puts $fd ""
+    puts $fd "console.log('Hello');"
+    puts $fd "</script>"
+    
+    puts $fdi {
+	<script>
+	console.log(document.URL);
+	var url = new URL(document.URL);
+	var ref = url.searchParams.get('ref');
+	if (ref != "") {
+	    document.write("<a href='" + ref + "' target='_top'>TOP</a><p>");
+	}
+	</script>
+    }
+
     puts $fdi "<table width=100% cellpadding=2>"
     puts $fdi "<tr>"
 
