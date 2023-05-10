@@ -42,7 +42,7 @@ namespace eval bringatrailer {
 		    regsub -all \\\\ $article_url "" article_url
 		    if {[regexp {"timestamp_end":([0-9]+)} $line dummy pubdate]} {
 			set date($article_url) $pubdate
-			puts $pubdate
+			#puts $pubdate
 		    } else {
 			set date($article_url) [clock seconds]
 		    }
@@ -73,7 +73,7 @@ namespace eval bringatrailer {
 	}
 
 	foreach article_url $list {
-	    puts $article_url
+	    #puts $article_url
 	}
 
 	set pubdate [expr [clock seconds] - [llength $list]]
