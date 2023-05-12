@@ -9,6 +9,7 @@ namespace eval yahoohk {
         set h(out)   yhk
 	set h(max_articles)  [::get_debug_opt DEBUG_MAX_ARTICLES  150]
         set h(max_downloads) [::get_debug_opt DEBUG_MAX_DOWNLOADS 25]
+	set h(traditional) 1
     }
 
     proc update_index {} {

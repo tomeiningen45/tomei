@@ -903,6 +903,9 @@ proc adapter_init {adapter first} {
         set h(article_sort_byurl) 0
         set h(filter_duplicates)  0
         set h(max_articles) 100
+
+	# Is this traditional chinese
+        set h(traditional) 0
     }
     set ${adapter}::h(out) $adapter
     db_load $adapter
@@ -1390,7 +1393,7 @@ proc html_cache_file {url pubdate} {
     return [::md5::md5 -hex $url=$pubdate]
 }
 
-proc set_html_lang {lang fd} {
+proc set_html_lang {adapter lang fd} {
     if {"$lang" == "jp"} {
 	set lang ja
     }
@@ -1400,7 +1403,18 @@ proc set_html_lang {lang fd} {
     if {"$lang" == "ja"} {
 	puts $fd "<meta property=\"og:locale\" content=\"ja_JP\" />"
     }
+    set font ""
 
+    if {"$lang" == "ja"} {
+	set font {style='font-family: "Hiragino Kaku Gothic ProN","Hiragino Sans","Meiryo","MS PGothic",sans-serif;'}
+    } elseif {"$lang" == "zh"} {
+	if {[set ${adapter}::h(traditional)] == "1"} {
+	    set font {style='font-family: "Hiragino Sans TC","Helvetica Neue",Helvetica,Arial,STHeitiTC-light,STHeiti,"Microsoft JhengHei",微軟正黑體,sans-serif;'}
+	} else {
+	    set font {style='font-family: "Hiragino Sans GB","冬青黑体简体中文","Microsoft Yahei","微软雅黑",Simhei,Helvetica,Arial,sans-serif;'}
+	}
+    }
+    
     puts $fd {
 	<style>
 	img {
@@ -1414,7 +1428,7 @@ proc set_html_lang {lang fd} {
 	</style>
     }
     
-    puts $fd "</head><body lang=\"$lang\"><span lang=\"$lang\">"
+    puts $fd "</head><body $font lang=\"$lang\"><span lang=\"$lang\">"
 }
 
 proc write_html_file {fd0 adapter list {subpageinfo {}}} {
@@ -1437,8 +1451,8 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 
     set lang [set ${adapter}::h(lang)]
 
-    set_html_lang $lang $fd
-    set_html_lang $lang $fdi
+    set_html_lang $adapter $lang $fd
+    set_html_lang $adapter $lang $fdi
 
     set oldlist $list
     set list {}
@@ -1506,7 +1520,7 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 	if {![file exists $cache_file]} {
 	    set fdc [open $cache_file w+]
 	    fconfigure $fdc -encoding utf-8
-	    set_html_lang $lang $fdc
+	    set_html_lang $adapter $lang $fdc
 	    puts $fdc "<h2><a href='$url' target='_blank'>[set ${adapter}::dbs($url)]</a></h2>"
 	    set text [set ${adapter}::dbc($url)]
 	    if {![regexp ⤑ $text]} {
