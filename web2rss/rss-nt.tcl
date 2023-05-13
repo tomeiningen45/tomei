@@ -143,14 +143,15 @@ proc wget_inner {url {encoding utf-8}} {
 
     set started [now]
     if {[info exists env(RSSVERBOSE)]} {
-        puts -nonewline "wget $url"
+        puts -nonewline "wget (inner) $url"
 	flush stdout
     }
     set data ""
     set tmpfile /tmp/wget-rss-[pid]
     set comp_msg ""
     if {[catch {
-        exec wget --no-check-certificate --timeout=10 --tries=1 -q -O $tmpfile $url 2> /dev/null > /dev/null
+	set agent "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36"
+        exec wget --no-check-certificate --timeout=10 --tries=1 -q -U $agent -O $tmpfile $url 2> /dev/null > /dev/null
         set type [exec file $tmpfile]
         if {[regexp compressed $type]} {
             set cmd "|cat $tmpfile | zcat"
@@ -949,9 +950,10 @@ proc schedule_read {doer url {encoding utf-8}} {
 proc do_wget_now {doer url encoding} {
     global buff g
 
-    xlog 2 "wget $doer $url $encoding"
+    set agent "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36"
+    xlog 2 "wget (now) $doer $url $encoding"
 
-    set cmd "| wget --compression=auto --no-check-certificate --timeout=10 --tries=1 -q -O - -o /dev/null $url"
+    set cmd "| wget --compression=auto --no-check-certificate --timeout=10 --tries=1 -U [list $agent] -q -O - -o /dev/null $url"
     if {"$encoding" == "utf-8"} {
         # Tcl cannot handle some UTF8 characters :-(
         append cmd " | java FilterEmoji"

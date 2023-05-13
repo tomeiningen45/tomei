@@ -96,6 +96,12 @@ namespace eval 6park {
             regsub -nocase $pat $data "\n<xxximg src='$img'>\n" data
         }
         regsub -all "<xxximg " $data "<img " data
+	regsub -all "	" $data " " data
+	regsub -all " +\n" $data "\n" data
+	regsub -all "\n +" $data "\n" data
+	regsub -all "\n +" $data "\n" data
+	regsub -all "\n\n\n+" $data "\n\n" data
+	regsub -all "】\n+" $data "】 " data
         save_article 6park $title $url $data
     }
 }
