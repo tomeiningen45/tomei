@@ -50,6 +50,7 @@ namespace eval caranddriver {
 	}
 	set title $url
 
+	set lead_img [extract_lead_image $data]
         regexp {<title>([^<]+)</title>} $data dummy title
         regsub {.*<h1[^>]*>[^<]*</h1>} $data "" data
 
@@ -115,7 +116,8 @@ namespace eval caranddriver {
 	}
 	
 	regsub -all {Advertisement - Continue Reading Below} $data "" data
-	
+
+	set data $lead_img$data
 	save_article caranddriver $title $url [download_timestamp $pubdate]$data $pubdate
     }
 
@@ -126,5 +128,14 @@ namespace eval caranddriver {
         } else {
             return ""
         }
+    }
+
+    proc extract_lead_image {data} {
+	if {[regsub {.*<div class=.content-lead-image} $data "" data] &&
+	    [regexp {<img[^>]*src="([^"]+)"} $data dummy imgsrc]} {
+	    puts $imgsrc
+	    return "<img src='$imgsrc'><br>"
+	}
+	return ""
     }
 }
