@@ -1405,7 +1405,7 @@ proc set_html_lang {adapter lang fd} {
     if {"$lang" == "ja"} {
 	puts $fd "<meta property=\"og:locale\" content=\"ja_JP\" />"
     }
-    set font ""
+    set font {style='font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;'}
 
     if {"$lang" == "ja"} {
 	set font {style='font-family: "Hiragino Kaku Gothic ProN","Hiragino Sans","Meiryo","MS PGothic",sans-serif;'}
@@ -1474,16 +1474,11 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 	set needs_cache([file tail $c]) 1
     }
 
-    #puts $fd "<iframe src='[file tail $index_file]' frameborder='0' scrolling='yes'"
-    #puts $fd "style='height: 100%; width: 25%; float: left'"
-    #puts $fd "align='left'>"
-    #puts $fd "</iframe>"
-
     set len [llength $list]
 
     puts $fd "<script>"
     puts -nonewline $fd \
-	"document.write(\"<iframe src='[file tail $index_file]?ref=\" + document.referrer"
+	"document.write(\"<iframe id='index' name='index' src='[file tail $index_file]?ref=\" + document.referrer"
     puts -nonewline $fd \
 	" + \"' frameborder='0' scrolling='yes'"
     puts -nonewline $fd \
@@ -1498,24 +1493,40 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
     
     puts $fdi {
 	<script>
-	console.log(document.URL);
 	var url = new URL(document.URL);
 	var ref = url.searchParams.get('ref');
 	if (ref != "") {
 	    document.write("<a href='" + ref + "' target='_top'>TOP</a><p>");
 	}
+	last_select = null;
+	function do_select(n) {
+	    if (last_select != null) {
+		last_select.style.backgroundColor = ""
+	    }
+	    last_select = document.getElementById("index" + n);
+	    if (last_select != null) {
+		last_select.style.backgroundColor = "#ffffc0"
+	    }
+	    var articleFrame = parent.document.getElementById("article");
+	    if (articleFrame != null) {
+		articleFrame.contentWindow.focus();
+	    }	    
+	    return true;
+	}
 	</script>
     }
 
-    puts $fdi "<table width=100% cellpadding=2>"
+    puts $fdi "<table width=100% cellpadding=2 style='border-collapse: collapse'>"
     puts $fdi "<tr>"
 
-    set n 0
+    set n 1
     set firsturl ""
     foreach url $list {
 	set article "cache/$cache($url)"
-        puts $fdi "<tr><td valign=top>$n</td><td id='index$n'><a href='$article' target='article'>"
-	puts $fdi "<font size=+0>[set ${adapter}::dbs($url)]</a></font></td></tr>"
+        puts $fdi "<tr style='border-bottom: 1pt solid lightgrey'>"
+	puts $fdi "<td valign=top>$n</td><td id='index$n'>"
+	puts $fdi "<a onClick='do_select($n)' href='$article' style='text-decoration:none' target='article'>"
+	puts $fdi "<div style='height:100%;width:100%'><font size=+0>[set ${adapter}::dbs($url)]</font></div></a></td></tr>"
 	incr n
 
 	set cache_file $cache_dir/$cache($url)
@@ -1524,12 +1535,14 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 	    fconfigure $fdc -encoding utf-8
 	    set_html_lang $adapter $lang $fdc
 	    puts $fdc "<h2><a href='$url' target='_blank'>[set ${adapter}::dbs($url)]</a></h2>"
+	    puts $fdc "<button onclick='toggle()' style='margin-bottom:2px'><font size=+2><span id='toggle'>⬅</span></font></button></a>"
 	    set text [set ${adapter}::dbc($url)]
 	    if {![regexp ⤑ $text]} {
 		set pubdate [set ${adapter}::dbt($url)]
 		set text "([date_string $pubdate])<br>$text"
 	    }
 	    puts $fdc "<font size=+2>$text</font></div>"
+	    puts $fdc [article_html_scripts]
 	    close $fdc
 	}
 	if {"$firsturl" == ""} {
@@ -1537,11 +1550,11 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 	}
     }
 
-    puts $fd "<iframe src='$firsturl' name='article' frameborder='0' scrolling='yes'"
+    puts $fd "<iframe src='$firsturl' id='article' name='article' frameborder='0' scrolling='yes'"
     puts $fd "style='height: 100%; width: 75%; float: left'"
     puts $fd "</iframe>"
 
-    puts $fdi "</table>"
+    puts $fdi "</table><script>do_select(1)</script>"
     close $fdi
     close $fd
 
@@ -1552,6 +1565,36 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 	    xlog 2 "${adapter} -- delete cache $f"
 	    file delete $f
 	}
+    }
+}
+
+proc article_html_scripts {} {
+    return {
+	<script>
+	function toggle() {
+	    var indexFrame = parent.document.getElementById("index");
+	    var articleFrame = parent.document.getElementById("article");
+	    if (indexFrame != null) {
+		if (indexFrame.style.display != 'none') {
+		    indexFrame.style.display = 'none'
+		    t = "➡";
+		    if (articleFrame != null) {
+			articleFrame.style.width='100%'
+		    }
+		} else {
+		    indexFrame.style.display = 'block'
+		    t = "⬅";
+		    if (articleFrame != null) {
+			articleFrame.style.width='75%'
+		    }
+		}
+	    }
+	    var toggleText = window.document.getElementById("toggle");
+	    if (toggleText != null) {
+		toggleText.innerHTML = t;
+	    }
+	}
+	</script>
     }
 }
 
