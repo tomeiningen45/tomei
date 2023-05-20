@@ -91,6 +91,8 @@ namespace eval jiji {
 	regsub -all "\[ \t]+\n" $data \n data
 	regsub -all "\n\[ \t]+" $data \n data
 	regsub -all "\n\n+" $data \n data
+
+	set data [redirect_images https://www.jiji.com/ $data]
 	
         save_article jiji $title $url $data $pubdate
     }
