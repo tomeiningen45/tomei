@@ -1293,6 +1293,8 @@ proc db_sync_all_to_disk {} {
     }
     set g(has_unsaved_articles) 0
     set fd0 [open [all_index_file] w+]
+    fconfigure $fd0 -encoding utf-8
+    puts $fd0 {<html><head><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8"></head>}
     puts $fd0 "<ol>"
     foreach adapter $g(adapters) {
         set db [adapter_db_file $adapter]
@@ -1449,7 +1451,7 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 
     set tail [file tail [adapter_html_file $adapter $subpage]]
     set root [file root $tail]
-    puts $fd0 "<li><a href=$adapter/$tail>$root</a>"
+    puts $fd0 "<li><a href=$adapter/$tail>[set ${adapter}::h(desc)]</a>"
 
     set lang [set ${adapter}::h(lang)]
 
@@ -1476,6 +1478,7 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 
     set len [llength $list]
 
+    puts $fd "<title>[set ${adapter}::h(desc)]</title>"
     puts $fd "<script>"
     puts -nonewline $fd \
 	"document.write(\"<iframe id='index' name='index' src='[file tail $index_file]?ref=\" + document.referrer"
