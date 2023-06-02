@@ -73,24 +73,44 @@ namespace eval fishing {
 		}
 	    }
 	}
-	
-	set lines [split $data "\n"]
-	set i 0
-	foreach line $lines {
-	    incr i
-	    if {[regexp "^      (\[^<\]+)<br />" $line dummy pubdate]} {
-		set news [string trim [lindex $lines $i]]
-		regsub "&amp;" $pubdate " and " pubdate
-		set title "Bayside Marine Report $pubdate"
-		regsub -all " " $pubdate "-" pubdate
 
-		set article_url https://baysidemarinesc.com/?&id=$pubdate
-
-		if {![db_exists fishing $article_url]} {
-		    save_article fishing $title $article_url "$news<p>\n$imgs"
-		}
-		return
+	if {[regsub {.*<td WIDTH="371" HEIGHT="1608" VALIGN=baseline>} $data "" data]} {
+	    set list [split $data "\n"]
+	    set all {}
+	    for {set i 0} {$i < 25} {incr i} {
+		append all [lindex $list $i]\n
 	    }
+	    set data $all
+	} else {
+	    set data "site data has changed. Please check"
+	}
+	set md5 [::md5::md5 -hex $data]
+	
+	regsub {</strong>Need a license. Get it online at</h2>} $data "" data
+    	regsub {<h2 align="center"> https://www.ca.wildlifelicense.com/InternetSales/</h2>} $data "" data
+    	regsub {<h2 align="center">IF YOU ARE SICK STAY HOME DONT COME! <br />} $data "" data
+	regsub {<h2 align="center"><strong> ON 5-01-2023 WE WILL OPEN 6-5 DAILY <br>} $data "" data
+	regsub {<h2 align="center">SALMON SEASON CLOSED FOR 2023!<br />} $data "" data
+	regsub {MAY 15 CRAB FISHING IS BACK TO HOOPS AND LOOPS AND NO TRAPS UNTIL 6-30-23 .<br /> } $data "" data
+	
+	regsub -all {<h2 align="center">} $data "" data
+	regsub -all {<p align="center">&nbsp;</p>} $data "" data
+	regsub "In another emergency action, the Commission voted unanimously to reduce the daily bag and possession limit for California halibut from three fish to two fish in California waters north of Point Sur, Monterey County. The regulations are expected to take effect June 1, 2023. The reduced California halibut limit is designed to protect the resource amid increased recreational fishing pressure due to limited fishing opportunities and changes in other ocean fisheries including salmon. The Pacific halibut fishery is unaffected by the Commission&rsquo;s action; the daily bag and possession limit for Pacific halibut remains one fish with no size limit.&nbsp;</h2>" $data "" data
+
+	regsub -all {<br />} $data <br> data
+	regsub -all "(\[^\n\]*\[0-9\]+<br>)" $data <p><b>\\1</b> data
+	regsub -all "  +<br>" $data "" data	
+	regsub "^\[ \t\n\r\]*" $data "" data
+	
+	set title "Bayside Marine - [clock format [clock seconds] -format {%Y %b %d}]"
+	
+
+	set article_url https://baysidemarinesc.com/?&id=$md5
+
+	puts $md5
+	
+	if {![db_exists fishing $article_url]} {
+	    save_article fishing $title $article_url "$data<p>\n$imgs"
 	}
     }
 }
