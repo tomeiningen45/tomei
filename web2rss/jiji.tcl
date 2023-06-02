@@ -93,6 +93,14 @@ namespace eval jiji {
 	regsub -all "\n\n+" $data \n data
 
 	set data [redirect_images https://www.jiji.com/ $data]
+
+	if {![regexp {<img} $data]} {
+	    if {[clock seconds] - $pubdate < 3600} {
+		# Jiji.com sometimes updates the article with more contents and image. Wait for it.
+		puts "Waiting for image $url"
+		return
+	    }
+	}
 	
         save_article jiji $title $url $data $pubdate
     }
