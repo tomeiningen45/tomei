@@ -15,9 +15,10 @@ namespace eval jiji {
 	catch {
 	    unset jiji_pending
 	}
-	::schedule_read [list jiji::parse_index 50] https://www.jiji.com/jc/list?g=soc utf-8
-	::schedule_read [list jiji::parse_index 50] https://www.jiji.com/jc/list?g=int utf-8
+	::schedule_read [list jiji::parse_index 30] https://www.jiji.com/jc/list?g=soc utf-8
+	::schedule_read [list jiji::parse_index 30] https://www.jiji.com/jc/list?g=int utf-8
 	::schedule_read [list jiji::parse_index 10] https://www.jiji.com/jc/list?g=afp utf-8
+	::schedule_read [list jiji::parse_index 30] https://www.jiji.com/jc/list?g=eco utf-8
     }
 
     proc parse_index {limit index_url data} {
