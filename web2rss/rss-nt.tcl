@@ -1525,9 +1525,15 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
     set n 1
     set firsturl ""
     foreach url $list {
+	set image "&nbsp;"
+        set data [set ${adapter}::dbc($url)]
+	if {[regexp {(<img [^>]+)>} $data dummy head]} {
+	    set image "$head style='width:60;height:60;object-fit:contain'>"
+	}
+	
 	set article "cache/$cache($url)"
         puts $fdi "<tr style='border-bottom: 1pt solid lightgrey'>"
-	puts $fdi "<td valign=top>$n</td><td id='index$n'>"
+	puts $fdi "<td valign=top>$image</td><td id='index$n'>"
 	puts $fdi "<a onClick='do_select($n)' href='$article' style='text-decoration:none' target='article'>"
 	puts $fdi "<div style='height:100%;width:100%'><font size=+0>[set ${adapter}::dbs($url)]</font></div></a></td></tr>"
 	incr n
