@@ -70,6 +70,8 @@ namespace eval nhk {
         set spc "\[\n \t\]"
         regsub -all "${spc}${spc}${spc}+" $data \n\n data
 
+	set data [redirect_images https://www3.nhk.or.jp/ $data]
+	
         save_article nhk $title $url $data $pubdate
     }
 }
