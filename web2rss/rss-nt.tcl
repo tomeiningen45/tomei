@@ -1,3 +1,4 @@
+
 # This script should not be run by itself. It should always be launched via rss-nt.sh
 #
 # This is the main loop of rss-nt, which
@@ -1528,7 +1529,7 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 	set image "&nbsp;"
         set data [set ${adapter}::dbc($url)]
 	if {[regexp {(<img [^>]+)>} $data dummy head]} {
-	    set image "$head style='width:60;height:60;object-fit:contain'>"
+	    set image "$head style='width:60;height:60;max-width:60;object-fit:contain'>"
 	}
 	
 	set article "cache/$cache($url)"
