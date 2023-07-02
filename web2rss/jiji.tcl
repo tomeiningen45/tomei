@@ -60,6 +60,7 @@ namespace eval jiji {
     proc parse_article {url data} {
 	set title "$url"
 	regexp {<title>([^<]+)</title>} $data dummy title
+	regsub {：時事ドットコム} $title "" title
 	set pubdate [clock seconds]
 
 	if {[regexp {"datePublished":"([^\"]+)"} $data dummy date]} {
