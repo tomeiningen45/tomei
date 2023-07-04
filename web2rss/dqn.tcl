@@ -41,7 +41,11 @@ namespace eval dqn {
         set extra ""
         if {[regsub "痛いニュース\[^:\]*: " $title "" title]} {
             set extra "(痛)"
-        }
+	    set defimg https://livedoor.blogimg.jp/dqnplus/imgs/b/0/b0613243.png
+        } else {
+	    set defimg https://livedoor.blogimg.jp/hamusoku/imgs/e/f/ef3b3b00.jpg
+	}
+	
         regsub " - ライブドアブログ" $title "" title
         if {[regsub ":ハムスター速報" $title "" title]} {
             set extra "(ハ)"
@@ -97,6 +101,11 @@ namespace eval dqn {
         regsub -all "${spc}${spc}${spc}+" $data \n\n data
 
         set data "$moto$data"
+
+	if {![regexp "<img " $data]} {
+	    append data "\n<img src=\"$defimg\">"
+	}
+	
         save_article dqn $title $url $data $pubdate
     }
 }
