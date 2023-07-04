@@ -40,7 +40,7 @@ namespace eval basketballking {
     proc parse_article {url data} {
 	set title "$url"
 	regexp {<title>([^<]+)</title>} $data dummy title
-	regsub { | バスケットボールキング} $title "" title
+	regsub { . バスケットボールキング} $title "" title
 	set pubdate [clock seconds]
 
 	regsub {.*<div class="contents-main">} $data "" data
@@ -59,6 +59,7 @@ namespace eval basketballking {
 	regsub {<a href="[^<]*">[^<]*<img width="150" height="150" [^>]*>[^<]*</a>} $data "" data
 	regsub {202[0-9].[0-9][0-9].[0-9][0-9][^<]*<[^>]*article_UnderTitle -->} $data "" data
 	regsub {[0-9]+時間前[^<]*<[^>]*article_UnderTitle -->} $data "" data
+	regsub {[0-9]+分前[^<]*<[^>]*article_UnderTitle -->} $data "" data
 	set data [noscript $data]
 
 	regsub -all {.写真.[=＝][^<]*} $data "" data
