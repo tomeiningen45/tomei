@@ -109,21 +109,43 @@ namespace eval fishing {
 
 	set article_url https://baysidemarinesc.com/?&id=$md5
 
-	puts $md5
-	
 	if {![db_exists fishing $article_url]} {
 	    save_article fishing $title $article_url "$data<p>\n$imgs"
 	}
     }
 
+    proc to_pdt {time} {
+	if {[regexp {([0-9]+):([0-9]+) (..)} $time dummy h m which]} {
+	    if {$which == "pm" && $h != 12} {
+		incr h 12
+	    }
+	    incr h -3
+	    if {$h > 12} {
+		set which pm
+		incr h -12
+	    } elseif {$h < 12} {
+		set which am
+	    }
+	    if {$h < 10} {
+		#set h 0$h
+	    }
+	    set time "$h:$m $which"
+	}
+
+	return $time
+    }
+    
     proc parse_nba {index_url data} {
 	puts $index_url
 	if {![regsub {.*<div id="selectdate">} $data "" data]} {
 	    return
 	}
 	regsub {<div class=“previousgames”>.*} $data "" data
-	regsub -all {, ESPN Radio} $data "" data
-	regsub -all {ESPN Radio} $data "" data
+	regsub -nocase -all {, ESPN Radio} $data "" data
+	regsub -nocase -all {ESPN Radio} $data "" data
+
+	regsub -nocase -all {,NBA League Pass} $data "" data
+	regsub -nocase -all {NBA League Pass} $data "" data
 
 	set title "NBA Games for [clock format [clock seconds] -format %y/%m/%d]"
 	set out $title
@@ -139,21 +161,29 @@ namespace eval fishing {
 		    regsub -all {</a[^>]*>} $row "" row
 		    set nat ""
 		    set local ""
-		    if {[regexp {<td>([0-9]+:[0-9]+ [^<]+)</td><td>([^<]+)</td><td>([^<]*)</td>} $row dummy \
+		    if {[regexp {<td>([0-9]+:[0-9]+ [^<]+)</td><td>([^<]+)</td><td>([^<]*)</td><td>([^<]*)</td>} $row dummy \
 			     time teams nat local]} {
 			set ok 0
-			if {[regexp {(TNT)|(ESPN)|(ABC)} $nat]} {
+			if {[regexp {((TNT)|(ESPN)|(ABC))} $nat dummy nat]} {
 			    set ok 1
+			} else {
+			    set nat ""
 			}
-			if {[regexp NBCSBA $local]} {
+			if {[regexp (NBCSBA) $local dummy local]} {
 			    set ok 1
+			} else {
+			    set local ""
 			}
 			if {$ok} {
 			    if {$need_date} {
 				append out "\n<p><b>$date</b><br>\n"
 				set need_date 0
 			    }
-			    append out "$time...$teams...$nat...$local<br>\n"
+
+			    set time [to_pdt $time]
+			    
+			    append out "$time $teams $nat $local<br>\n"
+			    #append out "$row\n"
 			    incr n
 			    if {$n > 30} {
 				set done 1
@@ -164,6 +194,9 @@ namespace eval fishing {
 		}
 	    }
 	}
+
+	regsub -all {[ ][ ]+} $out " " out
+	regsub -all {[ ]+<} $out "<" out
 
 	set md5 [::md5::md5 -hex $out]
 	set article_url "$index_url?&id=$md5"
