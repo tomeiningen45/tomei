@@ -12,7 +12,8 @@ namespace eval fishing {
     proc update_index {} {
         ::schedule_read fishing::parse_noaa https://forecast.weather.gov/shmrn.php?mz=pzz535&syn=pzz500 utf-8
 	::schedule_read fishing::parse_bayside https://baysidemarinesc.com/ utf-8
-    }
+	::schedule_read fishing::parse_nba https://www.sportsmediawatch.com/nba-tv-schedule-2023-how-to-watch-stream-games-today/ utf-8
+     }
 
     proc parse_noaa {index_url data} {
 	set zone pzz535
@@ -26,7 +27,7 @@ namespace eval fishing {
 		    set pubdate "$last $h:$m:00 $tz $year"
 		    set pubdate [clock scan $pubdate]
 		}
-	    }	    
+	    }
 	}
 
 	if {$pubdate != ""} {
@@ -84,8 +85,7 @@ namespace eval fishing {
 	} else {
 	    set data "site data has changed. Please check"
 	}
-	set md5 [::md5::md5 -hex $data]
-	
+
 	regsub {</strong>Need a license. Get it online at</h2>} $data "" data
     	regsub {<h2 align="center"> https://www.ca.wildlifelicense.com/InternetSales/</h2>} $data "" data
     	regsub {<h2 align="center">IF YOU ARE SICK STAY HOME DONT COME! <br />} $data "" data
@@ -99,11 +99,13 @@ namespace eval fishing {
 
 	regsub -all {<br />} $data <br> data
 	regsub -all "(\[^\n\]*\[0-9\]+<br>)" $data <p><b>\\1</b> data
-	regsub -all "  +<br>" $data "" data	
+	regsub -all "  +<br>" $data "" data
 	regsub "^\[ \t\n\r\]*" $data "" data
 	
-	set title "Bayside Marine - [clock format [clock seconds] -format {%Y %b %d}]"
+	regsub {.*<div class="style2">} $data "" data
+	set md5 [::md5::md5 -hex $data]
 	
+	set title "Bayside Marine - [clock format [clock seconds] -format {%Y %b %d}]"
 
 	set article_url https://baysidemarinesc.com/?&id=$md5
 
@@ -111,6 +113,63 @@ namespace eval fishing {
 	
 	if {![db_exists fishing $article_url]} {
 	    save_article fishing $title $article_url "$data<p>\n$imgs"
+	}
+    }
+
+    proc parse_nba {index_url data} {
+	puts $index_url
+	if {![regsub {.*<div id="selectdate">} $data "" data]} {
+	    return
+	}
+	regsub {<div class=“previousgames”>.*} $data "" data
+	regsub -all {, ESPN Radio} $data "" data
+	regsub -all {ESPN Radio} $data "" data
+
+	set title "NBA Games for [clock format [clock seconds] -format %y/%m/%d]"
+	set out $title
+	set n 0
+	foreach item [makelist $data {<span class="bold"><a name="[^>]*">}] {
+	    if {[info exists done]} {
+		break
+	    }
+	    if {[regexp {^([^<]+)<} $item dummy date]} {
+		set need_date 1
+		foreach row [makelist $item {<tr>}] {
+		    regsub -all {<a[^>]*>} $row "" row
+		    regsub -all {</a[^>]*>} $row "" row
+		    set nat ""
+		    set local ""
+		    if {[regexp {<td>([0-9]+:[0-9]+ [^<]+)</td><td>([^<]+)</td><td>([^<]*)</td>} $row dummy \
+			     time teams nat local]} {
+			set ok 0
+			if {[regexp {(TNT)|(ESPN)|(ABC)} $nat]} {
+			    set ok 1
+			}
+			if {[regexp NBCSBA $local]} {
+			    set ok 1
+			}
+			if {$ok} {
+			    if {$need_date} {
+				append out "\n<p><b>$date</b><br>\n"
+				set need_date 0
+			    }
+			    append out "$time...$teams...$nat...$local<br>\n"
+			    incr n
+			    if {$n > 30} {
+				set done 1
+				break
+			    }
+			}
+		    }
+		}
+	    }
+	}
+
+	set md5 [::md5::md5 -hex $out]
+	set article_url "$index_url?&id=$md5"
+
+	if {![db_exists fishing $article_url]} {
+	    save_article fishing $title $article_url "$out<p>\n<img src=https://www.sportsmediawatch.com/wp-content/uploads/2022/04/smwpodcastlogo-350x250.webp>"
 	}
     }
 }
