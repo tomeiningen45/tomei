@@ -147,7 +147,8 @@ namespace eval fishing {
 	regsub -nocase -all {,NBA League Pass} $data "" data
 	regsub -nocase -all {NBA League Pass} $data "" data
 
-	set title "NBA Games for [clock format [clock seconds] -format %y/%m/%d]"
+	# Use EDT
+	set title "NBA Games for [clock format [expr [clock seconds] + 3 * 3600] -format %y/%m/%d]"
 	set out $title
 	set n 0
 	foreach item [makelist $data {<span class="bold"><a name="[^>]*">}] {
