@@ -136,7 +136,11 @@ namespace eval fishing {
     }
     
     proc parse_nba {index_url data} {
-	puts $index_url
+	set h [clock format [clock seconds] -format %H]
+	if {3 >= $h || $h >= 20 } {
+	    # avoid "Today" problem EDT vs PST
+	    return
+	}
 	if {![regsub {.*<div id="selectdate">} $data "" data]} {
 	    return
 	}
