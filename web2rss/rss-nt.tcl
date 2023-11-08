@@ -1293,7 +1293,7 @@ proc db_sync_all_to_disk {} {
         return
     }
     set g(has_unsaved_articles) 0
-    set fd0 [open [all_index_file] w+]
+    set fd0 [open [all_index_file].tmp w+]
     fconfigure $fd0 -encoding utf-8
     puts $fd0 {<html><head><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8"></head>}
     puts $fd0 "<ol>"
@@ -1392,6 +1392,8 @@ proc db_sync_all_to_disk {} {
     }
     puts $fd0 "</ol>"
     close $fd0
+
+    file rename -force [all_index_file].tmp [all_index_file]
 }
 
 proc html_cache_file {url pubdate} {
