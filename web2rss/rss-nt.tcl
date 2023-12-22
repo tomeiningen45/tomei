@@ -1531,6 +1531,9 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 	set image "&nbsp;"
         set data [set ${adapter}::dbc($url)]
 	if {[regexp {(<img [^>]+)>} $data dummy head]} {
+	    regsub style=  $head xstyle=  head
+	    regsub width=  $head xwidth=  head
+	    regsub height= $head xheight= head
 	    set image "$head style='width:60;height:60;max-width:60;object-fit:contain'>"
 	}
 	
