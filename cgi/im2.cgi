@@ -6,6 +6,7 @@ if [ -e /usr/bin/tclsh ]; then exec /usr/bin/tclsh "$0" ${1+"$@"} ; fi
 # \
 exec tclsh "$0" ${1+"$@"}
 
+
 # Test
 # http://localhost:9015/cgi-bin/im.cgi?a=http%3A%2F%2Fwww%2Epopo8%2Ecom%2Fpicts%2F201309%2F0901175733%5F85009%2Ejpg&b=http%3A%2F%2Fwww%2E6park%2Ecom%2Fnews%2Fmessages%2F43573%2Ehtml
 #
@@ -69,7 +70,26 @@ if {[catch {
 
     foreach wget {/usr/bin/wget /usr/local/bin/wget /opt/local/bin/wget} {
         if {[file exists $wget]} {
-	    set data [exec $wget -q -S --spider --referer=$ref $url 2>@ stdout | cat]
+	    # First let see what the server response should be
+	    if {[catch {
+		set data [exec $wget -q -S --method=HEAD --referer=$ref $url 2>@ stdout | cat]
+	    } err]} {
+		if {"$env(REQUEST_METHOD)" == "HEAD"} {
+		    puts "Content-Type: text/html\n"
+		    puts "<h1>CGI Error</h1>"
+		    puts "<pre>"
+		    puts "Error:"
+		    puts "ref: $ref"
+		    puts "url: $url"
+		    puts "cmd: wget -q -S --method=HEAD --referer=\$ref \$url"
+		    puts "cmd: wget -q -S --method=HEAD --referer=$ref $url"
+		    puts "err: $err"
+		    puts "END</pre>"
+		    exit 0
+		} else {
+		    set data "Content-Length: 0"
+		}
+	    }
 	    if {[regexp {Content-Length: ([0-9]+)} $data dummy length]} {
 	       #puts "Content-Length: $length"
 		puts "Cache-control: public, max-age=2592000"

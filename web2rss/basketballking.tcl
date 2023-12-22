@@ -64,7 +64,7 @@ namespace eval basketballking {
 
 	regsub -all {.写真.[=＝][^<]*} $data "" data
 	
-	#set data [redirect_images https://www.basketballking.com/ $data]
+	set data [redirect_images https://basketballking.jp/ $data]
 	
         save_article basketballking $title $url $data $pubdate
     }

@@ -105,6 +105,8 @@ namespace eval dqn {
 	if {![regexp "<img " $data]} {
 	    append data "\n<img src=\"$defimg\">"
 	}
+
+	set data [redirect_images https://livedoor.blogimg.jp/ $data]
 	
         save_article dqn $title $url $data $pubdate
     }
