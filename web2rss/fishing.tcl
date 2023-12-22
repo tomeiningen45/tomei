@@ -59,7 +59,7 @@ namespace eval fishing {
 		regsub -all "\n\n\n+" $data "\n\n" data
 		regsub "</div></div><p>\[\n \]+\$" $data "" data
 
-		append data "\n<img src='https://library.noaa.gov/portals/1/external-content.duckduckgo.com.jpg'>"
+		append data "\n<img src='/data/noaalogo1.jpg'>"
 		save_article fishing $title $article_url $data $pubdate
 	    }
 	}
