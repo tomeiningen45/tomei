@@ -55,6 +55,7 @@ namespace eval gigazine {
             regsub -all "<p>　<a" $data "<p><a" data
             regsub -all "<p>　<b" $data "<p><b" data
 
+	    set data [redirect_images http://gigazine.net/ $data]
             save_article gigazine $title $url $data $pubdate
         }
     }
