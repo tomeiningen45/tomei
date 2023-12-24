@@ -1432,6 +1432,29 @@ proc set_html_lang {adapter lang fd} {
 	body {
 	    word-wrap: break-word;
 	}
+	
+        /* The navigation bar */
+        .navbar {
+            overflow: hidden;
+            background-color: #a0a0a0;
+            position: fixed; /* Set the navbar to fixed position */
+            top: 0; /* Position the navbar at the top of the page */
+            left: 0;
+            width: 100%; /* Full width */
+        }
+
+        /* Links inside the navbar */
+        .navbar a {
+            float: left;
+            display: block;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+	/* The scrollable part of the index, below the navbar */
+	.indexmain {
+            margin-top: 70px; /* Add a top margin to avoid content overlay */
+        }
 	</style>
     }
     
@@ -1502,7 +1525,10 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 	var url = new URL(document.URL);
 	var ref = url.searchParams.get('ref');
 	if (ref != "") {
-	    document.write("<a href='" + ref + "' target='_top'>TOP</a><p>");
+            document.write("<div class='navbar'>");	    
+	    document.write("<a href='" + ref + "' target='_top'>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TOP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-</a><p>");
+	    document.write("</div>");
+            document.write("<div class='indexmain'>");
 	}
 	last_select = null;
 	function do_select(n) {
