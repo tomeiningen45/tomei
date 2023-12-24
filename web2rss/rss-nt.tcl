@@ -1709,12 +1709,15 @@ proc write_xml_file {adapter list {subpageinfo {}}} {
 }
 
 proc redirect_images {url data} {
-    set pat {<img[^>]*src=[\"\']([^\"\']*)[\"\'][^>]*>}
-    while {[regexp -nocase $pat $data dummy img]} {
-	set img [redirect_image $img $url]
-	regsub -all "\\\\" $img {\\\\} img
-	regsub -all {&} $img {\\\&} img
-	regsub -nocase $pat $data "\n<xxximg src='$img'>\n" data
+    set pat1 {<img[^>]*src=[\"\']([^\"\']*)[\"\'][^>]*>}
+    set pat2 {<img[^>]*src=([^\"\'][^ >]*)[^>]*>}
+    foreach pat [list $pat1 $pat2] {
+	while {[regexp -nocase $pat $data dummy img]} {
+	    set img [redirect_image $img $url]
+	    regsub -all "\\\\" $img {\\\\} img
+	    regsub -all {&} $img {\\\&} img
+	    regsub -nocase $pat $data "\n<xxximg src='$img'>\n" data
+	}
     }
     regsub -all "<xxximg " $data "<img " data
 

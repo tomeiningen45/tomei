@@ -109,8 +109,12 @@ namespace eval yahoohk {
 		return
 	    }
 	}
+
+	regexp {<img class=caas-img [^>]*>} $data provider_image
+	
         regsub {<header><h1>([^<]+)</h1></header>} $data "" data
 	regsub {.*<div class="caas-body">} $data "<div>" data
+	regsub {.*<span class=caas-author-byline-collapse>} $data "" data
         regsub {.*<article} $data "<span " data
         regsub {<div class=.canvas-share-buttons.*} $data "" data
         regsub {</article>.*} $data "" data
@@ -151,7 +155,7 @@ namespace eval yahoohk {
         set data [sub_block $data {<svg[^>]*>} {</svg>} ""]
         regsub -all {<path[^>]*>} $data "" data
 
-        regsub -all {<figcaption[^>]*>} $data "\n<i><br><font size=-1>\u2605 " data
+        regsub -all {<figcaption[^>]*>} $data "\n<i><br><font >\u2605 " data
         regsub -all "</figcaption" $data "</font></i><br" data
         regsub {<div id="YDC-Bottom".*} $data "" data
         regsub {&lt;!--AD--&gt;&lt;.*} $data "" data
@@ -207,6 +211,15 @@ namespace eval yahoohk {
             return;
         }
 	regsub "^<p>" $data "" data
+
+	regsub -all {(<img[^>]*>)<img[^>]* class=caas-img>} $data \\1 data
+	
+	catch {
+	    append data $provider_image
+	}
+
+	regsub {<h1 data-test-locator=headline>[^<]*</h1></header>} $data "" data
+	
 	set data [redirect_images https://hk.finance.yahoo.com/news/test.html $data]
         set data "${provider}&nbsp;\n$data"
 	set data "[download_timestamp $pubdate]$data"
