@@ -491,12 +491,7 @@ proc update_xml {site} {
             }
 
             if {0 + $succeeded >= 0 || !$need_audio} {
-		if {"$author" != ""} {
-		    set p "[string range $author 0 16] - "
-		} else {
-		    set p ""
-		}
-                puts $fd "<item><title>$p$title</title>"
+                puts $fd "<item><title>$title</title>"
                 puts $fd "<link>https://youtu.bee/$id</link>"
                 puts $fd "<dc:creator><!\[CDATA\[siran\]\]></dc:creator>"
                 puts $fd "<pubDate>[clock_format [expr $pubdate / 1000]]</pubDate>"
