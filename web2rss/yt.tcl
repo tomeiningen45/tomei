@@ -1,3 +1,8 @@
+# TESTING:
+#
+# env(YTONLY)  : If set to a youtube video ID, download only this video.
+# env(IDXONLY) : If not empty, only download the sources lists and print out the worklist
+
 set config(max-download) 10
 set config(max-storage)  20
 set config(max-retry)    3
@@ -187,6 +192,20 @@ proc main {} {
         }
     }
 
+    if {[info exists env(IDXONLY)] && "$env(IDXONLY)" != ""} {
+	foreach item $worklist {
+	    set site [lindex $item 0]
+	    set id   [lindex $item 1]
+	    if {[is_audio_needed $site]} {
+		set na " (noaudio)"
+	    } else {
+		set na ""
+	    }
+	    puts "$id = $site$na"
+	}
+	exit
+    }
+    
 
     # Download each video, oldest first
     foreach item $worklist {
@@ -260,11 +279,13 @@ proc main {} {
             set title ""
             set pubdate [clock milliseconds]
             set description ""
-
+	    set author ""
+	    
             if {$retrycount < $config(max-retry)} {
                 if {[catch {
                     # Read the descriptions, etc
                     if {$getaudio || ![file exists $metadata]} {
+			puts "\n=================================================="
                         puts "Downloading meta data from $url"
                         set data [exec wget --no-check-certificate --timeout=10 --tries=1 -q -O - $url 2> /dev/null | java FilterEmoji]
                         regsub -all {\\\"} $data "'" data
@@ -280,7 +301,12 @@ proc main {} {
                         if {$title == ""} {
                             regexp {"title":\{"simpleText":\"([^\"]+)} $data dummy title
                         }
-                        puts $title
+			set author ""
+			regexp {"author":"([^"]+)"} $data dummy author
+			if {$author == ""} {
+			    regexp {"ownerChannelName":"([^"]+)"} $data dummy author
+			}
+                        puts $author:$title
                         puts $description
                         if {!$getaudio} {
                             # No need to get the audio. Just update the RSS feed with title and description
@@ -310,7 +336,9 @@ proc main {} {
                         if {!$succeeded} {
                             incr retrycount
                         }
-                    }
+                    } else {
+			set succeeded 1
+		    }
                 } errInfo]} {
                     puts "*** Failed to download audio data"
                     puts $errInfo
@@ -324,6 +352,7 @@ proc main {} {
                     puts $fd "lappend metainfo($id) [list $pubdate]"
                     puts $fd "lappend metainfo($id) [list $description]"
                     puts $fd "lappend metainfo($id) [list $succeeded]"
+		    puts $fd "lappend metainfo($id) [list $author]"
                     close $fd
                     puts "$filename (Succeeded = $succeeded)"
                 }
@@ -426,7 +455,7 @@ proc update_xml {site} {
 
     set list [lsort -command sort_by_newest_timestamp [array names ts]]
     foreach id $list {
-        puts $ts($id)
+        #puts $ts($id)
         set metadata [storage_root]/yt/data/$id.tcl
         if {[file exists $metadata] && [catch {
             catch {unset metainfo($id)}
@@ -437,6 +466,7 @@ proc update_xml {site} {
             set pubdate     [lindex $info 3]
             set description [lindex $info 4]
             set succeeded   [lindex $info 5]
+	    set author      [lindex $info 6]
             set hasaudio    0
 
             if {[file exists $filename]} {
@@ -455,13 +485,18 @@ proc update_xml {site} {
                 set thumb [redirect_image $thumb $link]
                 #puts $thumb
                 set description "$description <p> <img src=\"$thumb\"> "
-                set description "<a href=$link>ORIG</a> &nbsp;&nbsp; $description"
+                set description "<a href=$link>Watch on YouTube - \[$author\]</a><br><br>$description"
             } xx]} {
                 #puts $xx
             }
 
             if {0 + $succeeded >= 0 || !$need_audio} {
-                puts $fd "<item><title>$title</title>"
+		if {"$author" != ""} {
+		    set p "[string range $author 0 16] - "
+		} else {
+		    set p ""
+		}
+                puts $fd "<item><title>$p$title</title>"
                 puts $fd "<link>https://youtu.bee/$id</link>"
                 puts $fd "<dc:creator><!\[CDATA\[siran\]\]></dc:creator>"
                 puts $fd "<pubDate>[clock_format [expr $pubdate / 1000]]</pubDate>"
@@ -479,7 +514,7 @@ proc update_xml {site} {
                 puts $fd "</item>"
             }
 
-            puts $filename-$succeeded-$title
+            #puts $filename-$succeeded-$title
         } errInfo]} {
             puts $errInfo
         }
