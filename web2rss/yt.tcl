@@ -2,6 +2,15 @@
 #
 # env(YTONLY)  : If set to a youtube video ID, download only this video.
 # env(IDXONLY) : If not empty, only download the sources lists and print out the worklist
+#
+#
+# Example:
+#
+# Do this to exercise all logic, except that no videos will be downloaded
+#   env YTONLY=none tclsh yt.tcl
+#
+# Do this to download all indices, but only download the video Jck6NZbrNsk
+#   env YTONLY=Jck6NZbrNsk tclsh yt.tcl
 
 set config(max-download) 10
 set config(max-storage)  20
@@ -272,6 +281,16 @@ proc main {} {
         }
 
         set getaudio [is_audio_needed $site]
+	if {$getaudio} {
+	    if {![info exists metainfo($id)] ||
+		[lindex $metainfo($id) 1] == "unknown"} {
+		set succeeded 0
+	    }
+	}
+
+	#puts getaudio=$getaudio
+	#puts succeeded=$succeeded
+	#puts retrycount=$retrycount
 
         if {!$succeeded} {
             set filename unknown
