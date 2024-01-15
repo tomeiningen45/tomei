@@ -386,7 +386,8 @@ proc main {} {
         }
 
         if {![file exists [storage_root]/$site.xml] ||
-            ![file exists [storage_root]/$site.html]} {
+            ![file exists [storage_root]/$site.html] ||
+            ![file exists [storage_root]/$site-b.html]} {
             set update 1
         }
 
@@ -544,7 +545,8 @@ proc update_html {site} {
     set need_audio [is_audio_needed $site]
 
     catch {unset ts}
-    set html [storage_root]/$site.html
+    set html  [storage_root]/$site.html
+    set htmlb [storage_root]/$site-b.html
     set sitedir [storage_root]/yt/$site
     if {![file exists $sitedir]} {
         return
@@ -554,8 +556,12 @@ proc update_html {site} {
     }
 
     set fd [open $html w+]
+    set fdb [open $htmlb w+]
     puts $fd {<html lang="ja">
 	<meta charset="utf-8">
+    }
+    puts $fdb {<html lang="ja">
+	<meta charset="utf-8"><ol>
     }
     set iframe {<iframe width="420" height="315" src="https://www.youtube.com/embed/ID?autoplay=0&mute=1"></iframe>}
     
@@ -572,7 +578,7 @@ proc update_html {site} {
             set info $metainfo($id)
            #set filename    [lindex $info 1]
             set title       [lindex $info 2]
-           #set pubdate     [lindex $info 3]
+            set pubdate     [lindex $info 3]
             set body        [lindex $info 4]
            #set succeeded   [lindex $info 5]
            #set hasaudio    0
@@ -614,6 +620,9 @@ proc update_html {site} {
             regsub ID $iframe $id if
             puts $fd "<script> iframes\[$n\]='$if' </script>"
             incr n
+
+	    set date [clock format [expr $pubdate / 1000] -format {%Y/%m/%d %H:%M:%S}]
+	    puts $fdb "<li><code>$date</code> <a href=$link>$title</a>"
         } errInfo]} {
             puts $errInfo
         }
@@ -646,6 +655,7 @@ proc update_html {site} {
     puts $fd "</script>"
     
     close $fd
+    close $fdb
 }
 
 
