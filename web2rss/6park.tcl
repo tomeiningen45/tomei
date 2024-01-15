@@ -3,7 +3,7 @@
 namespace eval 6park {
     proc init {first} {
         variable h
-        set h(article_sort_byurl) 1
+        set h(article_sort_byurl) 0
         set h(lang)  zh
         set h(desc)  留园
         set h(url)   http://www.6park.com
