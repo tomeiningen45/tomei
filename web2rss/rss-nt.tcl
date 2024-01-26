@@ -1295,7 +1295,10 @@ proc db_sync_all_to_disk {} {
     set g(has_unsaved_articles) 0
     set fd0 [open [all_index_file].tmp w+]
     fconfigure $fd0 -encoding utf-8
-    puts $fd0 {<html><head><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8"></head>}
+    puts $fd0 {<html><head><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">}
+    puts $fd0 {<meta name="apple-mobile-web-app-title" content="Mebaru">}
+    puts $fd0 {<meta name="apple-mobile-web-app-capable" content="yes">}
+    puts $fd0 {</head>}
     puts $fd0 "<ol>"
     foreach adapter $g(adapters) {
         set db [adapter_db_file $adapter]
@@ -1310,7 +1313,10 @@ proc db_sync_all_to_disk {} {
         puts $fd "variable dbf"
         puts $fd "variable dbsp"
 
-	puts $fd2 {<html><head><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8"></head>}
+	puts $fd2 {<html><head><META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">}
+        puts $fd2 {<meta name="apple-mobile-web-app-title" content="Mebaru">}
+        puts $fd2 {<meta name="apple-mobile-web-app-capable" content="yes">}
+	puts $fd2 {</head>}
 	puts $fd2 "Updated [date_string]<p>Sources:<ul>"
 	foreach i [set ${adapter}::h(indices)] {
 	    puts $fd2 "<li><a href='$i'>$i</a>"
@@ -1457,7 +1463,8 @@ proc set_html_lang {adapter lang fd} {
         }
 	</style>
     }
-    
+    puts $fd {<meta name="apple-mobile-web-app-title" content="Mebaru">}
+    puts $fd {<meta name="apple-mobile-web-app-capable" content="yes">}
     puts $fd "</head><body $font lang=\"$lang\"><span lang=\"$lang\">"
 }
 
