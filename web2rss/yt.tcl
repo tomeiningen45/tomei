@@ -337,12 +337,12 @@ proc main {} {
 			##puts ""
 			##puts "$ytdl --get-filename --no-mtime -o $filenamespec --audio-format m4a -x $url"
 			##puts ""
-                        set filename [exec $ytdl --get-filename -o $filenamespec --audio-format m4a $url 2>@ stdout]
+                        set filename [exec $ytdl --get-filename -o $filenamespec --audio-format m4a $url 2> /dev/null]
                         if {[regexp {[.]webm$} $filename]} {
                             regsub {[.]webm$} $filename .m4a filename
                         }
                         puts "filename = $filename"
-                        set length [exec $ytdl --get-duration $url 2>@ stdout]
+                        set length [exec $ytdl --get-duration $url 2> /dev/null]
                         puts "length = $length"
                         if {[skip_long_videos $site] && [regexp {:.+:} $length]} {
                             puts "Skipping videos that are over 1 hour long"
