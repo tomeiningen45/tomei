@@ -349,7 +349,22 @@ proc main {} {
                         } elseif {[regexp "(LIVE)|(Watch Live)" $title]} {
                             puts "Skipping LIVE videos"
                         } elseif {![file exists $filename]} {
-                            exec $ytdl --no-mtime -o $filenamespec --audio-format m4a -x $url 2>@ stdout >@ stdout
+			    if {[catch {
+# typical audio formats -- we use 139 to save space.
+# 233     mp4   audio only        │                   m3u8  │ audio only          unknown             [en] Default
+# 234     mp4   audio only        │                   m3u8  │ audio only          unknown             [en] Default
+# 139-drc m4a   audio only      2 │    59.54MiB   49k https │ audio only          mp4a.40.5   49k 22k [en] low, DRC, m4a_dash
+# 139     m4a   audio only      2 │    59.54MiB   49k https │ audio only          mp4a.40.5   49k 22k [en] low, m4a_dash
+# 249     webm  audio only      2 │    60.97MiB   50k https │ audio only          opus        50k 48k [en] low, webm_dash
+# 250     webm  audio only      2 │    75.71MiB   62k https │ audio only          opus        62k 48k [en] low, webm_dash
+# 140-drc m4a   audio only      2 │   158.02MiB  129k https │ audio only          mp4a.40.2  129k 44k [en] medium, DRC, m4a_dash
+# 140     m4a   audio only      2 │   158.02MiB  129k https │ audio only          mp4a.40.2  129k 44k [en] medium, m4a_dash
+# 251     webm  audio only      2 │   137.20MiB  112k https │ audio only          opus       112k 48k [en] medium, webm_dash
+				exec $ytdl -f 139 --no-mtime -o $filenamespec --audio-format m4a -x $url 2>@ stdout >@ stdout
+			    } errorInfo]} {
+				puts "--------------------\nfailed: $errorInfo; try without specifying -f"
+				exec $ytdl        --no-mtime -o $filenamespec --audio-format m4a -x $url 2>@ stdout >@ stdout
+			    }
                         }
                         set succeeded [file exists $filename]
                         if {!$succeeded} {
