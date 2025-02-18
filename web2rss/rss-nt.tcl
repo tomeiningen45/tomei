@@ -815,6 +815,10 @@ proc discover {} {
         }
     }
 
+    xcatch {
+        {puts "Adapters = [lsort $g(adapters)]"}
+    }
+
     if {[set d [get_debug_opt DEBUG_ADAPTERS]] != ""} {
         # for debug only
         set g(adapters) $d
@@ -1304,7 +1308,7 @@ proc db_sync_all_to_disk {} {
         set db [adapter_db_file $adapter]
         xlog 2 "syncing $adapter $db"
         file mkdir [file dirname $db]
-        set fd  [open $db w+]
+        set fd  [open $db.tmp w+]
         set fd2 [open [file root $db].html w+]
 	fconfigure $fd2 -encoding utf-8	
         puts $fd "variable dbs"
@@ -1371,7 +1375,9 @@ proc db_sync_all_to_disk {} {
             #puts $n=$g(max_articles)
         }
 
+        puts $fd "##END##"
         close $fd
+        file rename -force $db.tmp $db
 	puts $fd2 </ol>
         close $fd2
 
