@@ -109,6 +109,8 @@ namespace eval yahoohk {
 		return
 	    }
 	}
+ 
+        regsub -all {((data-i13n)|(alt)|(data-ylk))=\"[^\"]+\"} $data "" data
 
 	regexp {<img class=caas-img [^>]*>} $data provider_image
 	
