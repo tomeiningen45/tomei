@@ -29,6 +29,8 @@ namespace eval jalopnik {
         regexp {<title>([^<|]+)} $data dummy title
         regsub { - JALOPNIK} $title "" title
 
+        set olddata $data
+
         if {[regsub {.*<div[^>]*js_post-content[^>]*>} $data "<div>" data] &&
             [regsub {<div[^>]*js_comments-iframe.*} $data "" data]} {
             set data [noscript $data]
@@ -49,6 +51,9 @@ namespace eval jalopnik {
 
 
             # set data [redirect_images http://jalopnik.com/ $data]
+            save_article jalopnik $title $url $data $pubdate
+        } elseif {[regexp {<div[^>]*js_slideshow-next} $olddata]} {
+            set data "Slideshow"
             save_article jalopnik $title $url $data $pubdate
         }
     }

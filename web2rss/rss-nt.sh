@@ -16,6 +16,9 @@ while true; do
     fi
 
     log=/tmp/rss-nt.log
+    if test "$DEBUG" != ""; then
+        log=/tmp/debug-rss-nt.log
+    fi
 
     for i in 5 4 3 2 1; do
         j=$(expr $i + 1)
