@@ -8,7 +8,7 @@
 #Number of articles to store in the xml file
 #export DEBUG_MAX_ARTICLES=
 #export DEBUG_MAX_ARTICLES=60
- export DEBUG_MAX_ARTICLES=1
+ export DEBUG_MAX_ARTICLES=80
 
 #Number of articles to download from the web site
 #export DEBUG_MAX_DOWNLOADS=20
@@ -21,7 +21,7 @@
 #----------------------------------------------------------------------
 
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} reuters"  (no more RSS feed from reuters)
- export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} bleacher"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} bleacher"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park_forum_mil"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} 6park"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoohk"
@@ -32,31 +32,49 @@
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} gigazine"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} craigslist"
 #export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} hatelabo"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} itmedia"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} dqn"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} fishing"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoofn"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} caranddriver"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} jiji"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} basketballking"
+export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoohk"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} jalopnik"
+#export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} bringatrailer"
 
 #----------------------------------------------------------------------
 # Tests for specific article -- if non-empty, must be exactly one URL,
 # and ${DEBUG_ADAPTERS} must be a single entry which can handle the URL
 #----------------------------------------------------------------------
 
-#export DEBUG_ARTICLE=https://gigazine.net/news/20210115-pirate-bay-founder-parler-embarrassing/
-#export DEBUG_ARTICLE=https://news.yahoo.co.jp/articles/058bc222b5539e9d4d7f2a6743ed2b4d974c87de
-#export DEBUG_ARTICLE=https://sfbay.craigslist.org/sfc/ctd/d/2012-ford-e350-extended-15-passenger/7257286046.html
-#export DEBUG_ARTICLE=https://sfbay.craigslist.org/eby/cto/d/vallejo-2009-hyundai-sonata-gls-speed/7258436465.html
-#export DEBUG_ARTICLE=https://headlines.yahoo.co.jp/article?a=20210108-74127209-business-bus_all
-#export DEBUG_ARTICLE=https://news.yahoo.co.jp/articles/467b76408a96d9f61d8889e693efc8474186f461
-#export DEBUG_ARTICLE=
-#export DEBUG_ARTICLE="http://feeds.reuters.com/~r/reuters/topNews/~3/Svyx0NMhLP8/-idUSKBN1EA0OO"
-#export DEBUG_ARTICLE=https://tw.travel.yahoo.com/news/%E7%B4%90%E8%A5%BF%E8%98%AD%E8%87%AA%E7%94%B1%E8%A1%8C-38-000%E5%85%83%E7%92%B0%E9%81%8A%E7%B4%90%E8%A5%BF%E8%98%AD-%E6%A9%9F%E7%A5%A8-%E9%A3%9F%E5%AE%BF-071721925.html
-#export DEBUG_ARTICLE=http://bleacherreport.com/articles/2752850-lavar-ball-lakers-dont-want-to-play-for-luke-walton-lonzo-looked-disgusted
-
-#export DEBUG_ARTICLE='https://club.6parker.com/military/index.php?app=forum&act=threadview&tid=15170548'
-
-#export DEBUG_ARTICLE=https://bleacherreport.com/articles/2816345-lebron-james-calls-out-nba-refs-after-late-lonzo-ball-foul-on-russell-westbrook
-
-#export DEBUG_ARTICLE=https://bleacherreport.com/articles/10065118-kevin-durant-steph-curry-zion-injury-replacements-revealed-for-nba-all-star-game
+#D=https://www.caranddriver.com/news/a43698012/2024-mclaren-750s-revealed/
+#D=https://www.caranddriver.com/photos/g43688888/2024-mclaren-750s-revealed-photos/
+#D=https://finance.yahoo.com/news/dollar-dominance-could-way-tripolar-182500899.html
+#D=https://finance.yahoo.com/news/fed-decision-apple-earnings-april-jobs-report-what-to-know-this-week-144601325.html
+#D=https://finance.yahoo.com/news/oil-chaotic-selloff-worsens-7-232258587.html
+#D=https://finance.yahoo.com/news/warren-buffetts-bank-account-charlie-184500727.html
+#D=https://www.caranddriver.com/reviews/a43825380/2024-porsche-cayenne-s-turbo-gt-drive/
+#D=https://hk.news.yahoo.com/%E6%9B%BE%E6%B7%91%E9%9B%85-030145204.html.html
+#D=https://jalopnik.com/chances-of-city-killing-asteroid-impact-in-2032-upped-t-1851762206
+#D=https://jalopnik.com/cheap-european-cars-are-ditching-infotainment-screens-i-1851758109
+#D=https://jalopnik.com/at-15-500-is-this-2007-mini-cooper-s-a-mega-bargain-1851761170
+#D=https://jalopnik.com/boeing-737-max-hits-car-in-the-middle-of-runway-during-1851762609
+#D=https://jalopnik.com/plane-wrecks-sub-implosion-audio-and-boomless-superson-1851763730
+#D=https://bleacherreport.com/articles/10129493-report-kevin-durant-blindsided-by-suns-warriors-trade-rumors-before-nba-deadline
+#D=https://www.itmedia.co.jp/news/articles/2502/14/news159.html
+#D=https://hk.news.yahoo.com/%E5%B7%9D%E6%99%AE%E7%89%B9%E4%BD%BF-%E7%BE%8E%E4%B8%8D%E6%9C%83%E5%B0%8D%E7%83%8F%E5%85%8B%E8%98%AD%E5%BC%B7%E5%8A%A0%E5%8D%94%E8%AD%B0-043502218.html
+if test "$DDAA" = ""; then
+    export DEBUG_ARTICLE=$D
+fi
+echo $DEBUG_ARTICLE
 #----------------------------------------------------------------------
 if test ! -f FilterEmoji.class; then
     javac FilterEmoji.java || exit 1
+fi
+
+if test "$1" = "-r"; then
+    (set -x; rm -rf /var/www/html/webrss/*)
 fi
 
 env DEBUG=1 bash rss-nt.sh

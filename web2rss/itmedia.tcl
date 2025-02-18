@@ -31,6 +31,7 @@ namespace eval itmedia {
 
         regsub {.*<!-- cmsHoleBodyStart -->} $data "" data
         regsub {<!-- cmsBodyMainEnd -->.*} $data "" data
+        regsub -all \u001a $data "" data
 
 	set data [redirect_images https://www.itmedia.co.jp/news $data]
         save_article itmedia $title $url $data $pubdate

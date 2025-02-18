@@ -44,6 +44,7 @@ namespace eval yahoohk {
         }
 
         foreach article_url [lsort -dictionary $list] {
+            regsub -all "\\&#x2F;" $article_url / article_url
             if {![regexp {^((https://)|(http://))} $article_url]} {
                 set article_url https://hk.news.yahoo.com${article_url}
             }
@@ -172,7 +173,8 @@ namespace eval yahoohk {
         regsub {<p> *編輯推薦 *</p>.*} $data "" data
         regsub {<span>看這些話題的相關文章：</span>.*} $data "" data
         regsub {<p> *【延伸閱讀】<br /></p>.*} $data "" data
-        
+        regsub {<p> *(相關文章)|(延伸閱讀).*} $data "" data
+
         regsub -all "<span></span>" $data "" data
         regsub -all "</span><span>" $data "" data
 
