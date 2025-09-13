@@ -12,7 +12,7 @@
 
 #Number of articles to download from the web site
 #export DEBUG_MAX_DOWNLOADS=20
- export DEBUG_MAX_DOWNLOADS=20
+ export DEBUG_MAX_DOWNLOADS=40
 
 # Set the following to exit after the first site has finished writing to db
  export DEBUG_NO_LOOPS=1
@@ -64,6 +64,7 @@ export DEBUG_ADAPTERS="${DEBUG_ADAPTERS} yahoohk"
 #D=https://bleacherreport.com/articles/10129493-report-kevin-durant-blindsided-by-suns-warriors-trade-rumors-before-nba-deadline
 #D=https://www.itmedia.co.jp/news/articles/2502/14/news159.html
 #D=https://hk.news.yahoo.com/%E5%B7%9D%E6%99%AE%E7%89%B9%E4%BD%BF-%E7%BE%8E%E4%B8%8D%E6%9C%83%E5%B0%8D%E7%83%8F%E5%85%8B%E8%98%AD%E5%BC%B7%E5%8A%A0%E5%8D%94%E8%AD%B0-043502218.html
+D=https://hk.news.yahoo.com/tesla-%E5%AE%8C%E6%88%90-cybertruck-%E9%85%8D%E7%BD%AE%E7%9A%84%E6%9C%80%E7%B5%82%E7%A2%BA%E8%AA%8D-141329223.html
 if test "$DDAA" = ""; then
     export DEBUG_ARTICLE=$D
 fi
@@ -73,9 +74,15 @@ if test ! -f FilterEmoji.class; then
     javac FilterEmoji.java || exit 1
 fi
 
-if test "$1" = "-r"; then
-    (set -x; rm -rf /var/www/html/webrss/*)
-fi
+for i in $*; do
+    if test "$i" = "-r"; then
+        (set -x; rm -rf /var/www/html/webrss/*)
+    fi
+    if test "$i" = "-a"; then
+        unset DEBUG_ARTICLE
+    fi
+done
+
 
 env DEBUG=1 bash rss-nt.sh
 

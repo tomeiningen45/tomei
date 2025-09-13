@@ -63,7 +63,7 @@ namespace eval yahoohk {
     proc debug_article_parser {article_url} {
         ::schedule_read yahoohk::parse_article $article_url
     }
-    
+
     proc deduplicate_images {data} {
         set pat {<img[^>]*src="([^>\"]+)"[^>]*>}
 
@@ -79,7 +79,7 @@ namespace eval yahoohk {
                 set loc {}
                 puts 1
                 continue
-            }            
+            }
             if {[regexp $pat $data dummy loc2]} {
                 if {[string comp $loc $loc2] == 0} {
                     regsub $pat $data "<br>" data
@@ -94,7 +94,7 @@ namespace eval yahoohk {
         }
         return $data
     }
-    
+
     proc parse_article {url data} {
         set title ""
         regexp {<title>([^<]+)</title>} $data dummy title
@@ -110,12 +110,13 @@ namespace eval yahoohk {
 		return
 	    }
 	}
- 
+
         regsub -all {((data-i13n)|(alt)|(data-ylk))=\"[^\"]+\"} $data "" data
 
 	regexp {<img class=caas-img [^>]*>} $data provider_image
-	
-        regsub {<header><h1>([^<]+)</h1></header>} $data "" data
+        regsub -all {<img src=.data:image/gif;base64[^>]*">} $data "\[IMG\]" data
+        regsub {<header[^>]*><h1>([^<]+)</h1></header>} $data "" data
+	regsub {.*<div [^>]* data-testid="article-body">} $data "<div>" data
 	regsub {.*<div class="caas-body">} $data "<div>" data
 	regsub {.*<span class=caas-author-byline-collapse>} $data "" data
         regsub {.*<article} $data "<span " data
@@ -186,7 +187,7 @@ namespace eval yahoohk {
 	regsub -all {<a [^>]*" href=} $data "<a href=" data
 	regsub -all {<blockquote [^>]*>} $data "<blockquote>" data
 
-        if {[regexp 今日新聞 $data]} {
+        if {[regexp xx今日新聞 $data]} {
             filter_article yahoohk $url
             return
         }
@@ -208,8 +209,13 @@ namespace eval yahoohk {
         regsub {<<p>更多相關文章</p>.*} $data "" data
         regsub {<p>一齊睇.今日重點新聞：</p>.*} $data "" data
         regsub {<<em>相關文章：</em>.*} $data "" data
-
         regsub {</time>} $data "</time><p>" data
+        regsub {<section class="privacy-container.*} $data "" data
+	regsub {<a[^>]*>Terms.*CA 私隱通知  </a>} $data "" data
+	regsub -all {</p>廣告廣告<p>} $data "" data
+	regsub {<h3 [^>]*>推薦閱讀.*} $data "" data
+        regsub {<header[^>]*><a .*</header>} $data "" data
+
         if {"$data" == ""} {
             filter_article yahoohk $url
             return;
@@ -217,16 +223,17 @@ namespace eval yahoohk {
 	regsub "^<p>" $data "" data
 
 	regsub -all {(<img[^>]*>)<img[^>]* class=caas-img>} $data \\1 data
-	
+
 	catch {
 	    append data $provider_image
 	}
 
 	regsub {<h1 data-test-locator=headline>[^<]*</h1></header>} $data "" data
-	
+
 	set data [redirect_images https://hk.finance.yahoo.com/news/test.html $data]
         set data "${provider}&nbsp;\n$data"
 	set data "[download_timestamp $pubdate]$data"
+
         save_article yahoohk $title $url $data $pubdate
     }
 }
