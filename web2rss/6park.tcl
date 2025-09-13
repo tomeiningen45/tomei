@@ -27,7 +27,12 @@ namespace eval 6park {
                 [regexp {"url":"([^\"]+)"} $line dummy url]} {
 
                 regsub ☆ $title "" title
-                set url "https://www.6parknews.com/newspark/$url"
+                regsub -all {\\/} $url / url
+                if {[regexp {^view} $url]} {
+                    set url "https://www.6parknews.com/newspark/$url"
+                } elseif {![regexp {^https:} $url]} {
+                    continue
+                }
 
                 if {![info exists seen($url)]} {
                     set seen($url) 1
