@@ -1289,7 +1289,7 @@ proc db_sync_all_to_disk {} {
     global g env
 
     if {$g(has_unsaved_articles) == 0} {
-        xlog 1 "no updates ... no need to sync to disk [clock format [clock seconds] -timezone :US/Pacific]"
+        xlog 1 "no updates ... no need to sync to disk [clock format [clock seconds] -timezone :America/Los_Angeles]"
         if {[info exists env(DEBUG_NO_LOOPS)]} {
             puts "env(DEBUG_NO_LOOPS) exists ... exiting"
             exit
@@ -1391,7 +1391,7 @@ proc db_sync_all_to_disk {} {
         }
 
 
-        xlog 2 "... written $n articles [clock format [clock seconds] -timezone :US/Pacific]"
+        xlog 2 "... written $n articles [clock format [clock seconds] -timezone :America/Los_Angeles]"
         if {[info exists env(DEBUG_NO_LOOPS)] &&
             (![info exists env(DEBUG_ARTICLE)] || "$env(DEBUG_ARTICLE)" == "")} {
 	    global done_count
