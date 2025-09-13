@@ -13,31 +13,26 @@ namespace eval 6park {
         ::schedule_read 6park::parse_index https://www.6parknews.com/newspark/index.php utf-8
     }
 
-    proc parse_index {index_url data} {
-        regsub {<div id="d_list"} $data "" data
-        regsub {<div id="d_list_foot"} $data "" data
-        regsub {.*<div id="d_list_page"} $data "" data
+    # this function is called when ./test.sh has a non-empty DEBUG_ARTICLE
+    proc debug_article_parser {article_url} {
+        ::schedule_read 6park::parse_article $article_url
+    }
 
+    proc parse_index {index_url data} {
         set list {}
 
-        foreach line [makelist $data <li>] {
-            if {[regexp {href="([^>]+)"} $line dummy article_url] &&
-                [regexp {>([^<]+)<} $line dummy title]} {
-            }
+        foreach line [makelist $data {"nid":}] {
+            if {[regexp {^"([^\"]+)"} $line dummy id] &&
+                [regexp {"title":"([^\"]+)"} $line dummy title] &&
+                [regexp {"url":"([^\"]+)"} $line dummy url]} {
 
-            if {![regexp {nid=([0-9]+)$} $article_url dummy id]} {
-                continue;
-            }
+                regsub ☆ $title "" title
+                set url "https://www.6parknews.com/newspark/$url"
 
-            regsub ☆ $title "" title
-            
-            if {![regexp {http[a-z]*://www.6parknews.com} $article_url]} {
-                continue
-            }
-
-            if {![info exists seen($article_url)]} {
-                set seen($article_url) 1
-                lappend list [list $article_url $title $id]
+                if {![info exists seen($url)]} {
+                    set seen($url) 1
+                    lappend list [list $url $title $id]
+                }
             }
         }
 
@@ -63,11 +58,16 @@ namespace eval 6park {
 
         regsub {.*<div id="mainContent">} $data "" data
         regsub {.*<div id='shownewsc' style="margin:15px;">} $data "" data
+        regsub {.*<div class="article-content" id="article-content">} $data "" data
+        regsub {.*<!-- 文章内容 -->} $data "" data
+
         regsub {<table class='xianhua_jidan'.*} $data "" data
+        regsub {<span class='ad_title'>Advertisements</span></div>.*} $data "" data
+        regsub {<!-- 文章内容结束 -->.*} $data "" data
         regsub {<a href=[^>]+target=_blank><img[^>]+转发本条新闻到微博'></a>} $data "" data
 
         set data [sub_block $data "<script" "</script>" ""]
-        set data [sub_block $data {<ins class="adsbygoogle"} "</ins>" ""]=
+        set data [sub_block $data {<ins class="adsbygoogle"} "</ins>" ""]
         
         if {"$from" != ""} {
             set data "【$from】 $data"
