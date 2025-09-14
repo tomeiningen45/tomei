@@ -57,7 +57,7 @@ if {[catch {
             catch {close $fd}
             flush stdout
 
-            #log "[clock format [clock seconds] -format %y%m%d-%H%M%S] [format %8d $n]: $ref => $url"
+            log "[clock format [clock seconds] -format %y%m%d-%H%M%S] [format %8d $n]: $ref => $url"
             
             exit
         }
@@ -71,6 +71,4 @@ if {[catch {
     puts "Content-Type: text/html\n"
     puts "<h1>CGI Error</h1>"
     puts "<pre>$errorInfo</pre>"
-    puts "<h2>auto_path</h2>"
-    puts "<pre>[join $auto_path \n]</pre>"
 }
