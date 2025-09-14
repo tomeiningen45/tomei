@@ -95,6 +95,16 @@ namespace eval yahoohk {
         return $data
     }
 
+    proc parse_images {data} {
+        set images {}
+        foreach line [makelist $data {type.":."image."}] {
+            if {[regexp {caption.":."} $line ] && [regexp {(https://s.yimg.com/os/creatr-uploaded-images/[^/]*/[0-9a-f-]*)} $line dummy img]} {
+                lappend images $img
+            }
+        }
+        return $images
+    }
+
     proc parse_article {url data} {
         set title ""
         regexp {<title>([^<]+)</title>} $data dummy title
@@ -111,10 +121,25 @@ namespace eval yahoohk {
 	    }
 	}
 
+        set images [parse_images $data]
+
         regsub -all {((data-i13n)|(alt)|(data-ylk))=\"[^\"]+\"} $data "" data
 
 	regexp {<img class=caas-img [^>]*>} $data provider_image
-        regsub -all {<img src=.data:image/gif;base64[^>]*">} $data "\[IMG\]" data
+
+        # Replace these images
+        set pat {<img src=.data:image/gif;base64[^>]*">}
+        set n 0
+        while {[regexp $pat $data]} {
+            if {$n < [llength $images]} {
+                regsub $pat $data "<img src=\"[lindex $images $n]\">" data
+                incr n
+            } else {
+                regsub $pat $data "\[IMG\]" data
+            }
+        }
+        # Done
+
         regsub {<header[^>]*><h1>([^<]+)</h1></header>} $data "" data
 	regsub {.*<div [^>]* data-testid="article-body">} $data "<div>" data
 	regsub {.*<div class="caas-body">} $data "<div>" data
@@ -215,6 +240,7 @@ namespace eval yahoohk {
 	regsub -all {</p>廣告廣告<p>} $data "" data
 	regsub {<h3 [^>]*>推薦閱讀.*} $data "" data
         regsub {<header[^>]*><a .*</header>} $data "" data
+        regsub {<a [^>]*>下載Yahoo財經APP</a>} $data "" data
 
         if {"$data" == ""} {
             filter_article yahoohk $url
