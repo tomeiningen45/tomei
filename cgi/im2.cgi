@@ -105,7 +105,8 @@ if {[catch {
 		exit 0
 	    }
 	    
-            set fd [open "|$wget -q -O - --referer=$ref $url"]
+            # wget-helper.sh passes -U to wget (tcl cannot handle spaces)
+            set fd [open "|bash /usr/local/lib/wget-helper.sh $ref $url"]
             fconfigure $fd -translation binary -encoding binary
             fconfigure stdout -translation binary -encoding binary
 
