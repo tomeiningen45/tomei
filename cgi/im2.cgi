@@ -68,11 +68,13 @@ if {[catch {
 	exit 0
     }
 
+    set agent {Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36}
+
     foreach wget {/usr/bin/wget /usr/local/bin/wget /opt/local/bin/wget} {
         if {[file exists $wget]} {
 	    # First let see what the server response should be
 	    if {[catch {
-		set data [exec $wget -q -S --method=HEAD --referer=$ref $url 2>@ stdout | cat]
+		set data [exec $wget -q -S --method=HEAD --referer=$ref -U $agent $url 2>@ stdout | cat]
 	    } err]} {
 		if {"$env(REQUEST_METHOD)" == "HEAD"} {
 		    puts "Content-Type: text/html\n"
