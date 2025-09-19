@@ -7,6 +7,8 @@ namespace eval 6park {
         set h(lang)  zh
         set h(desc)  留园
         set h(url)   http://www.6park.com
+        set h(max_articles)  [::get_debug_opt DEBUG_MAX_ARTICLES  150]
+        set h(max_downloads) [::get_debug_opt DEBUG_MAX_DOWNLOADS 25]
     }
 
     proc update_index {} {
@@ -15,7 +17,7 @@ namespace eval 6park {
 
     # this function is called when ./test.sh has a non-empty DEBUG_ARTICLE
     proc debug_article_parser {article_url} {
-        ::schedule_read 6park::parse_article $article_url
+        ::schedule_read [list 6park::parse_toutiaoabc 12345 TITLE] $article_url utf-8
     }
 
     proc parse_index {index_url data} {
@@ -58,6 +60,8 @@ namespace eval 6park {
     }
 
     proc parse_toutiaoabc {id title url data} {
+        global g
+
         set from ""
         regexp {新闻来源: ([^ ]+)} $data dymmy from
 
@@ -82,6 +86,10 @@ namespace eval 6park {
         regsub -all <center> $data <!--noceneter--> data
         regsub -all </center> $data "" data
         regsub -all {align='center'} $data "" data
+
+        # redirect youtube embedded frames, as Newsify is buggy with this
+        # src="https://www.youtube.com/embed/NoONSPZK8gE"
+        regsub -all {src="https://www.youtube.com/embed/([^\"]+)"} $data "src=\"$g(webroot)/cgi-bin/rd2.cgi?a=embed\\&b=\\1\"" data
 
         # fix images
         regsub -all {onload='javascript:if[(]this.width>600[)] this.width=600'} $data "" data
