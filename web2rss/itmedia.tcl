@@ -9,6 +9,7 @@ namespace eval itmedia {
         set h(desc)  {ITmedia NEWS}
         set h(url)   https://www.itmedia.co.jp/news
         set h(out)   itmedia
+        set h(redirect_images) 1
     }
 
     proc update_index {} {

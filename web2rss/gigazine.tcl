@@ -9,6 +9,7 @@ namespace eval gigazine {
         set h(desc)  GIGAZINE
         set h(url)   http://gigazine.net/
         set h(out)   gigazine
+        set h(redirect_images) 1
     }
 
     proc update_index {} {

@@ -10,6 +10,7 @@ namespace eval dqn {
         set h(desc)  痛いニュース(ﾉ∀`)
         set h(url)   http://blog.livedoor.jp/dqnplus/
         set h(out)   dqn
+        set h(redirect_images) 1
     }
 
     proc update_index {} {

@@ -8,6 +8,7 @@ namespace eval jiji {
         set h(desc)  {時事通信}
         set h(url)   https://www.jiji.com/
         set h(out)   jiji
+        set h(redirect_images) 1
     }
 
     proc update_index {} {

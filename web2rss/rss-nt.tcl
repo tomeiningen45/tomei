@@ -912,6 +912,10 @@ proc adapter_init {adapter first} {
 
 	# Is this traditional chinese
         set h(traditional) 0
+
+        # should we redirect images in the HTML files?
+        # (images are never redirected in rss files)
+        set h(redirect_images) 0
     }
     set ${adapter}::h(out) $adapter
     db_load $adapter
@@ -1569,7 +1573,8 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
     foreach url $list {
 	set image "&nbsp;"
         set data [set ${adapter}::dbc($url)]
-	if {[regexp {(<img [^>]+)>} $data dummy head]} {
+	if {[regexp {(<img [^>]+)>} $data dummy head] && 0} {
+            # 2026/03/09 don't put image in index column to speed up loading
 	    regsub style=  $head xstyle=  head
 	    regsub width=  $head xwidth=  head
 	    regsub height= $head xheight= head
@@ -1591,6 +1596,9 @@ proc write_html_file {fd0 adapter list {subpageinfo {}}} {
 	    puts $fdc "<h2><a href='$url' target='_blank'>[set ${adapter}::dbs($url)]</a></h2>"
 	    puts $fdc "<button onclick='toggle()' style='margin-bottom:2px'><font size=+2><span id='toggle'>⬅</span></font></button></a>"
 	    set text [set ${adapter}::dbc($url)]
+            if [set ${adapter}::h(redirect_images)] {
+                set text [redirect_images_html $url $text]
+            }
 	    if {![regexp ⤑ $text]} {
 		set pubdate [set ${adapter}::dbt($url)]
 		set text "([date_string $pubdate])<br>$text"
@@ -1721,7 +1729,12 @@ proc write_xml_file {adapter list {subpageinfo {}}} {
     close $fd
 }
 
+# Backward compatibility -- we no longer redirect images in the RSS data
 proc redirect_images {url data} {
+    return $data
+}
+
+proc redirect_images_html {url data} {
     set pat1 {<img[^>]*src=[\"\']([^\"\']*)[\"\'][^>]*>}
     set pat2 {<img[^>]*src=([^\"\'][^ >]*)[^>]*>}
     foreach pat [list $pat1 $pat2] {

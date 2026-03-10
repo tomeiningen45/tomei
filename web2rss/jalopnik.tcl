@@ -9,6 +9,7 @@ namespace eval jalopnik {
         set h(desc)  JALOPNIK
         set h(url)   http://jalopnik.com/
         set h(out)   jalopnik
+        set h(redirect_images) 1
     }
 
     proc update_index {} {
