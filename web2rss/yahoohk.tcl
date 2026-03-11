@@ -110,6 +110,7 @@ namespace eval yahoohk {
         set title ""
         regexp {<title>([^<]+)</title>} $data dummy title
         regsub {[ -]*\u96C5\u864E\u9999\u6E2F\u65B0\u805E} $title "" title
+        regsub {｜Yahoo.*$} $title "" title
 
 	set pubdate [clock seconds]
 	if {[regexp -nocase {<time [^>]* datetime="([^>]+)">} $data dummy t]} {
@@ -242,6 +243,7 @@ namespace eval yahoohk {
 	regsub {<h3 [^>]*>推薦閱讀.*} $data "" data
         regsub {<header[^>]*><a .*</header>} $data "" data
         regsub {<a [^>]*>下載Yahoo財經APP</a>} $data "" data
+        regsub -all {廣告廣告} $data "" data
 
         if {"$data" == ""} {
             filter_article yahoohk $url
