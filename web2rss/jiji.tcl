@@ -105,9 +105,7 @@ namespace eval jiji {
 	    }
 	}
 
-	if {![regexp "<img " $data]} {
-	    append data "\n<img src=/webrss/jijitsushin_200x200.jpg>"
-	}
+        append data "\n<p><p><p><img src=/webrss/jijitsushin_200x200.jpg>"
 	
         save_article jiji $title $url $data $pubdate
     }
