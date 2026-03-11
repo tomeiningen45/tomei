@@ -6,13 +6,13 @@ namespace eval 6park {
         set h(article_sort_byurl) 0
         set h(lang)  zh
         set h(desc)  留园
-        set h(url)   http://www.6park.com
+        set h(url)   https://www.vava8.com/
         set h(max_articles)  [::get_debug_opt DEBUG_MAX_ARTICLES  150]
         set h(max_downloads) [::get_debug_opt DEBUG_MAX_DOWNLOADS 25]
     }
 
     proc update_index {} {
-        ::schedule_read 6park::parse_index https://www.6parknews.com/newspark/index.php utf-8
+        ::schedule_read 6park::parse_index https://www.vava8.com/index.php?app=index&act=api_list&limit=50&sort=latest&content_type=news utf-8
     }
 
     # this function is called when ./test.sh has a non-empty DEBUG_ARTICLE
@@ -23,18 +23,15 @@ namespace eval 6park {
     proc parse_index {index_url data} {
         set list {}
 
-        foreach line [makelist $data {"nid":}] {
-            if {[regexp {^"([^\"]+)"} $line dummy id] &&
-                [regexp {"title":"([^\"]+)"} $line dummy title] &&
-                [regexp {"url":"([^\"]+)"} $line dummy url]} {
-
-                regsub ☆ $title "" title
-                regsub -all {\\/} $url / url
-                if {[regexp {^view} $url]} {
-                    set url "https://www.6parknews.com/newspark/$url"
-                } elseif {![regexp {^https:} $url]} {
-                    continue
-                }
+        foreach line [makelist $data {"id":}] {
+            if {[regexp {^([0-9]+),} $line dummy id] &&
+                [regexp {"title":"([^\"]+)"} $line dummy title]} {
+                regsub -all {[$]} $title "\\\\u0024" title
+                regsub -all {\[} $title "\\\\u005b" title
+                regsub -all {\]} $title "\\\\u005d" title
+                set title [eval set a \"$title\"]
+                puts $title
+                set url "https://www.vava8.com/index.php?app=index&act=view&id=$id"
 
                 if {![info exists seen($url)]} {
                     set seen($url) 1
@@ -62,59 +59,12 @@ namespace eval 6park {
     proc parse_toutiaoabc {id title url data} {
         global g
 
-        set from ""
-        regexp {新闻来源: ([^ ]+)} $data dymmy from
-
-        regsub {.*<div id="mainContent">} $data "" data
-        regsub {.*<div id='shownewsc' style="margin:15px;">} $data "" data
-        regsub {.*<div class="article-content" id="article-content">} $data "" data
-        regsub {.*<!-- 文章内容 -->} $data "" data
-
-        regsub {<table class='xianhua_jidan'.*} $data "" data
-        regsub {<span class='ad_title'>Advertisements</span></div>.*} $data "" data
-        regsub {<!-- 文章内容结束 -->.*} $data "" data
-        regsub {<a href=[^>]+target=_blank><img[^>]+转发本条新闻到微博'></a>} $data "" data
-
-        set data [sub_block $data "<script" "</script>" ""]
-        set data [sub_block $data {<ins class="adsbygoogle"} "</ins>" ""]
-        
-        if {"$from" != ""} {
-            set data "【$from】 $data"
+        if {[regsub {^.*<div id="article-content">} $data "" data] &&
+            [regsub {<div id="content-notice">.*} $data "" data]} {
+            set data [string trim $data]
+            regsub "^<p>" $data "" data
+            append data "<p><p><p><p><p><img src='https://www.vava8.com/tpl/public/images/logo.png'>"
+            save_article 6park $title $url $data
         }
-
-        # most of the center tags are wrong on 6park
-        regsub -all <center> $data <!--noceneter--> data
-        regsub -all </center> $data "" data
-        regsub -all {align='center'} $data "" data
-
-        # redirect youtube embedded frames, as Newsify is buggy with this
-        # src="https://www.youtube.com/embed/NoONSPZK8gE"
-        regsub -all {src="https://www.youtube.com/embed/([^\"]+)"} $data "src=\"$g(webroot)/cgi-bin/rd2.cgi?a=embed\\&b=\\1\"" data
-
-        # fix images
-        regsub -all {onload='javascript:if[(]this.width>600[)] this.width=600'} $data "" data
-        regsub -all {<br [^>]*>} $data <br> data
-        regsub -all {<br>.[ 　]+} $data "<br>" data
-        regsub -all {<br>.<b>[ 　]+} $data "<br><b>" data
-        regsub -all "\n\[ \t\r\]+<" $data "\n<" data
-        regsub -all "<br>(\n<br>)+" $data "<br><br>\n" data
-        regsub -all {>[ 　]+<} $data "><" data
-
-        # don't show 6park images for now, since they are locked by referrer
-        set pat {<img[^>]*src=[\"\']([^\"\']*)[\"\'][^>]*>}
-        while {[regexp -nocase $pat $data dummy img]} {
-            set img [redirect_image $img $url]
-            regsub -all "\\\\" $img {\\\\} img
-            regsub -all {&} $img {\\\&} img
-            regsub -nocase $pat $data "\n<xxximg src='$img'>\n" data
-        }
-        regsub -all "<xxximg " $data "<img " data
-	regsub -all "	" $data " " data
-	regsub -all " +\n" $data "\n" data
-	regsub -all "\n +" $data "\n" data
-	regsub -all "\n +" $data "\n" data
-	regsub -all "\n\n\n+" $data "\n\n" data
-	regsub -all "】\n+" $data "】 " data
-        save_article 6park $title $url $data
     }
 }
