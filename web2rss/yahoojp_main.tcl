@@ -1,4 +1,4 @@
-# @(disabled)rss-nt-adapter@
+# @rss-nt-adapter@
 
 namespace eval yahoojp_main {
     proc init {first} {
@@ -9,10 +9,11 @@ namespace eval yahoojp_main {
         set h(desc)  Yahoo主要
         set h(url)   https://news.yahoo.co.jp/
         set h(out)   yjpmain
+        set h(redirect_images) 1
     }
 
     proc update_index {} {
-        atom_update_index yahoojp_main http://news.yahoo.co.jp/pickup/rss.xml
+        atom_update_index yahoojp_main https://news.yahoo.co.jp/rss/categories/domestic.xml
     }
 
     proc parse_link {link} {
@@ -25,6 +26,15 @@ namespace eval yahoojp_main {
     }
     
     proc parse_article {pubdate url data} {
-        yahoojp::parse_article yahoojp_main $pubdate $url $data
+        regsub {[?]source=rss} $url "" url
+        set title ""
+        regexp {<title>([^<]+)</title>} $data dummy title
+        regsub { - Yahoo.*} $title "" title
+        if {"$title" != "" &&
+            [regsub {.*<div class=.article_body [^>]+>} $data "" data] &&
+            [regsub {<h3 [^>]+>[^<]*関連記事.*} $data "" data]} {
+            append data "<p><p><img src='https://s.yimg.jp/c/icon/s/bsc/2.0/y120.png'>"
+            save_article yahoojp_main $title $url $data $pubdate
+        }
     }
 }
