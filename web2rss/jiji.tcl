@@ -105,7 +105,7 @@ namespace eval jiji {
 	    }
 	}
 
-        append data "\n<p><p><p><img src=/webrss/jijitsushin_200x200.jpg>"
+        append data "\n<p><p><p><img src=https://sp.m.jiji.com/apple-touch-icon-180x180.png>"
 	
         save_article jiji $title $url $data $pubdate
     }
