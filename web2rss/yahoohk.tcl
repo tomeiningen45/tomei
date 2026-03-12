@@ -262,7 +262,7 @@ namespace eval yahoohk {
 	set data [redirect_images https://hk.finance.yahoo.com/news/test.html $data]
         set data "${provider}&nbsp;\n$data"
 	set data "[download_timestamp $pubdate]$data"
-
+        append data "\n<p><p><img src='https://s.yimg.com/cv/apiv2/twapp/apple-touch-icon@167x167.png'>"
         save_article yahoohk $title $url $data $pubdate
     }
 }
