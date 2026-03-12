@@ -59,12 +59,17 @@ namespace eval 6park {
     proc parse_toutiaoabc {id title url data} {
         global g
 
+
+        set from ""
+        if {[regexp {<meta name="author" content="([^>]+)">} $data dummy from]} {
+            set from " | $from"
+        }
         if {[regsub {^.*<div id="article-content">} $data "" data] &&
             [regsub {<div id="content-notice">.*} $data "" data]} {
             set data [string trim $data]
             regsub "^<p>" $data "" data
             append data "<p><p><p><p><p><img src='https://www.vava8.com/tpl/public/images/logo.png'>"
-            save_article 6park $title $url $data
+            save_article 6park $title$from $url $data
         }
     }
 }
