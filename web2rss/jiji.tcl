@@ -83,6 +83,7 @@ namespace eval jiji {
 	set data [sub_block $data {<script[^>]*>} </script> ""]
 	regsub -all {<img src="/news2/kiji_photos/square/dummy/dummy2.png"[^>]*>} $data "" data
 	regsub -all {<img src="/} $data {<img src="https://www.jiji.com/} data 
+        regsub -all {<img src="[.][.]/} $data {<img src="https://www.jiji.com/} data
 	regsub -all {<a href="[^>]*rel=pv">} $data "" data
 	set data "[download_timestamp $pubdate]${data}"
 
