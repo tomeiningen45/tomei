@@ -34,6 +34,8 @@ namespace eval yahoojp_main {
             [regsub {.*<div class=.article_body [^>]+>} $data "" data] &&
             [regsub {<h3 [^>]+>[^<]*関連記事.*} $data "" data]} {
             regsub -all "\n\n　" $data "<p>" data
+            regsub -all "。\n\n" $data "。<p>\n\n" data
+
             append data "<p><p><img src='https://s.yimg.jp/c/icon/s/bsc/2.0/y120.png'>"
             save_article yahoojp_main $title $url $data $pubdate
         }
