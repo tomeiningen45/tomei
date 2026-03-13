@@ -34,6 +34,10 @@ namespace eval itmedia {
         regsub {<!-- cmsBodyMainEnd -->.*} $data "" data
         regsub -all \u001a $data "" data
 
+        regsub {<div id="cmsMark"><span[^>]*><a [^>]*><img src=[^>]*>} $data "" data
+        regsub -all {<![^>]*>} $data "" data
+        regsub -all "\n\n" $data "\n" data
+
 	set data [redirect_images https://www.itmedia.co.jp/news $data]
         save_article itmedia $title $url $data $pubdate
     }
