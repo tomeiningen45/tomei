@@ -30,9 +30,15 @@ namespace eval register {
 	regsub {...The Register</title>} $data {</title>} data
         regexp {<title>([^<|]+)} $data dummy title
 
+        set favicon ""
+        if {[regexp {href="(/[^>]+/apple-touch-icon.png)"} $data dummy favicon]} {
+            set favicon "<img src='https://www.theregister.com$favicon'>"
+        }
         regsub {.*<div id="article">} $data "" data
         regsub {.*<div id="body">} $data "" data
         regsub {<div class="wptl btm">.*} $data "" data
+
+        append data $favicon
 
         save_article register $title $url $data $pubdate
     }
