@@ -1,4 +1,4 @@
-# @rss-nt-adapter@
+# @<disable>rss-nt-adapter@
 
 namespace eval yahoofn {
     proc init {first} {
