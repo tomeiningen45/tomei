@@ -32,6 +32,7 @@ namespace eval yahoojp_main {
     # old_data = when parsing a series of pages, $old_data contains the pages that we have parsed so far
     proc parse_article2 {pubdate old_data orig_url url data} {
         regsub {[?]source=rss} $url "" url
+        regsub {[?]source=rss} $orig_url "" orig_url
         set title ""
         regexp {<title>([^<]+)</title>} $data dummy title
         regsub { - Yahoo.*} $title "" title
